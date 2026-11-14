@@ -4,6 +4,7 @@ import Program from '../../layouts/Program.astro';
 import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
 import { playerSeasonStats, playerGameLog } from '../../lib/season';
+import { nonEmptyCategories } from '../../lib/statcards';
 import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat } from '../../lib/format';
 import type { Player } from '../../lib/schema';
 
@@ -19,7 +20,7 @@ const { prev, next } = Astro.props as { prev: string | null; next: string | null
 const roster = getRoster();
 const player = getPlayer(slug!)!;
 const stats = getSeasonStats();
-const cats = playerSeasonStats(roster, stats, player);
+const cats = nonEmptyCategories(playerSeasonStats(roster, stats, player));
 const log = playerGameLog(roster, getGames(), player);
 const name = `${player.firstName} ${player.lastName}`;
 const nb = (s: string | null) => (s ? getPlayer(s) : undefined) as Player | undefined;
@@ -52,7 +53,7 @@ const entries = log.flatMap((e) => {
 
   <h2 class="section-title">Season Stats</h2>
   {cats.length === 0
-    ? <p class="card muted">No stats entered on MaxPreps yet.</p>
+    ? <p class="card muted">No stats recorded yet.</p>
     : <div class="statcards">{cats.map((c) => (
       <section class="card statcard avoid-break" aria-label={`${c.label} season stats`}>
         <h3>{c.label}</h3>

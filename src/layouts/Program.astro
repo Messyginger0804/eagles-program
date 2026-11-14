@@ -18,6 +18,7 @@ interface Props { title?: string }
 const { title } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 const path = Astro.url.pathname.replace(/\/$/, '');
+const isHome = path === withBase('/').replace(/\/$/, '');
 const is = (href: string) => path === withBase(href).replace(/\/$/, '');
 const section = (href: string) => is(href) || path.startsWith(withBase(href).replace(/\/$/, '') + '/');
 const moreHrefs = ['/more', '/matchup', '/seniors-coaches', '/print'];
@@ -83,9 +84,9 @@ const tabs = [
       </p>
     </footer>
 
-    <a class="fab" href={withBase('/#numbers')} data-open-numbers aria-haspopup="dialog" aria-label="Find a player by number">
+    {!isHome && <a class="fab" href={withBase('/#numbers')} data-open-numbers aria-haspopup="dialog" aria-label="Find a player by number">
       <span aria-hidden="true">#</span>
-    </a>
+    </a>}
     <nav class="tabbar" aria-label="Main">
       <ul>
         {tabs.map((t) => (
