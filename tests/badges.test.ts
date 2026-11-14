@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { gameBadges, roundName } from '../src/lib/format.ts';
 
-const base = { playoff: false, round: null, districtGame: false, labels: [] as ('seniorNight' | 'homecoming')[] };
+const base = { playoff: false, round: null, districtGame: false, labels: [] as Parameters<typeof gameBadges>[0]['labels'] & {} };
 const labels = (g: Parameters<typeof gameBadges>[0]) => gameBadges(g).map((b) => b.label);
 
 describe('gameBadges', () => {
@@ -17,6 +17,10 @@ describe('gameBadges', () => {
   it('orders playoff, district, senior night, homecoming', () => {
     expect(labels({ ...base, playoff: true, round: 'Area', districtGame: true, labels: ['homecoming', 'seniorNight'] }))
       .toEqual(['Area', 'District', 'Senior Night', 'Homecoming']);
+  });
+  it('renders Feeder Night as a special badge after the other labels', () => {
+    expect(gameBadges({ ...base, labels: ['feederNight'] })[0]).toMatchObject({ key: 'feederNight', label: 'Feeder Night', kind: 'special' });
+    expect(labels({ ...base, labels: ['feederNight', 'homecoming', 'seniorNight'] })).toEqual(['Senior Night', 'Homecoming', 'Feeder Night']);
   });
   it('tags kinds and tolerates missing labels', () => {
     expect(gameBadges({ playoff: false, round: null, districtGame: true }).map((b) => b.kind)).toEqual(['district']);

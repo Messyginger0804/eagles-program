@@ -1,12 +1,17 @@
 ---
 import Program from '../layouts/Program.astro';
 import GameCard from '../components/GameCard.astro';
-import { getTeam, getGames } from '../lib/data';
+import EventCard from '../components/EventCard.astro';
+import { getTeam, getGames, getScheduleEvents } from '../lib/data';
 import { recordStr } from '../lib/format';
+import { mergeSchedule, splitRecord } from '../lib/season';
 const team = getTeam();
 const games = getGames();
 const finals = games.filter((g) => g.score);
 const pf = finals.reduce((s, g) => s + g.score!.wh, 0);
+const split = splitRecord(games);
+const hasNeutral = split.neutral.w + split.neutral.l + split.neutral.t > 0;
+const items = mergeSchedule(games, getScheduleEvents());
 const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
 ---
 <Program title="Schedule">
@@ -14,10 +19,13 @@ const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
   <dl class="facts facts--tiles">
     <div><dt>Overall</dt><dd>{recordStr(team.record.overall)}</dd></div>
     <div><dt>District</dt><dd>{recordStr(team.record.district)}</dd></div>
+    <div><dt>Home</dt><dd>{recordStr(split.home)}</dd></div>
+    <div><dt>Away</dt><dd>{recordStr(split.away)}</dd></div>
+    {hasNeutral && <div><dt>Neutral</dt><dd>{recordStr(split.neutral)}</dd></div>}
     <div><dt>PF / PA</dt><dd>{pf} / {pa}</dd></div>
   </dl>
   <ol class="glist">
-    {games.map((g) => <li><GameCard game={g} /></li>)}
+    {items.map((i) => <li>{i.type === 'game' ? <GameCard game={i.game} /> : <EventCard event={i.event} />}</li>)}
   </ol>
   <p class="caveat">Scores and records as reported on MaxPreps.</p>
 </Program>

@@ -72,13 +72,14 @@ export const takeawayLabel = (t: 'interception' | 'fumbleRecovery') =>
 
 export interface GameBadge { key: string; label: string; kind: 'playoff' | 'district' | 'special' }
 
-/** Ordered badges for a game: playoff round (or "Playoff"), District, Senior Night, Homecoming. */
+/** Ordered badges for a game: playoff round (or "Playoff"), District, Senior Night, Homecoming, Feeder Night. */
 export function gameBadges(g: Pick<Game, 'playoff' | 'round' | 'districtGame'> & { labels?: Game['labels'] }): GameBadge[] {
   const out: GameBadge[] = [];
   if (g.playoff) out.push({ key: 'playoff', label: g.round?.trim() || 'Playoff', kind: 'playoff' });
   if (g.districtGame) out.push({ key: 'district', label: 'District', kind: 'district' });
   if (g.labels?.includes('seniorNight')) out.push({ key: 'seniorNight', label: 'Senior Night', kind: 'special' });
   if (g.labels?.includes('homecoming')) out.push({ key: 'homecoming', label: 'Homecoming', kind: 'special' });
+  if (g.labels?.includes('feederNight')) out.push({ key: 'feederNight', label: 'Feeder Night', kind: 'special' });
   return out;
 }
 
@@ -146,4 +147,14 @@ export function paragraphs(s: string): string[] {
 export function playerForStatRow(roster: Roster, row: { number: string; nameAbbrev: string }): Player | undefined {
   const m = matchRow(roster, { stats: {}, ...row } as Parameters<typeof matchRow>[1]);
   return 'player' in m ? m.player : undefined;
+}
+
+/** Short site tag for schedule cards: "HOME", "AWAY", "NEUTRAL"; null when unknown. */
+export const siteTag = (l: Game['location']) => (l ? l.toUpperCase() : null);
+
+/** "Home 5-0 · Away 4-2", plus "Neutral 0-1" only once a neutral-site game is final. */
+export function splitRecordLine(r: { home: { w: number; l: number; t: number }; away: { w: number; l: number; t: number }; neutral: { w: number; l: number; t: number } }): string {
+  const parts = [`Home ${recordStr(r.home)}`, `Away ${recordStr(r.away)}`];
+  if (r.neutral.w + r.neutral.l + r.neutral.t > 0) parts.push(`Neutral ${recordStr(r.neutral)}`);
+  return parts.join(' · ');
 }

@@ -1,12 +1,16 @@
 ---
 import { withBase } from '../lib/url';
 import type { Game } from '../lib/schema';
-import { gameBadges, gameLabel, shortDate, siteLabel } from '../lib/format';
+import { gameBadges, gameLabel, shortDate, siteLabel, siteTag } from '../lib/format';
 const { game } = Astro.props as { game: Game };
 const done = game.score && game.result;
+const tag = siteTag(game.location);
 ---
 <a class:list={['gcard', done && `gcard--${game.result}`]} href={withBase(`/games/${game.id}`)}>
-  <span class="gcard__date">{shortDate(game.date)}</span>
+  <span class="gcard__when">
+    <span class="gcard__date">{shortDate(game.date)}</span>
+    {tag && <span class={`gcard__site gcard__site--${game.location}`}>{tag}</span>}
+  </span>
   <span class="gcard__main">
     <span class="gcard__opp">{gameLabel(game)}</span>
     <span class="gcard__tags">

@@ -94,7 +94,7 @@ export const TakeawaySchema = z.object({
   player: playerRef.nullable(),
 });
 
-export const GameLabels = ['seniorNight', 'homecoming'] as const;
+export const GameLabels = ['seniorNight', 'homecoming', 'feederNight'] as const;
 
 export const GameSchema = z.object({
   id: z.string().regex(/^\d{4}-(\d{2}-\d{2}|tbd)-[a-z0-9-]+$/, 'id must be YYYY-MM-DD-<opponent-slug>'),
@@ -128,6 +128,15 @@ export const GameSchema = z.object({
     highlights: z.array(link),
   }),
 });
+
+export const ScheduleEventSchema = z.object({
+  date: isoDate,
+  kind: z.enum(['scrimmage', 'bye']),
+  opponentName: z.string().min(1).nullable().default(null),
+  location: z.enum(['home', 'away', 'neutral']).nullable().default(null),
+  note: z.string().nullable().default(null),
+}).refine((e) => e.kind !== 'scrimmage' || e.opponentName, { message: 'a scrimmage needs opponentName', path: ['opponentName'] });
+export const ScheduleEventsSchema = z.array(ScheduleEventSchema);
 
 export const OpponentSchema = z.object({
   slug: z.string(),
@@ -170,6 +179,7 @@ export type SeasonStats = z.infer<typeof SeasonStatsSchema>;
 export type ScoringPlay = z.infer<typeof ScoringPlaySchema>;
 export type Takeaway = z.infer<typeof TakeawaySchema>;
 export type Game = z.infer<typeof GameSchema>;
+export type ScheduleEvent = z.infer<typeof ScheduleEventSchema>;
 export type Opponent = z.infer<typeof OpponentSchema>;
 
 /** Format zod issues as "path: message" lines. */

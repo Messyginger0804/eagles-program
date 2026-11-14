@@ -3,8 +3,8 @@
 import { DatabaseSync } from 'node:sqlite';
 import { resolve } from 'node:path';
 import {
-  GameSchema, OpponentSchema, RosterSchema, SeasonStatsSchema, TeamSchema,
-  type Game, type Opponent, type Roster, type SeasonStats, type StatCategory, type Team,
+  GameSchema, OpponentSchema, ScheduleEventsSchema, RosterSchema, SeasonStatsSchema, TeamSchema,
+  type Game, type Opponent, type ScheduleEvent, type Roster, type SeasonStats, type StatCategory, type Team,
 } from './schema.ts';
 
 type Row = Record<string, any>;
@@ -159,6 +159,14 @@ export function readGames(db: DatabaseSync, season = currentSeason(db)): Game[] 
 export function readGame(db: DatabaseSync, id: string): Game | undefined {
   const g = get(db, 'SELECT * FROM games WHERE id = ?', id);
   return g ? buildGame(db, g) : undefined;
+}
+
+/** Preseason scrimmages and bye weeks for a season, by date. Empty if the table is absent (older DBs). */
+export function readScheduleEvents(db: DatabaseSync, season = currentSeason(db)): ScheduleEvent[] {
+  if (!get(db, "SELECT 1 AS x FROM sqlite_master WHERE type = 'table' AND name = 'schedule_events'")) return [];
+  return ScheduleEventsSchema.parse(all(db, 'SELECT * FROM schedule_events WHERE season = ? ORDER BY date', season).map((r) => ({
+    date: r['date'], kind: r['kind'], opponentName: r['opponent_name'], location: r['location'], note: r['note'],
+  })));
 }
 
 function buildOpponent(db: DatabaseSync, s: Row, season: number): Opponent {

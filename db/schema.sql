@@ -108,11 +108,23 @@ CREATE TABLE IF NOT EXISTS game_venues (
   address TEXT NOT NULL
 );
 
--- Special-game labels ('seniorNight', 'homecoming'). Replaced wholesale on each game upsert.
+-- Special-game labels ('seniorNight', 'homecoming', 'feederNight'). Replaced wholesale on each game upsert.
 CREATE TABLE IF NOT EXISTS game_labels (
   game_id TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
-  label   TEXT NOT NULL CHECK (label IN ('seniorNight','homecoming')),
+  label   TEXT NOT NULL CHECK (label IN ('seniorNight','homecoming','feederNight')),
   PRIMARY KEY (game_id, label)
+);
+
+-- Non-game schedule entries (preseason scrimmages, bye weeks). Kept out of `games` so they never count
+-- toward records, stats or game pages. Replaced wholesale per season on import.
+CREATE TABLE IF NOT EXISTS schedule_events (
+  season        INTEGER NOT NULL,
+  date          TEXT NOT NULL,
+  kind          TEXT NOT NULL CHECK (kind IN ('scrimmage','bye')),
+  opponent_name TEXT,
+  location      TEXT CHECK (location IN ('home','away','neutral')),
+  note          TEXT,
+  PRIMARY KEY (season, date)
 );
 
 CREATE TABLE IF NOT EXISTS scoring_plays (
