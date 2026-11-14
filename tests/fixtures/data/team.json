@@ -1,0 +1,9 @@
+{
+  "school": "Wilmer-Hutchins", "mascot": "Eagles", "city": "Dallas", "state": "TX",
+  "season": 2026, "classification": "4A Division 1", "district": null,
+  "colors": { "primary": "#034CB2", "secondary": "#046DFF", "accent": "#FFFFFF" },
+  "record": { "overall": { "w": 9, "l": 2, "t": 0 }, "district": { "w": 7, "l": 1, "t": 0 } },
+  "coaches": [{ "name": "Leon Paul", "role": "Head Coach" }],
+  "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/football/",
+  "nextGameId": "2026-tbd-lindale"
+}

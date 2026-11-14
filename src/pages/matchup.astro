@@ -1,0 +1,96 @@
+---
+import { withBase } from '../lib/url';
+import Program from '../layouts/Program.astro';
+import RosterTable from '../components/RosterTable.astro';
+import { getTeam, getRoster, getNextGame, getOpponent, getGames } from '../lib/data';
+import { recordStr, shortDate, longDate, opponentSlug, locationLabel, WH_NAME } from '../lib/format';
+const team = getTeam();
+const roster = getRoster();
+const game = getNextGame();
+const opp = game ? getOpponent(opponentSlug(game)) : undefined;
+const oppFull = game ? `${game.opponent.name}${game.opponent.mascot ? ` ${game.opponent.mascot}` : ''}` : '';
+const head = (c: { name: string; role: string }[]) => c.find((x) => /head/i.test(x.role))?.name ?? 'TBA';
+const whResults = getGames().filter((g) => g.score);
+---
+<Program title="This Week">
+  <h1>This Week</h1>
+  {!game ? <p class="lede">No upcoming game is scheduled yet.</p> : (
+    <>
+      <section class="vs-head" aria-label="Matchup">
+        <p class="vs"><span class="school">{WH_NAME}</span> {team.mascot}<br />vs.<br /><span class="school">{game.opponent.name}</span> {game.opponent.mascot ?? ''}</p>
+        <p class="muted">Both teams are the Eagles, so look for the school name.</p>
+      </section>
+
+      <dl class="card facts">
+        <div><dt>{WH_NAME} record</dt><dd>{recordStr(team.record.overall)} ({recordStr(team.record.district)} district)</dd></div>
+        <div><dt>{game.opponent.name} record</dt><dd>{opp ? `${recordStr(opp.record.overall)}${opp.record.district ? ` (${recordStr(opp.record.district)} district)` : ''}` : 'Not available'}</dd></div>
+        <div><dt>{WH_NAME} head coach</dt><dd>{head(team.coaches)}</dd></div>
+        <div><dt>{game.opponent.name} head coach</dt><dd>{opp ? head(opp.coaches) : 'TBA'}</dd></div>
+        <div><dt>Kickoff</dt><dd>{game.date ? `${longDate(game.date)}` : 'TBA'}{game.date ? '' : ''}</dd></div>
+        <div><dt>Site</dt><dd>{locationLabel(game.location)}</dd></div>
+      </dl>
+      <p><strong>Kickoff: TBA</strong>{game.date ? ` (${shortDate(game.date)}, time not announced)` : ''}</p>
+      {game.maxprepsUrl && <p class="linkrow"><a href={game.maxprepsUrl} rel="noopener">Game page on MaxPreps</a> · <a href={withBase(`/games/${game.id}`)}>Game page here</a></p>}
+
+      <h2>The Centerfold</h2>
+      <div class="fold__tabs chips no-print" id="fold-tabs" role="group" aria-label="Choose a roster" hidden>
+        <button type="button" class="chip" data-t="wh" aria-pressed="true">{WH_NAME}</button>
+        <button type="button" class="chip" data-t="opp" aria-pressed="false">{game.opponent.name}</button>
+      </div>
+      <div class="fold" id="fold">
+        <section class="fold__panel" data-p="wh" aria-labelledby="fold-wh">
+          <h3 id="fold-wh">{WH_NAME} Eagles</h3>
+          <RosterTable rows={roster.players} caption={`${WH_NAME} Eagles numerical roster`} compact />
+        </section>
+        <section class="fold__panel" data-p="opp" aria-labelledby="fold-opp">
+          <h3 id="fold-opp">{game.opponent.name} {game.opponent.mascot ?? ''}</h3>
+          {opp
+            ? <RosterTable rows={opp.roster} caption={`${game.opponent.name} numerical roster`} compact />
+            : <p>Roster not available yet.</p>}
+        </section>
+      </div>
+
+      <h2>Season Results</h2>
+      <div class="fold">
+        <section>
+          <h3>{WH_NAME}</h3>
+          <div class="table-scroll" role="region" tabindex="0" aria-label={`${WH_NAME} results`}><table>
+            <caption class="sr-only">{WH_NAME} results</caption>
+            <thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Result</th></tr></thead>
+            <tbody>{whResults.map((g) => (
+              <tr><th scope="row">{shortDate(g.date)}</th><td>{g.location === 'away' ? 'at' : 'vs.'} {g.opponent.name}</td><td>{g.result} {g.score!.wh}-{g.score!.opp}</td></tr>
+            ))}</tbody>
+          </table></div>
+        </section>
+        <section>
+          <h3>{game.opponent.name}</h3>
+          {opp ? (
+            <div class="table-scroll" role="region" tabindex="0" aria-label={`${game.opponent.name} results`}><table>
+              <caption class="sr-only">{game.opponent.name} results</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Result</th></tr></thead>
+              <tbody>{opp.results.map((r) => (
+                <tr><th scope="row">{shortDate(r.date)}</th><td>{r.location === 'away' ? 'at' : 'vs.'} {r.opponent}</td><td>{r.score && r.result ? `${r.result} ${r.score.us}-${r.score.them}` : 'TBA'}</td></tr>
+              ))}</tbody>
+            </table></div>
+          ) : <p>Results not available yet.</p>}
+        </section>
+      </div>
+      <p class="caveat">Opponent rosters and results as listed on MaxPreps. Players are not linked to individual pages.</p>
+    </>
+  )}
+
+  <script is:inline>
+    (function () {
+      var tabs = document.getElementById('fold-tabs'), fold = document.getElementById('fold');
+      if (!tabs || !fold) return;
+      tabs.hidden = false; fold.classList.add('has-tabs');
+      var btns = tabs.querySelectorAll('button'), panels = fold.querySelectorAll('.fold__panel');
+      function show(t) {
+        btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
+        panels.forEach(function (p) { if (p.dataset.p === t) p.removeAttribute('data-off'); else p.setAttribute('data-off', ''); });
+      }
+      btns.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.t); }); });
+      show('wh');
+    })();
+  </script>
+</Program>

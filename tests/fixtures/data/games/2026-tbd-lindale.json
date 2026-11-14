@@ -1,0 +1,30 @@
+{
+  "id": "2026-tbd-lindale",
+  "status": "scheduled",
+  "date": null,
+  "playoff": true,
+  "round": null,
+  "location": "neutral",
+  "districtGame": false,
+  "opponent": {
+    "name": "Lindale",
+    "mascot": "Eagles",
+    "city": "Lindale",
+    "maxprepsTeamUrl": null
+  },
+  "contestId": null,
+  "maxprepsUrl": null,
+  "score": null,
+  "result": null,
+  "quarters": null,
+  "recordAfter": null,
+  "scoringStatus": "none",
+  "scoring": [],
+  "takeaways": [],
+  "playerStats": null,
+  "links": {
+    "replay": null,
+    "recap": null,
+    "highlights": []
+  }
+}

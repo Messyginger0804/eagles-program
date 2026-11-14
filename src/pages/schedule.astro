@@ -1,0 +1,27 @@
+---
+import Program from '../layouts/Program.astro';
+import GameRow from '../components/GameRow.astro';
+import { getTeam, getGames } from '../lib/data';
+import { recordStr } from '../lib/format';
+const team = getTeam();
+const games = getGames();
+const finals = games.filter((g) => g.score);
+const pf = finals.reduce((s, g) => s + g.score!.wh, 0);
+const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
+---
+<Program title="Schedule">
+  <h1>Schedule &amp; Results</h1>
+  <dl class="card facts">
+    <div><dt>Overall</dt><dd>{recordStr(team.record.overall)}</dd></div>
+    <div><dt>District</dt><dd>{recordStr(team.record.district)}</dd></div>
+    <div><dt>Points for / against</dt><dd>{pf} / {pa}</dd></div>
+  </dl>
+  <div class="table-scroll" role="region" tabindex="0" aria-label="Schedule and results">
+    <table>
+      <caption class="sr-only">2026 Wilmer-Hutchins Eagles schedule and results</caption>
+      <thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col" class="res">Result</th></tr></thead>
+      <tbody>{games.map((g) => <GameRow game={g} />)}</tbody>
+    </table>
+  </div>
+  <p class="caveat">Scores and records as reported on MaxPreps.</p>
+</Program>

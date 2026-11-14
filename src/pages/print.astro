@@ -1,0 +1,94 @@
+---
+import { withBase } from '../lib/url';
+import Program from '../layouts/Program.astro';
+import RosterTable from '../components/RosterTable.astro';
+import GameRow from '../components/GameRow.astro';
+import StatCaveat from '../components/StatCaveat.astro';
+import { getTeam, getRoster, getSeasonStats, getGames, getNextGame, getOpponent } from '../lib/data';
+import { seniors, leaders } from '../lib/season';
+import { playerForStatRow, byNumber, recordStr, primaryKey, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
+import { WELCOME_NOTE } from '../config';
+const team = getTeam(), roster = getRoster(), stats = getSeasonStats(), games = getGames();
+const game = getNextGame();
+const opp = game ? getOpponent(opponentSlug(game)) : undefined;
+const division = team.classification.replace(/Division 1$/, 'Division I');
+const srs = byNumber(seniors(roster));
+const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) => x.key === primaryKey(c))?.label ?? '';
+---
+<Program title="Print">
+  <div class="printbar no-print">
+    <button type="button" class="btn" id="print-btn">Print / Save as PDF</button>
+    <p class="muted" style="margin:0">The whole program in booklet order. Use letter size, double-sided, and fold in half.</p>
+  </div>
+
+  <section class="cover avoid-break" aria-label="Cover">
+    <p class="cover__masthead">Game Day Program · Fan Edition {team.season}</p>
+    <p class="cover__wordmark">Eagles</p>
+    <p class="cover__team">{team.school} {team.city}, {team.state}</p>
+    <p class="cover__record">{recordStr(team.record.overall)}</p>
+    <p class="cover__sub">({recordStr(team.record.district)} district)</p>
+    <p class="cover__tag">{division} Playoffs</p>
+  </section>
+
+  <section class="page-break-before" aria-labelledby="p-welcome">
+    <h2 id="p-welcome">Welcome</h2>
+    <div class="welcome">{paragraphs(WELCOME_NOTE).map((t) => <p>{t}</p>)}</div>
+  </section>
+
+  <section class="page-break-before print-section" aria-labelledby="p-sched">
+    <h2 id="p-sched">Schedule &amp; Results</h2>
+    <p><strong>{recordStr(team.record.overall)}</strong> overall · <strong>{recordStr(team.record.district)}</strong> district</p>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Schedule and results"><table>
+      <caption class="sr-only">Schedule and results</caption>
+      <thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Result</th></tr></thead>
+      <tbody>{games.map((g) => <GameRow game={g} />)}</tbody>
+    </table></div>
+  </section>
+
+  {game && (
+    <>
+      <section class="page-break-before" aria-labelledby="p-fold-opp">
+        <h2 id="p-fold-opp">This Week: {game.opponent.name} {game.opponent.mascot ?? ''}</h2>
+        <p>{WH_NAME} Eagles vs. {game.opponent.name} {game.opponent.mascot ?? ''} · Kickoff: TBA{opp ? ` · ${game.opponent.name} is ${recordStr(opp.record.overall)}` : ''}</p>
+        {opp ? <RosterTable rows={opp.roster} caption={`${game.opponent.name} numerical roster`} compact split /> : <p>Roster not available yet.</p>}
+      </section>
+      <section class="page-break-before" aria-labelledby="p-fold-wh">
+        <h2 id="p-fold-wh">This Week: {WH_NAME} Eagles</h2>
+        <RosterTable rows={roster.players} caption={`${WH_NAME} Eagles numerical roster`} compact split />
+      </section>
+    </>
+  )}
+
+  <section class="page-break-before" aria-labelledby="p-stats">
+    <h2 id="p-stats">Season Leaders</h2>
+    <StatCaveat games={stats.gamesPlayed} />
+    <div class="leaders">
+      {stats.categories.map((c) => {
+        const top = leaders(stats, c.key, primaryKey(c), 5);
+        return top.length ? (
+          <div class="avoid-break"><h3>{c.label} ({colLabel(c)})</h3>
+            <ol>{top.map((r) => {
+              const pl = playerForStatRow(roster, r);
+              return <li>#{r.number} {pl ? <a href={withBase(`/players/${pl.slug}`)}>{pl.firstName} {pl.lastName}</a> : r.nameAbbrev} — {r.value}</li>;
+            })}</ol></div>
+        ) : null;
+      })}
+    </div>
+  </section>
+
+  <section class="page-break-before" aria-labelledby="p-sr">
+    <h2 id="p-sr">Seniors</h2>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Seniors"><table>
+      <caption class="sr-only">Seniors</caption>
+      <thead><tr><th scope="col" class="num">#</th><th scope="col">Name</th><th scope="col">Pos</th><th scope="col">Season highlight</th></tr></thead>
+      <tbody>{srs.map((p) => (
+        <tr><th scope="row" class="num">{p.number}</th><td>{p.firstName} {p.lastName}</td><td>{p.positions.join(', ') || '—'}</td><td>{statHighlight(roster, stats, p) ?? '—'}</td></tr>
+      ))}</tbody>
+    </table></div>
+    <p class="caveat">Thank you, seniors. Unofficial fan program; stats as entered on MaxPreps.</p>
+  </section>
+
+  <script is:inline>
+    document.getElementById('print-btn').addEventListener('click', function () { window.print(); });
+  </script>
+</Program>

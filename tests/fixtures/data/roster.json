@@ -1,0 +1,167 @@
+{
+ "asOf": "2026-11-14",
+ "players": [
+  {
+   "careerId": "c0000000000a1",
+   "athleteId": null,
+   "number": "6",
+   "firstName": "Anterio",
+   "lastName": "Lomax",
+   "slug": "6-anterio-lomax",
+   "positions": [
+    "WR",
+    "DB"
+   ],
+   "grade": 12,
+   "height": "5'10\"",
+   "weight": 165,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a1",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a2",
+   "athleteId": null,
+   "number": "3",
+   "firstName": "Ryland",
+   "lastName": "Smith",
+   "slug": "3-ryland-smith",
+   "positions": [
+    "DB"
+   ],
+   "grade": 11,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a2",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a3",
+   "athleteId": null,
+   "number": "23",
+   "firstName": "Sergio",
+   "lastName": "Salas",
+   "slug": "23-sergio-salas",
+   "positions": [
+    "K"
+   ],
+   "grade": 10,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a3",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a4",
+   "athleteId": null,
+   "number": "10",
+   "firstName": "Darrick",
+   "lastName": "Todd",
+   "slug": "10-darrick-todd",
+   "positions": [
+    "QB"
+   ],
+   "grade": 12,
+   "height": "6'0\"",
+   "weight": 180,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a4",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a5",
+   "athleteId": null,
+   "number": "5",
+   "firstName": "Jordan",
+   "lastName": "Smith",
+   "slug": "5-jordan-smith",
+   "positions": [
+    "LB"
+   ],
+   "grade": 12,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a5",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a6",
+   "athleteId": null,
+   "number": "5",
+   "firstName": "Kyle",
+   "lastName": "Smith",
+   "slug": "5-kyle-smith",
+   "positions": [
+    "RB"
+   ],
+   "grade": 9,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a6",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a7",
+   "athleteId": null,
+   "number": "11",
+   "firstName": "Sam",
+   "lastName": "Adams",
+   "slug": "11-sam-adams",
+   "positions": [
+    "DL"
+   ],
+   "grade": 10,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a7",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a8",
+   "athleteId": null,
+   "number": "11",
+   "firstName": "Tom",
+   "lastName": "Baker",
+   "slug": "11-tom-baker",
+   "positions": [
+    "OL"
+   ],
+   "grade": 11,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a8",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000a9",
+   "athleteId": null,
+   "number": "0",
+   "firstName": "Jahkei",
+   "lastName": "Johnson",
+   "slug": "0-jahkei-johnson",
+   "positions": [
+    "S",
+    "WR"
+   ],
+   "grade": 11,
+   "height": "6'3\"",
+   "weight": 170,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000a9",
+   "highlights": []
+  },
+  {
+   "careerId": "c0000000000b0",
+   "athleteId": null,
+   "number": "00",
+   "firstName": "Nobody",
+   "lastName": "Stats",
+   "slug": "00-nobody-stats",
+   "positions": [
+    "OL"
+   ],
+   "grade": null,
+   "height": null,
+   "weight": null,
+   "maxprepsUrl": "https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/athletes/x/?careerid=c0000000000b0",
+   "highlights": []
+  }
+ ]
+}

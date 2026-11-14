@@ -1,0 +1,42 @@
+---
+import { withBase } from '../lib/url';
+import { byNumber, gradeLabel, positionGroups } from '../lib/format';
+interface Row { number: string; firstName: string; lastName: string; positions: string[]; grade: number | null; height: string | null; weight: number | null; slug?: string }
+interface Props { rows: Row[]; id?: string; caption: string; filterable?: boolean; compact?: boolean; split?: boolean }
+const { rows, id, caption, filterable = false, compact = false, split = false } = Astro.props;
+const sorted = byNumber(rows);
+// split: two half tables side by side (print booklet) so a big roster fits one page
+const half = Math.ceil(sorted.length / 2);
+const chunks = split ? [sorted.slice(0, half), sorted.slice(half)] : [sorted];
+---
+<div class:list={['roster-wrap', split && 'roster-split']}>
+{chunks.map((chunk, ci) => (
+<div class:list={['table-scroll', compact && 'compact']} tabindex="0" role="region" aria-label={split ? `${caption} (part ${ci + 1} of 2)` : caption}>
+  <table class="roster" id={ci === 0 ? id : undefined}>
+    <caption class="sr-only">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="num">#</th><th scope="col">Name</th><th scope="col">Pos</th>
+        <th scope="col">Gr</th><th scope="col">Ht</th><th scope="col" class="num">Wt</th>
+      </tr>
+    </thead>
+    <tbody>
+      {chunk.map((p) => (
+        <tr
+          data-num={filterable ? p.number : undefined}
+          data-name={filterable ? `${p.firstName} ${p.lastName}`.toLowerCase() : undefined}
+          data-groups={filterable ? positionGroups(p.positions).join(' ') : undefined}
+        >
+          <th scope="row" class="num">{p.number}</th>
+          <td>{p.slug ? <a href={withBase(`/players/${p.slug}`)}>{p.firstName} {p.lastName}</a> : <>{p.firstName} {p.lastName}</>}</td>
+          <td>{p.positions.join(', ') || '—'}</td>
+          <td>{gradeLabel(p.grade)}</td>
+          <td>{p.height ?? '—'}</td>
+          <td class="num">{p.weight ?? '—'}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+))}
+</div>

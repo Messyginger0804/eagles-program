@@ -1,0 +1,5 @@
+---
+import { STATS_CAVEAT } from '../lib/format';
+const { games } = Astro.props as { games: number };
+---
+<p class="caveat">{STATS_CAVEAT(games)}</p>
