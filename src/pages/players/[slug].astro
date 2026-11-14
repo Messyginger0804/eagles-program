@@ -3,7 +3,7 @@ import { withBase } from '../../lib/url';
 import Program from '../../layouts/Program.astro';
 import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
-import { playerSeasonStats, playerGameLog } from '../../lib/season';
+import { playerSeasonStats, playerGameLog, playByPlayTouchdowns, pbpCoverageNote } from '../../lib/season';
 import { nonEmptyCategories } from '../../lib/statcards';
 import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat } from '../../lib/format';
 import type { Player } from '../../lib/schema';
@@ -21,6 +21,8 @@ const roster = getRoster();
 const player = getPlayer(slug!)!;
 const stats = getSeasonStats();
 const cats = nonEmptyCategories(playerSeasonStats(roster, stats, player));
+const pbpRow = playByPlayTouchdowns(roster, getGames()).rows.find((r) => r.player.careerId === player.careerId);
+const pbpNote = pbpCoverageNote(playByPlayTouchdowns(roster, getGames()).coverage);
 const log = playerGameLog(roster, getGames(), player);
 const name = `${player.firstName} ${player.lastName}`;
 const nb = (s: string | null) => (s ? getPlayer(s) : undefined) as Player | undefined;
@@ -52,9 +54,22 @@ const entries = log.flatMap((e) => {
   </section>
 
   <h2 class="section-title">Season Stats</h2>
-  {cats.length === 0
-    ? <p class="card muted">No stats recorded yet.</p>
-    : <div class="statcards">{cats.map((c) => (
+  {cats.length === 0 && !pbpRow && <p class="card muted">No stats recorded yet.</p>}
+  {(cats.length > 0 || pbpRow) && <div class="statcards">
+    {pbpRow && (
+      <section class="card statcard avoid-break" aria-label="Touchdowns from play-by-play">
+        <h3>Touchdowns (play-by-play)</h3>
+        <dl class="statgrid">
+          {pbpRow.rushing > 0 && <div><dt>Rush</dt><dd>{pbpRow.rushing}</dd></div>}
+          {pbpRow.receiving > 0 && <div><dt>Rec</dt><dd>{pbpRow.receiving}</dd></div>}
+          {pbpRow.passing > 0 && <div><dt>Pass</dt><dd>{pbpRow.passing}</dd></div>}
+          {pbpRow.returns > 0 && <div><dt>Ret</dt><dd>{pbpRow.returns}</dd></div>}
+          <div><dt>Total</dt><dd>{pbpRow.total}</dd></div>
+        </dl>
+        <p class="caveat">{pbpNote}</p>
+      </section>
+    )}
+    {cats.map((c) => (
       <section class="card statcard avoid-break" aria-label={`${c.label} season stats`}>
         <h3>{c.label}</h3>
         <dl class="statgrid">

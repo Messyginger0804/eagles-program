@@ -191,3 +191,78 @@ export function scoringTouchdowns(roster: Roster, games: Game[]): { byCareerId: 
   }
   return { byCareerId, unmatched };
 }
+
+export interface PbpTdRow {
+  player: Player;
+  rushing: number;
+  receiving: number;
+  passing: number;
+  returns: number;
+  total: number;
+}
+export interface PbpCoverage {
+  complete: number;
+  partial: number;
+  none: number;
+  played: number;
+}
+
+const RETURN_TD_TYPES = new Set<ScoringPlay['type']>(['intReturnTD', 'fumbleReturnTD', 'puntReturnTD', 'kickReturnTD']);
+
+/**
+ * WH touchdowns by player from play-by-play, only for final games whose scoringStatus is complete or partial.
+ * passTD credits the receiver (`player`) with a receiving TD and the passer with a passing TD; the total counts
+ * each play once per player, so a QB's total is his passing TDs and a receiver's is his receiving TDs.
+ * Rows are sorted by total descending, then last name. Unmatched scorer/passer refs are returned separately.
+ */
+export function playByPlayTouchdowns(
+  roster: Roster,
+  games: Game[],
+): { rows: PbpTdRow[]; coverage: PbpCoverage; unmatched: { gameId: string; play: ScoringPlay; role: 'scorer' | 'passer' }[] } {
+  const coverage: PbpCoverage = { complete: 0, partial: 0, none: 0, played: 0 };
+  const unmatched: { gameId: string; play: ScoringPlay; role: 'scorer' | 'passer' }[] = [];
+  const byId = new Map<string, PbpTdRow>();
+  const row = (p: Player) => {
+    let r = byId.get(p.careerId);
+    if (!r) byId.set(p.careerId, (r = { player: p, rushing: 0, receiving: 0, passing: 0, returns: 0, total: 0 }));
+    return r;
+  };
+  for (const g of games) {
+    if (g.status !== 'final') continue;
+    coverage.played++;
+    coverage[g.scoringStatus]++;
+    if (g.scoringStatus === 'none') continue;
+    for (const play of g.scoring) {
+      if (play.team !== 'WH') continue;
+      const t = play.type;
+      const isRush = t === 'rushTD', isPass = t === 'passTD', isRet = RETURN_TD_TYPES.has(t);
+      if (!isRush && !isPass && !isRet) continue;
+      const scorer = play.player ? roster.players.find((pl) => refMatchesPlayer(play.player, pl)) : undefined;
+      if (play.player && !scorer) unmatched.push({ gameId: g.id, play, role: 'scorer' });
+      if (scorer) {
+        const r = row(scorer);
+        if (isRush) r.rushing++;
+        else if (isPass) r.receiving++;
+        else r.returns++;
+        r.total++;
+      }
+      if (isPass && play.passer) {
+        const qb = roster.players.find((pl) => refMatchesPlayer(play.passer, pl));
+        if (qb) {
+          const r = row(qb);
+          r.passing++;
+          r.total++;
+        } else unmatched.push({ gameId: g.id, play, role: 'passer' });
+      }
+    }
+  }
+  const rows = [...byId.values()].sort((a, b) => b.total - a.total || a.player.lastName.localeCompare(b.player.lastName));
+  return { rows, coverage, unmatched };
+}
+
+/** One-line coverage note, e.g. "Counted from MaxPreps play-by-play for 3 of 11 games (2 partial). ..." */
+export function pbpCoverageNote(c: PbpCoverage): string {
+  const covered = c.complete + c.partial;
+  const partial = c.partial ? ` (${c.partial} partial)` : '';
+  return `Counted from MaxPreps play-by-play for ${covered} of ${c.played} games${partial}. Games without play-by-play aren't included, so these are minimums.`;
+}

@@ -70,6 +70,23 @@ export function playDesc(p: ScoringPlay, role: 'scorer' | 'passer' = 'scorer'): 
 export const takeawayLabel = (t: 'interception' | 'fumbleRecovery') =>
   t === 'interception' ? 'Interception' : 'Fumble recovery';
 
+export interface GameBadge { key: string; label: string; kind: 'playoff' | 'district' | 'special' }
+
+/** Ordered badges for a game: playoff round (or "Playoff"), District, Senior Night, Homecoming. */
+export function gameBadges(g: Pick<Game, 'playoff' | 'round' | 'districtGame'> & { labels?: Game['labels'] }): GameBadge[] {
+  const out: GameBadge[] = [];
+  if (g.playoff) out.push({ key: 'playoff', label: g.round?.trim() || 'Playoff', kind: 'playoff' });
+  if (g.districtGame) out.push({ key: 'district', label: 'District', kind: 'district' });
+  if (g.labels?.includes('seniorNight')) out.push({ key: 'seniorNight', label: 'Senior Night', kind: 'special' });
+  if (g.labels?.includes('homecoming')) out.push({ key: 'homecoming', label: 'Homecoming', kind: 'special' });
+  return out;
+}
+
+/** Playoff round name for headers ("Area Round"), "Playoffs" when none is stored, null for non-playoff games. */
+export function roundName(g: Pick<Game, 'playoff' | 'round'>): string | null {
+  return g.playoff ? (g.round?.trim() || 'Playoffs') : null;
+}
+
 /** "at Eastern Hills", "vs. Pinkston", etc. */
 export function gameLabel(g: Game): string {
   const prefix = g.location === 'away' ? 'at' : 'vs.';
@@ -77,6 +94,15 @@ export function gameLabel(g: Game): string {
 }
 export const locationLabel = (l: Game['location']) =>
   l === 'home' ? 'Home' : l === 'away' ? 'Away' : l === 'neutral' ? 'Neutral site' : 'Site TBA';
+
+/** Venue name when known, else the home/away/neutral label ("Site TBA" if nothing is set). */
+export function siteLabel(g: Pick<Game, 'location'> & { venue?: Game['venue'] }): string {
+  return g.venue?.name ?? locationLabel(g.location);
+}
+/** Google Maps search link for a venue ("name, address"). */
+export function mapsUrl(v: NonNullable<Game['venue']>): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${v.name}, ${v.address}`)}`;
+}
 
 /** Primary sort column per stat category (desc). */
 export const PRIMARY_STAT: Record<string, string> = {

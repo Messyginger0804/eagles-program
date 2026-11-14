@@ -101,6 +101,20 @@ CREATE TABLE IF NOT EXISTS games (
 );
 CREATE INDEX IF NOT EXISTS games_season ON games(school_id, season);
 
+-- Optional venue per game (one row max). Replaced on each game upsert.
+CREATE TABLE IF NOT EXISTS game_venues (
+  game_id TEXT PRIMARY KEY REFERENCES games(id) ON DELETE CASCADE,
+  name    TEXT NOT NULL,
+  address TEXT NOT NULL
+);
+
+-- Special-game labels ('seniorNight', 'homecoming'). Replaced wholesale on each game upsert.
+CREATE TABLE IF NOT EXISTS game_labels (
+  game_id TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+  label   TEXT NOT NULL CHECK (label IN ('seniorNight','homecoming')),
+  PRIMARY KEY (game_id, label)
+);
+
 CREATE TABLE IF NOT EXISTS scoring_plays (
   game_id          TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
   seq              INTEGER NOT NULL,

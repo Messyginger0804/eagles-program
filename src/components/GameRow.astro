@@ -1,18 +1,16 @@
 ---
 import { withBase } from '../lib/url';
 import type { Game } from '../lib/schema';
-import { gameLabel, shortDate, locationLabel } from '../lib/format';
+import { gameBadges, gameLabel, shortDate, siteLabel } from '../lib/format';
 const { game } = Astro.props as { game: Game };
+const badges = gameBadges(game);
 ---
 <tr>
   <th scope="row">{shortDate(game.date)}</th>
   <td>
     <a href={withBase(`/games/${game.id}`)}>{gameLabel(game)}</a>
-    <span class="badges">
-      {game.districtGame && <span class="badge">District</span>}
-      {game.playoff && <span class="badge badge--solid">Playoff{game.round ? ` · ${game.round}` : ''}</span>}
-    </span>
-    {game.status === 'scheduled' && <span class="muted"> · {locationLabel(game.location)}</span>}
+    {badges.length > 0 && <span class="muted"> · {badges.map((b) => b.label).join(' · ')}</span>}
+    {game.status === 'scheduled' && <span class="muted"> · {siteLabel(game)}</span>}
   </td>
   <td class="res">
     {game.score && game.result

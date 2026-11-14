@@ -3,7 +3,9 @@
   "status": "final",
   "date": "2026-11-13",
   "playoff": true,
-  "round": null,
+  "round": "Bi-District",
+  "labels": ["homecoming", "seniorNight"],
+  "venue": null,
   "location": "away",
   "districtGame": false,
   "opponent": {

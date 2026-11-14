@@ -104,6 +104,9 @@ main { max-width: 1040px; margin: 0 auto; padding: 1rem 1rem calc(var(--tabbar) 
 .chipnav .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.4rem; scrollbar-width: thin; }
 .chipnav .chip { white-space: nowrap; }
 .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 6px; background: var(--card2); color: var(--silver); font: 700 0.75rem var(--f-head); letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--line); }
+.gcard__tags .badge { white-space: nowrap; }
+.badge--special { background: transparent; color: #fff; border-color: var(--silver); }
+.matchup-round { margin: 0 0 0.6rem; font: 700 0.95rem var(--f-head); letter-spacing: 0.08em; text-transform: uppercase; color: var(--sky); }
 .badge--hot { background: var(--blue); color: #fff; border-color: #fff; transform: skewX(-8deg); }
 .pos { display: inline-block; padding: 0.05rem 0.5rem; border-radius: 5px; background: rgba(108, 169, 220, 0.18); color: #fff; font: 700 0.78rem var(--f-head); letter-spacing: 0.08em; }
 .wl { display: inline-grid; place-items: center; min-width: 2.2rem; height: 2.2rem; padding: 0 0.4rem; border-radius: 8px; font: 400 1.25rem var(--f-num); letter-spacing: 0.02em; }
@@ -141,6 +144,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 1rem 1rem calc(var(--tabbar) 
 .nextgame__label { grid-column: 1 / -1; font: 700 0.7rem var(--f-head); letter-spacing: 0.18em; text-transform: uppercase; color: var(--sky); }
 .nextgame__vs { font: 700 1.15rem/1.2 var(--f-head); text-transform: uppercase; }
 .nextgame__meta { grid-column: 1; font-size: 0.9rem; color: var(--silver); }
+.nextgame__where { margin: 0.4rem 0 0; font-size: 0.9rem; }
+.nextgame__where a { color: var(--sky); }
 .nextgame__cta { grid-row: 2 / span 2; grid-column: 2; align-self: center; font: 700 0.85rem var(--f-head); letter-spacing: 0.08em; text-transform: uppercase; color: var(--sky); }
 .numbers { margin-top: 0.9rem; scroll-margin-top: 70px; }
 .numbers .section-title { margin: 0.4rem 0 0.5rem; }
@@ -234,8 +239,12 @@ main { max-width: 1040px; margin: 0 auto; padding: 1rem 1rem calc(var(--tabbar) 
 .gcard__main { display: grid; gap: 0.25rem; min-width: 0; }
 .gcard__opp { font: 700 1.15rem/1.1 var(--f-head); text-transform: uppercase; }
 .gcard__tags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; font-size: 0.9rem; }
-.gcard__res { display: flex; align-items: center; gap: 0.5rem; }
-.gcard__score { font: 400 1.5rem var(--f-num); letter-spacing: 0.03em; }
+.gcard__res { display: grid; grid-template-columns: 2.6rem 7.5ch; align-items: center; gap: 0.5rem; justify-content: end; font: 400 1.5rem var(--f-num); }
+.gcard__res .wl { width: 2.6rem; min-width: 0; padding: 0; box-sizing: border-box; }
+.gcard__score { display: grid; grid-template-columns: 3ch 1ch 3ch; font: 400 1.5rem var(--f-num); font-variant-numeric: tabular-nums; letter-spacing: 0; white-space: nowrap; }
+.gcard__us { text-align: right; }
+.gcard__dash { text-align: center; }
+.gcard__them { text-align: left; }
 
 /* ---------- game page ---------- */
 .gmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }

@@ -4,7 +4,7 @@ import Program from '../layouts/Program.astro';
 import Logo from '../components/Logo.astro';
 import { getTeam, getRoster, getSeasonStats, getNextGame, getOpponent } from '../lib/data';
 import { numberIndex } from '../lib/numbers';
-import { recordStr, shortDate, opponentSlug, locationLabel } from '../lib/format';
+import { recordStr, roundName, shortDate, opponentSlug, locationLabel, mapsUrl } from '../lib/format';
 const team = getTeam();
 const next = getNextGame();
 const opp = next ? getOpponent(opponentSlug(next)) : undefined;
@@ -28,15 +28,16 @@ const division = (team.classification ?? '').replace(/Division 1$/, 'Division I'
     </div>
     {next && (
       <a class="nextgame" href={withBase('/matchup')}>
-        <span class="nextgame__label">Next game</span>
+        <span class="nextgame__label">Next game{roundName(next) && <> · {roundName(next)}</>}</span>
         <span class="nextgame__vs">vs. {next.opponent.name}{next.opponent.mascot ? ` ${next.opponent.mascot}` : ''}</span>
         <span class="nextgame__meta">
-          {next.date ? shortDate(next.date) : 'Date TBA'} · {next.date ? 'Time TBA' : locationLabel(next.location)}
+          {next.date ? shortDate(next.date) : 'Date TBA'} · Kickoff TBA{next.venue ? ` · ${next.venue.name}` : !next.date ? ` · ${locationLabel(next.location)}` : ''}
           {opp && <> · {next.opponent.name} {opp.record.overall.w}-{opp.record.overall.l}</>}
         </span>
         <span class="nextgame__cta" aria-hidden="true">Matchup &rarr;</span>
       </a>
     )}
+    {next?.venue && <p class="nextgame__where"><a href={mapsUrl(next.venue)} target="_blank" rel="noopener">{next.venue.address}<span class="sr-only"> (opens maps in a new tab)</span></a></p>}
   </section>
 
   <section id="numbers" class="numbers" aria-labelledby="numbers-title">
