@@ -47,8 +47,8 @@ const division = (team.classification ?? '').replace(/Division 1$/, 'Division I'
       <button class="btn btn--ghost finder__go" type="submit">Search</button>
     </form>
     <ul class="tiles" id="home-tiles">
-      {entries.map((e) => (
-        <li>
+      {entries.map((e, i) => (
+        <li style={`--i:${Math.min(i, 12)}`}>
           <a class="tile" href={e.href} data-n={e.number}
              data-name={e.players.map((p) => `${p.first} ${p.last}`).join(' | ').toLowerCase()}
              aria-label={`Number ${e.number}, ${e.players.map((p) => `${p.first} ${p.last}`).join(' and ')}`}>
