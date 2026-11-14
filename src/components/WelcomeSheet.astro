@@ -1,0 +1,49 @@
+---
+// First-visit welcome sheet. Reuses the .sheet look from NumberSheet. No JS = never opens.
+import { WELCOME_NOTE, PROMO } from '../config';
+import { paragraphs } from '../lib/format';
+const [heading, ...rest] = paragraphs(WELCOME_NOTE);
+---
+<dialog id="welcome" class="sheet welcome-sheet" aria-labelledby="welcome-title">
+  <div class="sheet__inner">
+    <div class="sheet__grab" aria-hidden="true"></div>
+    <div class="sheet__bar">
+      <h2 id="welcome-title" class="sheet__title">{heading}</h2>
+      <button type="button" class="sheet__close" id="welcome-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" /></svg>
+      </button>
+    </div>
+    <div class="welcome-sheet__note">{rest.map((t) => <p>{t}</p>)}</div>
+    <hr class="welcome-sheet__rule" />
+    {PROMO.enabled && (
+      <aside class="welcome-sheet__promo" aria-labelledby="welcome-promo-title">
+        <p class="welcome-sheet__label">About this site</p>
+        <h3 id="welcome-promo-title">{PROMO.heading}</h3>
+        <p>{PROMO.body}</p>
+        <a class="btn btn--ghost" id="welcome-promo-link" href={PROMO.url} target="_blank" rel="noopener">{PROMO.linkLabel}</a>
+      </aside>
+    )}
+    <button type="button" class="btn welcome-sheet__go" id="welcome-go">Let's go, Eagles!</button>
+  </div>
+</dialog>
+<script is:inline>
+(function () {
+  var K = 'wh-welcome-dismissed-v1', d = document.getElementById('welcome');
+  if (!d || typeof d.showModal !== 'function') return;
+  function mark() { try { localStorage.setItem(K, '1'); } catch (e) {} }
+  var seen = true;
+  try { seen = localStorage.getItem(K) !== null; } catch (e) {}
+  d.addEventListener('close', mark);
+  document.getElementById('welcome-close').addEventListener('click', function () { mark(); d.close(); });
+  document.getElementById('welcome-go').addEventListener('click', function () { mark(); d.close(); });
+  d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+  var p = document.getElementById('welcome-promo-link');
+  if (p) p.addEventListener('click', mark);
+  document.addEventListener('click', function (e) {
+    if (d.open && e.target.closest && e.target.closest('[data-open-numbers], a.tile')) d.close();
+  }, true);
+  if (seen) return;
+  function show() { if (!d.open) d.showModal(); }
+  if (document.readyState === 'complete') show(); else window.addEventListener('load', show);
+})();
+</script>

@@ -8,9 +8,22 @@ export const REMOVAL_CONTACT: string | null = null;
 export const MAXPREPS_TEAM_URL =
   'https://www.maxpreps.com/tx/dallas/wilmer-hutchins-eagles/football/';
 
-/** Placeholder welcome note (fan's point of view). JC: edit freely; blank line = new paragraph. */
-export const WELCOME_NOTE = `Welcome to Friday night. Whether you grew up in these stands or you are here for the first time, we are glad you came out to cheer on the Eagles.
+/**
+ * Welcome note (fan's point of view), shown in the first-visit sheet, /seniors-coaches and /print.
+ * Blank line = new paragraph. In the sheet the first paragraph is the heading and the last is the sign-off.
+ */
+export const WELCOME_NOTE = `Welcome to Eagles Football!
 
-This little program is put together by a fan, for fans. It is not an official publication, and it is not run by the school. We just wanted something fun to flip through while we wait for kickoff: the roster, the schedule, and a look at who is on the other side of the field.
+This fan-made program helps everyone in the stands put a name to a number. Thank you to the players, coaches and families who make Friday nights special. Let's go, Eagles! 🦅
 
-Learn a few names, find your favorite number, and make some noise for these players. They work hard all year, and it shows. Thanks for being here. Go Eagles!`;
+— A proud Eagles football parent`;
+
+/** Small ad for the site builder, shown in the welcome sheet and the footer. Set enabled: false to remove both. */
+export const PROMO = {
+  enabled: true,
+  heading: 'Need a website or custom software?',
+  body: 'DFW Software Consulting built this site, and we can build yours too.',
+  linkLabel: 'Visit DFW Software Consulting',
+  url: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=welcome',
+  footerUrl: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=footer',
+};
