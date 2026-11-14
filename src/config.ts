@@ -22,8 +22,8 @@ This fan-made program helps everyone in the stands put a name to a number. Thank
 export const PROMO = {
   enabled: true,
   heading: 'Need a website or custom software?',
-  body: 'DFW Software Consulting built this site, and we can build yours too.',
-  linkLabel: 'Visit DFW Software Consulting',
+  linkText: 'DFW Software Consulting',
+  bodyAfterLink: ' built this site, and we can build yours too.',
   url: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=welcome',
   footerUrl: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=footer',
 };

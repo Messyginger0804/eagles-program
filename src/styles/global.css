@@ -360,6 +360,8 @@ table.roster th.num, table.roster td.num { text-align: right; }
 .welcome-sheet__promo h3 { font-size: 1.05rem; margin: 0.15rem 0 0.3rem; }
 .welcome-sheet__promo p { margin: 0 0 0.7rem; font-size: 0.95rem; }
 .welcome-sheet__label { color: var(--muted); font: 700 0.75rem var(--f-head); letter-spacing: 0.12em; text-transform: uppercase; }
-.welcome-sheet__promo .btn { white-space: normal; text-align: center; min-height: 44px; padding: 0.4rem 1rem; font-size: 0.9rem; }
+.welcome-sheet__promo p:last-child { margin-bottom: 0; }
+.welcome-sheet__link { color: var(--sky); text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+.welcome-sheet__link:focus-visible { outline: 3px solid #fff; outline-offset: 2px; border-radius: 3px; }
 .welcome-sheet__go { width: 100%; }
 .site-footer__credit { font-size: 0.85rem; }

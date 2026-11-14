@@ -19,8 +19,7 @@ const [heading, ...rest] = paragraphs(WELCOME_NOTE);
       <aside class="welcome-sheet__promo" aria-labelledby="welcome-promo-title">
         <p class="welcome-sheet__label">About this site</p>
         <h3 id="welcome-promo-title">{PROMO.heading}</h3>
-        <p>{PROMO.body}</p>
-        <a class="btn btn--ghost" id="welcome-promo-link" href={PROMO.url} target="_blank" rel="noopener">{PROMO.linkLabel}</a>
+        <p><a class="welcome-sheet__link" id="welcome-promo-link" href={PROMO.url} target="_blank" rel="noopener">{PROMO.linkText}</a>{PROMO.bodyAfterLink}</p>
       </aside>
     )}
     <button type="button" class="btn welcome-sheet__go" id="welcome-go">Let's go, Eagles!</button>
