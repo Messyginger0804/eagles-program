@@ -4,12 +4,13 @@ import Program from '../layouts/Program.astro';
 import RosterTable from '../components/RosterTable.astro';
 import GameRow from '../components/GameRow.astro';
 import StatCaveat from '../components/StatCaveat.astro';
-import { getTeam, getRoster, getSeasonStats, getGames, getNextGame, getOpponent } from '../lib/data';
-import { seniors, leaders } from '../lib/season';
-import { playerForStatRow, byNumber, recordStr, primaryKey, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
+import { getTeam, getRoster, getSeasonStats, getGames, getScheduleEvents, getNextGame, getOpponent } from '../lib/data';
+import { seniors, leaders, mergeSchedule } from '../lib/season';
+import { playerForStatRow, byNumber, recordStr, primaryKey, shortDate, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
 import { WELCOME_NOTE } from '../config';
 const team = getTeam(), roster = getRoster(), stats = getSeasonStats(), games = getGames();
 const game = getNextGame();
+const schedule = mergeSchedule(games, getScheduleEvents());
 const opp = game ? getOpponent(opponentSlug(game)) : undefined;
 const division = team.classification.replace(/Division 1$/, 'Division I');
 const srs = byNumber(seniors(roster));
@@ -41,7 +42,9 @@ const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) =>
     <div class="table-scroll" role="region" tabindex="0" aria-label="Schedule and results"><table>
       <caption class="sr-only">Schedule and results</caption>
       <thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Result</th></tr></thead>
-      <tbody>{games.map((g) => <GameRow game={g} />)}</tbody>
+      <tbody>{schedule.map((i) => i.type === 'game' ? <GameRow game={i.game} /> : i.event.kind === 'bye'
+        ? <tr><th scope="row">{shortDate(i.event.date)}</th><td colspan="2" class="muted">Bye Week</td></tr>
+        : <tr><th scope="row">{shortDate(i.event.date)}</th><td>{i.event.location === 'away' ? 'at' : 'vs.'} {i.event.opponentName}<span class="muted"> · Scrimmage</span></td><td class="res"><span class="muted">—</span></td></tr>)}</tbody>
     </table></div>
   </section>
 

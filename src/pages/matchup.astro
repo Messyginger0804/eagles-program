@@ -2,13 +2,15 @@
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import RosterTable from '../components/RosterTable.astro';
+import { splitRecord } from '../lib/season';
 import { getTeam, getRoster, getNextGame, getOpponent, getGames } from '../lib/data';
-import { recordStr, roundName, shortDate, longDate, opponentSlug, siteLabel, mapsUrl, WH_NAME } from '../lib/format';
+import { recordStr, splitRecordLine, roundName, shortDate, longDate, opponentSlug, siteLabel, mapsUrl, WH_NAME } from '../lib/format';
 const team = getTeam();
 const roster = getRoster();
 const game = getNextGame();
 const opp = game ? getOpponent(opponentSlug(game)) : undefined;
 const head = (c: { name: string; role: string }[]) => c.find((x) => /head/i.test(x.role))?.name ?? 'TBA';
+const whSplit = splitRecordLine(splitRecord(getGames()));
 const whResults = getGames().filter((g) => g.score);
 ---
 <Program title="Matchup">
@@ -32,7 +34,7 @@ const whResults = getGames().filter((g) => g.score);
       </section>
 
       <dl class="facts">
-        <div><dt>{WH_NAME} record</dt><dd>{recordStr(team.record.overall)} ({recordStr(team.record.district)} district)</dd></div>
+        <div><dt>{WH_NAME} record</dt><dd>{recordStr(team.record.overall)} ({recordStr(team.record.district)} district)<span class="facts__sub">{whSplit}</span></dd></div>
         <div><dt>{game.opponent.name} record</dt><dd>{opp ? `${recordStr(opp.record.overall)}${opp.record.district ? ` (${recordStr(opp.record.district)} district)` : ''}` : 'Not available'}</dd></div>
         <div><dt>{WH_NAME} head coach</dt><dd>{head(team.coaches)}</dd></div>
         <div><dt>{game.opponent.name} head coach</dt><dd>{opp ? head(opp.coaches) : 'TBA'}</dd></div>

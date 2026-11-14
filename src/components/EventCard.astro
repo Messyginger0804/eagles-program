@@ -1,0 +1,21 @@
+---
+import type { ScheduleEvent } from '../lib/schema';
+import { shortDate, siteTag } from '../lib/format';
+const { event } = Astro.props as { event: ScheduleEvent };
+const tag = siteTag(event.location);
+---
+{event.kind === 'bye'
+  ? <p class="gbye"><span class="gbye__date">{shortDate(event.date)}</span> · Bye Week</p>
+  : (
+    <div class="gcard gcard--event">
+      <span class="gcard__when">
+        <span class="gcard__date">{shortDate(event.date)}</span>
+        {tag && <span class={`gcard__site gcard__site--${event.location}`}>{tag}</span>}
+      </span>
+      <span class="gcard__main">
+        <span class="gcard__opp">{event.location === 'away' ? 'at' : 'vs.'} {event.opponentName}</span>
+        <span class="gcard__tags"><span class="badge">Scrimmage</span></span>
+      </span>
+      <span class="gcard__res" aria-hidden="true"></span>
+    </div>
+  )}

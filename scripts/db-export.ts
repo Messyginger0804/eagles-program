@@ -2,7 +2,7 @@
 // Usage: node scripts/db-export.ts --out <dir> [--db <path>] [--season <year>]
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { currentSeason, openReadOnly, readGames, readOpponents, readRoster, readSeasonStats, readTeam } from '../src/lib/db.ts';
+import { currentSeason, openReadOnly, readGames, readOpponents, readRoster, readScheduleEvents, readSeasonStats, readTeam } from '../src/lib/db.ts';
 import { DB_PATH } from './db-import.ts';
 
 export function exportDir(dbPath: string, out: string, season?: number): void {
@@ -15,6 +15,7 @@ export function exportDir(dbPath: string, out: string, season?: number): void {
     write('team.json', readTeam(db, s));
     write('roster.json', readRoster(db, s));
     write('season-stats.json', readSeasonStats(db, s));
+    write('schedule-events.json', readScheduleEvents(db, s));
     for (const g of readGames(db, s)) write(`games/${g.id}.json`, g);
     for (const o of readOpponents(db, s)) write(`opponents/${o.slug}.json`, o);
   } finally {

@@ -122,7 +122,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 1rem 1rem calc(var(--tabbar) 
 .facts > div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.6rem 0.9rem; }
 .facts dt { font: 500 0.78rem var(--f-head); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sky); }
 .facts dd { margin: 0.1rem 0 0; font-weight: 600; }
-.facts--tiles { grid-template-columns: repeat(3, 1fr); }
+.facts__sub { display: block; font-weight: 500; font-size: 0.9rem; color: var(--silver); }
+.facts--tiles { grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); }
 .facts--tiles > div { text-align: center; padding: 0.7rem 0.3rem; }
 .facts--tiles dd { font: 400 1.6rem var(--f-num); letter-spacing: 0.02em; }
 .morelist { display: grid; gap: 0.75rem; }
@@ -235,6 +236,10 @@ main { max-width: 1040px; margin: 0 auto; padding: 1rem 1rem calc(var(--tabbar) 
 .gcard:hover { border-color: var(--sky); }
 .gcard--W:hover { border-left-color: var(--win); }
 .gcard--L:hover { border-left-color: var(--loss); }
+.gcard__when { display: grid; gap: 0.2rem; justify-items: start; min-width: 0; }
+.gcard__site { font: 600 0.7rem/1 var(--f-head); letter-spacing: 0.08em; color: var(--sky); }
+.gcard--event { background: transparent; border-style: dashed; border-left-style: dashed; box-shadow: none; min-height: 60px; color: var(--silver); }
+.gbye { margin: 0; padding: 0.15rem 0.9rem; font: 500 0.9rem var(--f-head); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .gcard__date { font: 400 1.3rem/1 var(--f-num); letter-spacing: 0.03em; text-transform: uppercase; }
 .gcard__main { display: grid; gap: 0.25rem; min-width: 0; }
 .gcard__opp { font: 700 1.15rem/1.1 var(--f-head); text-transform: uppercase; }

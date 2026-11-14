@@ -1,5 +1,5 @@
 // Pure helpers over already-parsed data objects. No file I/O.
-import type { Game, Player, Roster, ScoringPlay, SeasonStats, StatCategory } from './schema.ts';
+import type { Game, Player, ScheduleEvent, Roster, ScoringPlay, SeasonStats, StatCategory } from './schema.ts';
 
 type StatRow = StatCategory['rows'][number];
 
@@ -265,4 +265,39 @@ export function pbpCoverageNote(c: PbpCoverage): string {
   const covered = c.complete + c.partial;
   const partial = c.partial ? ` (${c.partial} partial)` : '';
   return `Counted from MaxPreps play-by-play for ${covered} of ${c.played} games${partial}. Games without play-by-play aren't included, so these are minimums.`;
+}
+
+export interface WLT { w: number; l: number; t: number }
+
+/** Home / away / neutral records from final games (playoffs included). Scrimmages are not games, so never counted. */
+export function splitRecord(games: Pick<Game, 'status' | 'result' | 'location'>[]): { home: WLT; away: WLT; neutral: WLT } {
+  const out = { home: { w: 0, l: 0, t: 0 }, away: { w: 0, l: 0, t: 0 }, neutral: { w: 0, l: 0, t: 0 } };
+  for (const g of games) {
+    if (g.status !== 'final' || !g.result || !g.location) continue;
+    out[g.location][g.result === 'W' ? 'w' : g.result === 'L' ? 'l' : 't']++;
+  }
+  return out;
+}
+
+export type ScheduleItem =
+  | { type: 'game'; date: string | null; game: Game }
+  | { type: 'event'; date: string; event: ScheduleEvent };
+
+/** Games and scrimmage/bye events in one date-ordered list. Undated (TBD) games stay last; on a same-date tie the game comes first. */
+export function mergeSchedule(games: Game[], events: ScheduleEvent[]): ScheduleItem[] {
+  const items: ScheduleItem[] = [
+    ...sortGames(games).map((game): ScheduleItem => ({ type: 'game', date: game.date, game })),
+    ...events.map((event): ScheduleItem => ({ type: 'event', date: event.date, event })),
+  ];
+  const rank = (i: ScheduleItem) => (i.date === null ? 1 : 0);
+  return items
+    .map((item, idx) => ({ item, idx }))
+    .sort((a, b) => {
+      const r = rank(a.item) - rank(b.item);
+      if (r) return r;
+      if (a.item.date && b.item.date && a.item.date !== b.item.date) return a.item.date < b.item.date ? -1 : 1;
+      const t = (a.item.type === 'game' ? 0 : 1) - (b.item.type === 'game' ? 0 : 1);
+      return t || a.idx - b.idx;
+    })
+    .map((x) => x.item);
 }

@@ -11,10 +11,10 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { z } from 'zod';
 import {
-  GameSchema, OpponentSchema, RosterSchema, SeasonStatsSchema, TeamSchema, formatIssues,
-  type Game, type Opponent, type Roster, type SeasonStats, type StatCategory, type Team,
+  GameSchema, OpponentSchema, ScheduleEventsSchema, RosterSchema, SeasonStatsSchema, TeamSchema, formatIssues,
+  type Game, type Opponent, type ScheduleEvent, type Roster, type SeasonStats, type StatCategory, type Team,
 } from '../src/lib/schema.ts';
-import { canonical, getMeta, readGame, readOpponent, readRoster, readSeasonStats, readTeam } from '../src/lib/db.ts';
+import { canonical, getMeta, readScheduleEvents, readGame, readOpponent, readRoster, readSeasonStats, readTeam } from '../src/lib/db.ts';
 
 export const SCHEMA_PATH = fileURLToPath(new URL('../db/schema.sql', import.meta.url));
 export const DB_PATH = fileURLToPath(new URL('../db/eagles.db', import.meta.url));
@@ -25,6 +25,8 @@ export interface DataSet {
   stats: SeasonStats | null;
   games: Game[];
   opponents: Opponent[];
+  /** null = file absent (leave existing events alone). */
+  events: ScheduleEvent[] | null;
 }
 
 /** Read and validate a JSON dir. Throws one error listing every problem. */
@@ -51,10 +53,11 @@ export function readDataDir(dir: string): DataSet {
   const team = load(TeamSchema, 'team.json', true);
   const roster = load(RosterSchema, 'roster.json', false);
   const stats = load(SeasonStatsSchema, 'season-stats.json', false);
+  const events = load(ScheduleEventsSchema, 'schedule-events.json', false);
   const games = loadDir(GameSchema, 'games');
   const opponents = loadDir(OpponentSchema, 'opponents');
   if (errors.length || !team) throw new Error(`Invalid data in ${dir}:\n${errors.join('\n')}`);
-  return { team, roster, stats, games, opponents };
+  return { team, roster, stats, games, opponents, events };
 }
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -67,14 +70,19 @@ const same = (read: () => unknown, next: unknown): boolean => {
 export function openWritable(path: string): DatabaseSync {
   mkdirSync(dirname(path), { recursive: true });
   const db = new DatabaseSync(path);
+  // game_labels' CHECK list gained 'feederNight'; SQLite can't alter a CHECK, so rebuild an older table.
+  const old = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'game_labels'").get() as { sql: string } | undefined;
+  const rebuild = !!old && !old.sql.includes('feederNight');
+  if (rebuild) db.exec('ALTER TABLE game_labels RENAME TO game_labels_old');
   db.exec(readFileSync(SCHEMA_PATH, 'utf8'));
+  if (rebuild) db.exec('INSERT INTO game_labels SELECT * FROM game_labels_old; DROP TABLE game_labels_old');
   return db;
 }
 
 type Counts = Record<string, number>;
 
 export function importDataSet(db: DatabaseSync, data: DataSet): Counts {
-  const counts: Counts = { team: 0, roster: 0, stats: 0, games: 0, opponents: 0, unchanged: 0 };
+  const counts: Counts = { team: 0, roster: 0, stats: 0, games: 0, opponents: 0, events: 0, unchanged: 0 };
   const { team } = data;
   const season = team.season;
   const run = (sql: string, ...p: any[]) => db.prepare(sql).run(...p);
@@ -246,6 +254,14 @@ export function importDataSet(db: DatabaseSync, data: DataSet): Counts {
     counts['opponents']!++;
   }
 
+  if (data.events) {
+    if (!same(() => readScheduleEvents(db, season), data.events)) {
+      run('DELETE FROM schedule_events WHERE season = ?', season);
+      for (const e of data.events) run('INSERT INTO schedule_events VALUES (?, ?, ?, ?, ?, ?)', season, e.date, e.kind, e.opponentName, e.location, e.note);
+      counts['events'] = data.events.length;
+    }
+  }
+
   setMeta('next_game_id', team.nextGameId);
   return counts;
 }
@@ -278,7 +294,7 @@ if (import.meta.main) {
   try {
     const c = importDir(dbPath, resolve(dir));
     console.log(`db-import: ${resolve(dir)} -> ${dbPath}`);
-    console.log(`  written: team ${c['team']}, roster ${c['roster']}, stats ${c['stats']}, games ${c['games']}, opponents ${c['opponents']}; unchanged: ${c['unchanged']}`);
+    console.log(`  written: team ${c['team']}, roster ${c['roster']}, stats ${c['stats']}, games ${c['games']}, opponents ${c['opponents']}, events ${c['events']}; unchanged: ${c['unchanged']}`);
   } catch (e) {
     console.error(`db-import failed: ${(e as Error).message}`);
     process.exit(1);
