@@ -10,27 +10,28 @@ const team = getTeam(), roster = getRoster(), stats = getSeasonStats();
 const srs = byNumber(seniors(roster)).map((p) => ({ p, hl: statHighlight(roster, stats, p) }));
 ---
 <Program title="Seniors & Coaches">
-  <h1>Seniors &amp; Coaches</h1>
-  <h2>Welcome</h2>
-  <div class="welcome">{paragraphs(WELCOME_NOTE).map((t) => <p>{t}</p>)}</div>
+  <h1 class="page-title">Seniors &amp; Coaches</h1>
+  <h2 class="section-title">Welcome</h2>
+  <div class="welcome card">{paragraphs(WELCOME_NOTE).map((t) => <p>{t}</p>)}</div>
 
-  <h2>The Seniors</h2>
-  <p>{srs.length} seniors. Thank you for everything.</p>
+  <h2 class="section-title">The Seniors</h2>
+  <p class="muted">{srs.length} seniors. Thank you for everything.</p>
   <ul class="cards">
     {srs.map(({ p, hl }) => (
-      <li><div class="senior avoid-break">
-        <p class="numeral" aria-label={`Number ${p.number}`}>{p.number}</p>
-        <h3>{p.firstName} {p.lastName}</h3>
-        <p>{p.positions.join(' / ') || 'Position not listed'}</p>
-        {hl && <p class="muted">{hl} this season</p>}
-        <p><a href={withBase(`/players/${p.slug}`)}>Player page<span class="sr-only"> for {p.firstName} {p.lastName}</span></a></p>
-      </div></li>
+      <li><a class="senior card card--link avoid-break" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${p.firstName} ${p.lastName}, player page`}>
+        <span class="senior__num" aria-hidden="true">{p.number}</span>
+        <span class="senior__body">
+          <span class="senior__name">{p.firstName} {p.lastName}</span>
+          <span class="muted">{p.positions.join(' / ') || 'Position not listed'}</span>
+          {hl && <span class="senior__stat">{hl} this season</span>}
+        </span>
+      </a></li>
     ))}
   </ul>
   {srs.some((s) => s.hl) && <StatCaveat games={stats.gamesPlayed} />}
 
-  <h2>Coaching Staff</h2>
-  <ul class="cards">
-    {team.coaches.map((c) => <li><div class="senior"><h3>{c.name}</h3><p class="muted">{c.role}</p></div></li>)}
+  <h2 class="section-title">Coaching Staff</h2>
+  <ul class="cards cards--coaches">
+    {team.coaches.map((c) => <li><div class="card coach"><span class="coach__name">{c.name}</span><span class="muted">{c.role}</span></div></li>)}
   </ul>
 </Program>

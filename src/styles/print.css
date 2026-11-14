@@ -1,3 +1,11 @@
+/* Dark screen theme -> clean black-on-white booklet. */
+*, *::before, *::after { background-image: none !important; box-shadow: none !important; text-shadow: none !important; filter: none !important; animation: none !important; }
+.tabbar, .fab, .skip, dialog, .findnum, .topnav, .site-footer__links, .printbar { display: none !important; }
+main, main * { color: #000 !important; }
+main *:not(table):not(thead):not(tbody):not(tr):not(th):not(td):not(.cover):not(.badge):not(.wl) { background: transparent !important; }
+.card, .cover, .table-scroll, .hero { border-radius: 0 !important; border-color: #000 !important; }
+.site-footer { padding-bottom: 0 !important; }
+.site-footer, .site-footer * { color: #000 !important; }
 @page { size: letter; margin: 0.6in 0.5in; }
 html, body { background: #fff !important; color: #000 !important; font-size: 11pt; }
 nav, .nav, .no-print, .site-header, .chips, .fold__tabs { display: none !important; }
@@ -48,3 +56,4 @@ td a, .gamelog a, .site-footer a, .pager a, .card a { display: inline !important
 td.wrap { min-width: 0; }
 .site-footer { font-size: 8pt; color: #000 !important; border-top: 2px solid #000; padding-block: 0.4rem 0; }
 .print-section tbody th, .print-section td { padding-block: 3pt; }
+.wl, .wl--W, .wl--L, .wl--T, .wl--TBA, .badge, .badge--hot { background: #fff !important; color: #000 !important; border: 1.5px solid #000 !important; transform: none !important; }

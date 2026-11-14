@@ -17,89 +17,85 @@ const final = game.status === 'final' && game.score;
 const title = `${WH_NAME} vs. ${opp}`;
 ---
 <Program title={title}>
-  <p><a href={withBase("/schedule")}>&larr; Schedule</a></p>
-  <h1>{title}</h1>
-  <p class="muted">
+  <p class="backlink"><a href={withBase("/schedule")}>&larr; Schedule</a></p>
+  <h1 class="page-title page-title--sm">{title}</h1>
+  <p class="muted gmeta">
     {longDate(game.date)} · {locationLabel(game.location)}
     {game.districtGame && <span class="badge">District</span>}
-    {game.playoff && <span class="badge badge--solid">Playoff{game.round ? ` · ${game.round}` : ''}</span>}
+    {game.playoff && <span class="badge badge--hot">Playoff{game.round ? ` · ${game.round}` : ''}</span>}
   </p>
 
   {final ? (
     <>
       <section class="scoreboard" aria-label="Final score">
-        <div class="scoreboard__team">{WH_NAME}<br />Eagles</div>
+        <div class="scoreboard__team"><span class="scoreboard__abbr">WH</span>{WH_NAME} Eagles</div>
         <div class="scoreboard__score">
           <span class:list={[game.result === 'W' && 'scoreboard__score--win']}>{game.score!.wh}</span>
-          <span aria-hidden="true">–</span><span class="sr-only"> to </span>
+          <span aria-hidden="true" class="scoreboard__dash">–</span><span class="sr-only"> to </span>
           <span>{game.score!.opp}</span>
         </div>
-        <div class="scoreboard__team">{opp}<br />{game.opponent.mascot ?? ''}</div>
-        <p class="scoreboard__meta">Final · {game.result === 'W' ? 'Win' : game.result === 'L' ? 'Loss' : 'Tie'}{game.recordAfter ? ` · record ${recordStr(game.recordAfter)}` : ''}</p>
+        <div class="scoreboard__team scoreboard__team--opp"><span class="scoreboard__abbr">{opp.slice(0, 3).toUpperCase()}</span>{opp} {game.opponent.mascot ?? ''}</div>
+        <p class="scoreboard__meta">
+          <span class={`wl wl--${game.result}`}>{game.result}</span>
+          Final · {game.result === 'W' ? 'Win' : game.result === 'L' ? 'Loss' : 'Tie'}{game.recordAfter ? ` · record ${recordStr(game.recordAfter)}` : ''}
+        </p>
+        {q ? (
+          <div class="table-scroll scoreboard__qs" role="region" tabindex="0" aria-label="Quarter scores">
+            <table>
+              <caption class="sr-only">Score by quarter</caption>
+              <thead><tr>
+                <th scope="col">Team</th>
+                {Array.from({ length: nq }, (_, i) => <th scope="col" class="num">{qLabel(i)}</th>)}
+                <th scope="col" class="num">Final</th>
+              </tr></thead>
+              <tbody>
+                <tr><th scope="row">WH</th>{Array.from({ length: nq }, (_, i) => <td class="num">{q.wh[i] ?? 0}</td>)}<td class="num"><strong>{game.score!.wh}</strong></td></tr>
+                <tr><th scope="row">{opp}</th>{Array.from({ length: nq }, (_, i) => <td class="num">{q.opp[i] ?? 0}</td>)}<td class="num"><strong>{game.score!.opp}</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        ) : <p class="muted scoreboard__qs">Quarter scores not reported</p>}
       </section>
 
-      <h2>By Quarter</h2>
-      {q ? (
-        <div class="table-scroll" role="region" tabindex="0" aria-label="Quarter scores">
-          <table>
-            <caption class="sr-only">Score by quarter</caption>
-            <thead><tr>
-              <th scope="col">Team</th>
-              {Array.from({ length: nq }, (_, i) => <th scope="col" class="num">{qLabel(i)}</th>)}
-              <th scope="col" class="num">Final</th>
-            </tr></thead>
-            <tbody>
-              <tr><th scope="row">{WH_NAME}</th>{Array.from({ length: nq }, (_, i) => <td class="num">{q.wh[i] ?? 0}</td>)}<td class="num"><strong>{game.score!.wh}</strong></td></tr>
-              <tr><th scope="row">{opp}</th>{Array.from({ length: nq }, (_, i) => <td class="num">{q.opp[i] ?? 0}</td>)}<td class="num"><strong>{game.score!.opp}</strong></td></tr>
-            </tbody>
-          </table>
-        </div>
-      ) : <p>Quarter scores not reported</p>}
-
-      <h2>{game.scoringStatus === 'complete' ? 'Scoring Summary' : game.scoringStatus === 'partial' ? 'Partial scoring summary' : 'Scoring'}</h2>
-      {game.scoringStatus === 'none' && <p>No play-by-play reported.</p>}
+      <h2 class="section-title">{game.scoringStatus === 'complete' ? 'Scoring Summary' : game.scoringStatus === 'partial' ? 'Partial scoring summary' : 'Scoring'}</h2>
+      {game.scoringStatus === 'none' && <p class="card muted">No play-by-play reported.</p>}
       {game.scoringStatus === 'partial' && <p class="caveat">Partial scoring summary — MaxPreps play log incomplete</p>}
       {game.scoring.length > 0 && (
-        <div class="table-scroll" role="region" tabindex="0" aria-label="Scoring plays">
-          <table>
-            <caption class="sr-only">Scoring plays</caption>
-            <thead><tr><th scope="col">Qtr</th><th scope="col">Team</th><th scope="col">Play</th><th scope="col" class="num">{WH_NAME}</th><th scope="col" class="num">{opp}</th></tr></thead>
-            <tbody>
-              {game.scoring.map((p) => (
-                <tr>
-                  <th scope="row">Q{p.quarter}{p.time ? ` ${p.time}` : ''}</th>
-                  <td>{side(p.team)}</td>
-                  <td class="wrap">
-                    {p.player ? <>{p.player.name} (#{p.player.number}) </> : null}{playDesc(p)}
-                    {p.passer ? <> from {p.passer.name} (#{p.passer.number})</> : null}
-                  </td>
-                  <td class="num">{p.scoreAfter?.wh ?? '—'}</td>
-                  <td class="num">{p.scoreAfter?.opp ?? '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ol class="timeline" aria-label="Scoring plays">
+          {game.scoring.map((p) => (
+            <li class:list={['tl', p.team === 'WH' ? 'tl--wh' : 'tl--opp']}>
+              <span class="tl__when">Q{p.quarter}{p.time ? ` ${p.time}` : ''}</span>
+              <span class="tl__body">
+                <span class="tl__team">{side(p.team)}</span>
+                <span class="tl__play">
+                  {p.player ? <>{p.player.name} (#{p.player.number}) </> : null}{playDesc(p)}
+                  {p.passer ? <> from {p.passer.name} (#{p.passer.number})</> : null}
+                </span>
+              </span>
+              <span class="tl__score" aria-label={p.scoreAfter ? `Score ${p.scoreAfter.wh} to ${p.scoreAfter.opp}` : 'Score not listed'}>{p.scoreAfter ? `${p.scoreAfter.wh}-${p.scoreAfter.opp}` : '—'}</span>
+            </li>
+          ))}
+        </ol>
       )}
 
-      <h2>Takeaways</h2>
+      <h2 class="section-title">Takeaways</h2>
       {game.takeaways.length === 0
-        ? <p>No takeaways reported.</p>
+        ? <p class="card muted">No takeaways reported.</p>
         : <ul class="bullets">{game.takeaways.map((t) => (
-            <li>Q{t.quarter} · {takeawayLabel(t.type)} — {side(t.team)}{t.player ? `: ${t.player.name} (#${t.player.number})` : ''}</li>
+            <li class="card">Q{t.quarter} · {takeawayLabel(t.type)} — {side(t.team)}{t.player ? `: ${t.player.name} (#${t.player.number})` : ''}</li>
           ))}</ul>}
     </>
   ) : (
     <section class="card">
-      <h2>Game Preview</h2>
-      <p class="lede">{longDate(game.date)}. Kickoff: TBA. See the full matchup, with both rosters, on the <a href={withBase("/matchup")}>This Week page</a>.</p>
+      <h2 class="section-title">Game Preview</h2>
+      <p class="lede">{longDate(game.date)}. Kickoff: TBA. See the full matchup, with both rosters, on the <a href={withBase("/matchup")}>Matchup page</a>.</p>
     </section>
   )}
 
-  <h2>Links</h2>
-  <ul>
-    {game.maxprepsUrl && <li><a href={game.maxprepsUrl} rel="noopener">Full game page on MaxPreps</a></li>}
-    {game.links.replay && <li><a href={game.links.replay} rel="noopener">Replays: NFHS Network</a></li>}
-    {game.links.highlights.map((h) => <li><a href={h.url} rel="noopener">{h.label}</a></li>)}
+  <h2 class="section-title">Links</h2>
+  <ul class="linklist">
+    {game.maxprepsUrl && <li><a class="btn btn--ghost" href={game.maxprepsUrl} rel="noopener">Full game page on MaxPreps</a></li>}
+    {game.links.replay && <li><a class="btn btn--ghost" href={game.links.replay} rel="noopener">Replays: NFHS Network</a></li>}
+    {game.links.highlights.map((h) => <li><a class="btn btn--ghost" href={h.url} rel="noopener">{h.label}</a></li>)}
   </ul>
 </Program>

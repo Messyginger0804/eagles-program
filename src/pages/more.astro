@@ -1,0 +1,22 @@
+---
+import { withBase } from '../lib/url';
+import Program from '../layouts/Program.astro';
+import { MAXPREPS_TEAM_URL } from '../config';
+const links = [
+  { href: withBase('/matchup'), label: 'Matchup', note: 'This week: both rosters and records' },
+  { href: withBase('/seniors-coaches'), label: 'Seniors & Coaches', note: 'Welcome note, seniors, staff' },
+  { href: withBase('/print'), label: 'Print', note: 'Take the program to the stands' },
+  { href: MAXPREPS_TEAM_URL, label: 'MaxPreps', note: 'Official stat source (opens MaxPreps)', ext: true },
+];
+---
+<Program title="More">
+  <h1 class="page-title">More</h1>
+  <ul class="morelist">
+    {links.map((l) => (
+      <li><a class="card card--link" href={l.href} rel={l.ext ? 'noopener' : undefined}>
+        <span class="morelist__label">{l.label}</span>
+        <span class="muted">{l.note}</span>
+      </a></li>
+    ))}
+  </ul>
+</Program>
