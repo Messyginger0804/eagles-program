@@ -37,7 +37,7 @@ const entries = log.flatMap((e) => {
 <Program title={`#${player.number} ${name}`}>
   <p class="backlink"><a href={withBase("/roster")}>&larr; Roster</a></p>
   <section class="phero" aria-labelledby="pname">
-    <p class="phero__num" aria-hidden="true">{player.number}</p>
+    <p class="phero__num" aria-hidden="true" style={`view-transition-name: num-${player.slug}`}>{player.number}</p>
     <div class="phero__body">
       <h1 id="pname" class="phero__name"><span class="sr-only">Number {player.number}, </span>{player.firstName} <span>{player.lastName}</span></h1>
       <p class="phero__pos">

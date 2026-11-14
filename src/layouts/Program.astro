@@ -48,6 +48,31 @@ const tabs = [
     <link rel="preload" as="font" type="font/woff2" href={antonWoff2} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={oswaldWoff2} crossorigin />
     <link rel="stylesheet" href={printCss} media="print" />
+    <script is:inline>
+      // View-transition number morph (Chromium; other browsers ignore these events).
+      (function () {
+        var slug = function (u) { var m = /\/players\/([^\/]+)\/?$/.exec(new URL(u).pathname); return m && m[1]; };
+        addEventListener('pageswap', function (e) {
+          var k = e.viewTransition && e.activation && e.activation.entry && slug(e.activation.entry.url);
+          if (!k) return;
+          var sel = '[href$="/players/' + k + '/"]';
+          var n = document.querySelector('#numsheet[open] a' + sel);
+          n = n ? n.closest('.pcard').querySelector('.pcard__num') : document.querySelector('a.pc' + sel + ' .pc__num');
+          if (n) n.style.viewTransitionName = 'num-' + k;
+        });
+        addEventListener('pagereveal', function (e) {
+          var f = e.viewTransition && navigation.activation && navigation.activation.from;
+          var k = f && slug(f.url);
+          var n = k && document.querySelector('a.pc[href$="/players/' + k + '/"] .pc__num');
+          if (!n || n.getBoundingClientRect().top > innerHeight) return;
+          n.style.viewTransitionName = 'num-' + k;
+          e.viewTransition.finished.then(function () { n.style.viewTransitionName = ''; });
+        });
+        addEventListener('pageshow', function (e) {
+          if (e.persisted) document.querySelectorAll('[style*="view-transition-name"]').forEach(function (n) { n.style.viewTransitionName = ''; });
+        });
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

@@ -365,3 +365,29 @@ table.roster th.num, table.roster td.num { text-align: right; }
 .welcome-sheet__link:focus-visible { outline: 3px solid #fff; outline-offset: 2px; border-radius: 3px; }
 .welcome-sheet__go { width: 100%; }
 .site-footer__credit { font-size: 0.85rem; }
+
+/* ---------- motion: page transitions + home hero (screen, no reduced-motion only) ---------- */
+@media screen and (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: 110ms ease-in both vt-out; }
+  ::view-transition-new(root) { animation: 160ms ease-out 60ms both vt-in; }
+  .site-header { view-transition-name: site-header; }
+  .tabbar { view-transition-name: tabbar; }
+  .fab { view-transition-name: fab; }
+  ::view-transition-old(site-header), ::view-transition-old(tabbar) { display: none; }
+  ::view-transition-new(site-header), ::view-transition-new(tabbar) { animation: none; }
+  ::view-transition-group(site-header), ::view-transition-group(tabbar) { animation: none; }
+  ::view-transition-group(*):not(:is(root, site-header, tabbar, fab)) { animation-duration: 240ms; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @keyframes vt-out { to { opacity: 0; } }
+  @keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+
+  .hero::after { top: -40%; right: auto; left: -24%; width: 16%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent); animation: hero-sweep 6s ease-in-out 0.8s infinite; }
+  @keyframes hero-sweep { 0% { translate: 0; } 40%, 100% { translate: 1000%; } }
+  .hero__logo { animation: hero-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .hero__title { animation: hero-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s both; }
+  @keyframes hero-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+  #home-tiles > li { animation: tile-in 0.15s ease-out calc(var(--i, 0) * 12ms) both; }
+  @keyframes tile-in { from { opacity: 0; transform: translateY(6px); } }
+  .hero .badge--hot { animation: badge-glow 2.8s ease-in-out 1s infinite; }
+  @keyframes badge-glow { 50% { box-shadow: 0 0 12px 2px rgba(108, 169, 220, 0.65); } }
+}
