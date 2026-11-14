@@ -2,7 +2,7 @@
 import { withBase } from '../../lib/url';
 import Program from '../../layouts/Program.astro';
 import { getGames } from '../../lib/data';
-import { longDate, playDesc, takeawayLabel, locationLabel, WH_NAME, recordStr } from '../../lib/format';
+import { gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
 
 export function getStaticPaths() {
   return getGames().map((g) => ({ params: { id: g.id }, props: { game: g } }));
@@ -20,10 +20,14 @@ const title = `${WH_NAME} vs. ${opp}`;
   <p class="backlink"><a href={withBase("/schedule")}>&larr; Schedule</a></p>
   <h1 class="page-title page-title--sm">{title}</h1>
   <p class="muted gmeta">
-    {longDate(game.date)} · {locationLabel(game.location)}
-    {game.districtGame && <span class="badge">District</span>}
-    {game.playoff && <span class="badge badge--hot">Playoff{game.round ? ` · ${game.round}` : ''}</span>}
+    {longDate(game.date)} · {siteLabel(game)}
+    {gameBadges(game).map((b) => (
+      <span class:list={['badge', b.kind === 'playoff' && 'badge--hot', b.kind === 'special' && 'badge--special']}>
+        {b.kind === 'special' && <span aria-hidden="true">★ </span>}{b.label}
+      </span>
+    ))}
   </p>
+  {game.venue && <p class="muted gmeta"><a href={mapsUrl(game.venue)} target="_blank" rel="noopener">{game.venue.address}<span class="sr-only"> (opens maps in a new tab)</span></a>{!final && <> · Kickoff TBA</>}</p>}
 
   {final ? (
     <>

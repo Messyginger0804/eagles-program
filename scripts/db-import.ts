@@ -213,6 +213,10 @@ export function importDataSet(db: DatabaseSync, data: DataSet): Counts {
       g.contestId, g.maxprepsUrl, g.score?.wh ?? null, g.score?.opp ?? null, g.result, g.quarters ? JSON.stringify(g.quarters) : null,
       g.recordAfter?.w ?? null, g.recordAfter?.l ?? null, g.recordAfter?.t ?? null, g.scoringStatus, g.links.replay, g.links.recap,
     );
+    run('DELETE FROM game_venues WHERE game_id = ?', g.id);
+    if (g.venue) run('INSERT INTO game_venues(game_id, name, address) VALUES (?, ?, ?)', g.id, g.venue.name, g.venue.address);
+    run('DELETE FROM game_labels WHERE game_id = ?', g.id);
+    for (const l of new Set(g.labels)) run('INSERT INTO game_labels(game_id, label) VALUES (?, ?)', g.id, l);
     run('DELETE FROM scoring_plays WHERE game_id = ?', g.id);
     g.scoring.forEach((p, i) => run('INSERT INTO scoring_plays VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       g.id, i, p.quarter, p.time, p.team, p.type, p.player?.number ?? null, p.player?.name ?? null,

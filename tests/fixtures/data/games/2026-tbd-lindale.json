@@ -4,6 +4,8 @@
   "date": null,
   "playoff": true,
   "round": null,
+  "labels": [],
+  "venue": { "name": "City Bank Stadium", "address": "Forney, TX" },
   "location": "neutral",
   "districtGame": false,
   "opponent": {

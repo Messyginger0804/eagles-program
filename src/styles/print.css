@@ -56,4 +56,4 @@ td a, .gamelog a, .site-footer a, .pager a, .card a { display: inline !important
 td.wrap { min-width: 0; }
 .site-footer { font-size: 8pt; color: #000 !important; border-top: 2px solid #000; padding-block: 0.4rem 0; }
 .print-section tbody th, .print-section td { padding-block: 3pt; }
-.wl, .wl--W, .wl--L, .wl--T, .wl--TBA, .badge, .badge--hot { background: #fff !important; color: #000 !important; border: 1.5px solid #000 !important; transform: none !important; }
+.wl, .wl--W, .wl--L, .wl--T, .wl--TBA, .badge, .badge--hot, .badge--special { background: #fff !important; color: #000 !important; border: 1.5px solid #000 !important; transform: none !important; }

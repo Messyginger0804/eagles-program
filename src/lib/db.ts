@@ -108,6 +108,11 @@ export function readSeasonStats(db: DatabaseSync, season = currentSeason(db)): S
   });
 }
 
+function venueOf(db: DatabaseSync, id: string) {
+  const v = get(db, 'SELECT name, address FROM game_venues WHERE game_id = ?', id);
+  return v ? { name: v['name'], address: v['address'] } : null;
+}
+
 function buildGame(db: DatabaseSync, g: Row): Game {
   const o = get(db, 'SELECT * FROM schools WHERE id = ?', g['opponent_school_id'])!;
   const cats = categories(db, 'game_id = ?', g['id']);
@@ -115,6 +120,8 @@ function buildGame(db: DatabaseSync, g: Row): Game {
     : { w: g['record_after_w'], l: g['record_after_l'], ...(g['record_after_t'] == null ? {} : { t: g['record_after_t'] }) };
   return GameSchema.parse({
     id: g['id'], status: g['status'], date: g['date'], playoff: bool(g['playoff']), round: g['round'],
+    venue: venueOf(db, g['id']),
+    labels: all(db, 'SELECT label FROM game_labels WHERE game_id = ? ORDER BY label', g['id']).map((l) => l['label']),
     location: g['location'], districtGame: bool(g['district_game']),
     opponent: { name: o['name'], mascot: o['mascot'], city: o['city'], maxprepsTeamUrl: g['opponent_maxpreps_url'] },
     contestId: g['contest_id'], maxprepsUrl: g['maxpreps_url'],

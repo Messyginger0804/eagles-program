@@ -94,12 +94,16 @@ export const TakeawaySchema = z.object({
   player: playerRef.nullable(),
 });
 
+export const GameLabels = ['seniorNight', 'homecoming'] as const;
+
 export const GameSchema = z.object({
   id: z.string().regex(/^\d{4}-(\d{2}-\d{2}|tbd)-[a-z0-9-]+$/, 'id must be YYYY-MM-DD-<opponent-slug>'),
   status: z.enum(['final', 'scheduled']),
   date: isoDate.nullable(),
   playoff: z.boolean(),
   round: z.string().nullable(),
+  labels: z.array(z.enum(GameLabels)).default([]),
+  venue: z.object({ name: z.string().min(1), address: z.string().min(1) }).nullable().default(null),
   location: z.enum(['home', 'away', 'neutral']).nullable(),
   districtGame: z.boolean(),
   opponent: z.object({
