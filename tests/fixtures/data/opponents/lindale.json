@@ -1,0 +1,56 @@
+{
+ "slug": "lindale",
+ "name": "Lindale",
+ "mascot": "Eagles",
+ "city": "Lindale",
+ "state": "TX",
+ "classification": null,
+ "maxprepsUrl": "https://www.maxpreps.com/tx/lindale/lindale-eagles/football/",
+ "colors": {
+  "primary": "#CC0000",
+  "secondary": null
+ },
+ "record": {
+  "overall": {
+   "w": 10,
+   "l": 1,
+   "t": 0
+  },
+  "district": {
+   "w": 8,
+   "l": 0,
+   "t": 0
+  }
+ },
+ "coaches": [
+  {
+   "name": "Test Coach",
+   "role": "Head Coach"
+  }
+ ],
+ "roster": [
+  {
+   "number": "1",
+   "firstName": "Test",
+   "lastName": "Player",
+   "positions": [
+    "QB"
+   ],
+   "grade": 12,
+   "height": null,
+   "weight": null
+  }
+ ],
+ "results": [
+  {
+   "date": "2026-11-13",
+   "opponent": "Kaufman",
+   "location": "home",
+   "score": {
+    "us": 52,
+    "them": 22
+   },
+   "result": "W"
+  }
+ ]
+}

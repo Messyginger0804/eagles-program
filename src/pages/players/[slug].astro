@@ -1,0 +1,93 @@
+---
+import { withBase } from '../../lib/url';
+import Program from '../../layouts/Program.astro';
+import StatCaveat from '../../components/StatCaveat.astro';
+import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
+import { playerSeasonStats, playerGameLog } from '../../lib/season';
+import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat, WH_NAME } from '../../lib/format';
+import type { Player } from '../../lib/schema';
+
+export function getStaticPaths() {
+  const sorted = byNumber(getRoster().players);
+  return sorted.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { prev: sorted[i - 1]?.slug ?? null, next: sorted[i + 1]?.slug ?? null },
+  }));
+}
+const { slug } = Astro.params;
+const { prev, next } = Astro.props as { prev: string | null; next: string | null };
+const roster = getRoster();
+const player = getPlayer(slug!)!;
+const stats = getSeasonStats();
+const cats = playerSeasonStats(roster, stats, player);
+const log = playerGameLog(roster, getGames(), player);
+const name = `${player.firstName} ${player.lastName}`;
+const nb = (s: string | null) => (s ? getPlayer(s) : undefined) as Player | undefined;
+const prevP = nb(prev), nextP = nb(next);
+const entries = log.flatMap((e) => {
+  const g = getGame(e.gameId)!;
+  const when = `${shortDate(e.date)} · ${g.location === 'away' ? 'at' : 'vs.'} ${e.opponent}`;
+  return [
+    ...e.scoring.map((s) => ({ id: e.gameId, when, text: `Q${s.play.quarter} ${playDesc(s.play, s.role)}` })),
+    ...e.takeaways.map((t) => ({ id: e.gameId, when, text: `Q${t.quarter} ${takeawayLabel(t.type).toLowerCase()}` })),
+  ];
+});
+---
+<Program title={`#${player.number} ${name}`}>
+  <p><a href={withBase("/roster")}>&larr; Roster</a></p>
+  <section class="player-head" aria-labelledby="pname">
+    <p class="numeral" aria-label={`Number ${player.number}`}>{player.number}</p>
+    <div>
+      <h1 id="pname">{name}</h1>
+      <ul class="vitals">
+        <li><span>Pos</span>{player.positions.join(' / ') || '—'}</li>
+        <li><span>Grade</span>{gradeLabel(player.grade)}</li>
+        <li><span>Ht</span>{player.height ?? '—'}</li>
+        <li><span>Wt</span>{player.weight ?? '—'}</li>
+      </ul>
+      <p class="muted">{WH_NAME} Eagles</p>
+    </div>
+  </section>
+
+  <h2>Season Stats</h2>
+  {cats.length === 0
+    ? <p>No stats entered on MaxPreps yet.</p>
+    : cats.map((c) => (
+      <div class="avoid-break">
+        <h3>{c.label}</h3>
+        <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} stats`}>
+          <table>
+            <caption class="sr-only">{name} {c.label} season stats</caption>
+            <thead><tr>
+              {c.stats.gp != null && <th scope="col" class="num">GP</th>}
+              {c.columns.map((col) => <th scope="col" class="num">{col.label}</th>)}
+            </tr></thead>
+            <tbody><tr>
+              {c.stats.gp != null && <td class="num">{fmtStat(c.stats.gp)}</td>}
+              {c.columns.map((col) => <td class="num">{fmtStat(c.stats[col.key])}</td>)}
+            </tr></tbody>
+          </table>
+        </div>
+      </div>
+    ))}
+  <StatCaveat games={stats.gamesPlayed} />
+
+  <h2>Scoring &amp; Takeaways</h2>
+  {entries.length === 0
+    ? <p class="muted">No scoring plays or takeaways recorded for this player in the games reported so far.</p>
+    : <ul class="gamelog">
+        {entries.map((e) => <li><a href={withBase(`/games/${e.id}`)}>{e.when}</a> — {e.text}</li>)}
+      </ul>}
+  <p class="caveat">Play logs on MaxPreps are incomplete for most games.</p>
+
+  <h2>Links</h2>
+  <ul>
+    <li><a href={player.maxprepsUrl} rel="noopener">MaxPreps profile</a></li>
+    {player.highlights.map((h) => <li><a href={h.url} rel="noopener">{h.label}</a></li>)}
+  </ul>
+
+  <nav class="pager" aria-label="Other players">
+    {prevP ? <a href={withBase(`/players/${prevP.slug}`)} rel="prev">&larr; #{prevP.number} {prevP.firstName} {prevP.lastName}</a> : <span></span>}
+    {nextP ? <a href={withBase(`/players/${nextP.slug}`)} rel="next">#{nextP.number} {nextP.firstName} {nextP.lastName} &rarr;</a> : <span></span>}
+  </nav>
+</Program>

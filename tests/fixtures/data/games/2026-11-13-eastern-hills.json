@@ -1,0 +1,285 @@
+{
+  "id": "2026-11-13-eastern-hills",
+  "status": "final",
+  "date": "2026-11-13",
+  "playoff": true,
+  "round": null,
+  "location": "away",
+  "districtGame": false,
+  "opponent": {
+    "name": "Eastern Hills",
+    "mascot": "Highlanders",
+    "city": "Fort Worth",
+    "maxprepsTeamUrl": null
+  },
+  "contestId": "ad5486bc-d593-4f75-9adb-093c951d1aaa",
+  "maxprepsUrl": "https://www.maxpreps.com/tx/football/game/eastern-hills-fort-worth-vs-wilmer-hutchins-dallas/11-13-2026/",
+  "score": {
+    "wh": 33,
+    "opp": 28
+  },
+  "result": "W",
+  "quarters": {
+    "wh": [
+      9,
+      16,
+      0,
+      8
+    ],
+    "opp": [
+      0,
+      14,
+      6,
+      8
+    ]
+  },
+  "recordAfter": {
+    "w": 9,
+    "l": 2
+  },
+  "scoringStatus": "complete",
+  "scoring": [
+    {
+      "quarter": 1,
+      "time": null,
+      "team": "WH",
+      "type": "safety",
+      "player": null,
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 1,
+      "time": null,
+      "team": "WH",
+      "type": "rushTD",
+      "player": {
+        "number": "6",
+        "name": "Anterio Lomax"
+      },
+      "passer": null,
+      "yards": 23,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 1,
+      "time": null,
+      "team": "WH",
+      "type": "patKick",
+      "player": {
+        "number": "23",
+        "name": "Sergio Salas"
+      },
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "OPP",
+      "type": "rushTD",
+      "player": {
+        "number": "2",
+        "name": "Christopher Johnson"
+      },
+      "passer": null,
+      "yards": 2,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "OPP",
+      "type": "twoPtFailed",
+      "player": null,
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "WH",
+      "type": "safety",
+      "player": null,
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "WH",
+      "type": "rushTD",
+      "player": {
+        "number": "6",
+        "name": "Anterio Lomax"
+      },
+      "passer": null,
+      "yards": 5,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "WH",
+      "type": "patKick",
+      "player": null,
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "WH",
+      "type": "rushTD",
+      "player": {
+        "number": "6",
+        "name": "Anterio Lomax"
+      },
+      "passer": null,
+      "yards": 1,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "WH",
+      "type": "patKick",
+      "player": {
+        "number": "23",
+        "name": "Sergio Salas"
+      },
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "OPP",
+      "type": "passTD",
+      "player": {
+        "number": "17",
+        "name": "Robert Dow"
+      },
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 2,
+      "time": null,
+      "team": "OPP",
+      "type": "twoPtRush",
+      "player": {
+        "number": "2",
+        "name": "Christopher Johnson"
+      },
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 3,
+      "time": null,
+      "team": "OPP",
+      "type": "passTD",
+      "player": {
+        "number": "2",
+        "name": "Christopher Johnson"
+      },
+      "passer": {
+        "number": "5",
+        "name": "Kendrid Durst"
+      },
+      "yards": 35,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 3,
+      "time": null,
+      "team": "OPP",
+      "type": "patKickMissed",
+      "player": null,
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 4,
+      "time": null,
+      "team": "OPP",
+      "type": "rushTD",
+      "player": {
+        "number": "15",
+        "name": "Kingston Parks"
+      },
+      "passer": null,
+      "yards": 41,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 4,
+      "time": null,
+      "team": "OPP",
+      "type": "twoPtRush",
+      "player": {
+        "number": "2",
+        "name": "Christopher Johnson"
+      },
+      "passer": null,
+      "yards": null,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 4,
+      "time": null,
+      "team": "WH",
+      "type": "rushTD",
+      "player": {
+        "number": "10",
+        "name": "Darrick Todd"
+      },
+      "passer": null,
+      "yards": 1,
+      "scoreAfter": null
+    },
+    {
+      "quarter": 4,
+      "time": null,
+      "team": "WH",
+      "type": "twoPtPass",
+      "player": {
+        "number": "6",
+        "name": "Anterio Lomax"
+      },
+      "passer": {
+        "number": "10",
+        "name": "Darrick Todd"
+      },
+      "yards": null,
+      "scoreAfter": null
+    }
+  ],
+  "takeaways": [
+    {
+      "quarter": 4,
+      "team": "WH",
+      "type": "interception",
+      "player": {
+        "number": "3",
+        "name": "Ryland Smith"
+      }
+    }
+  ],
+  "playerStats": null,
+  "links": {
+    "replay": null,
+    "recap": null,
+    "highlights": []
+  }
+}

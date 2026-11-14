@@ -1,0 +1,146 @@
+{
+ "asOf": null,
+ "gamesPlayed": 10,
+ "categories": [
+  {
+   "key": "rushing",
+   "label": "Rushing",
+   "columns": [
+    {
+     "key": "gp",
+     "label": "GP"
+    },
+    {
+     "key": "car",
+     "label": "Car"
+    },
+    {
+     "key": "yds",
+     "label": "Yds"
+    },
+    {
+     "key": "td",
+     "label": "TD"
+    }
+   ],
+   "rows": [
+    {
+     "number": "6",
+     "nameAbbrev": "A. Lomax (Sr)",
+     "stats": {
+      "gp": 10,
+      "car": 120,
+      "yds": 900,
+      "td": 9
+     }
+    },
+    {
+     "number": "10",
+     "nameAbbrev": "D. Todd (Sr)",
+     "stats": {
+      "gp": 10,
+      "car": 40,
+      "yds": 300,
+      "td": null
+     }
+    },
+    {
+     "number": "5",
+     "nameAbbrev": "K. Smith (Fr)",
+     "stats": {
+      "gp": 10,
+      "car": 10,
+      "yds": 50,
+      "td": 1
+     }
+    }
+   ]
+  },
+  {
+   "key": "sacks",
+   "label": "Sacks",
+   "columns": [
+    {
+     "key": "gp",
+     "label": "GP"
+    },
+    {
+     "key": "sacks",
+     "label": "Sacks"
+    }
+   ],
+   "rows": [
+    {
+     "number": "5",
+     "nameAbbrev": "J. Smith (Sr)",
+     "stats": {
+      "gp": 10,
+      "sacks": 2.0
+     }
+    },
+    {
+     "number": "5",
+     "nameAbbrev": "K. Smith (Fr)",
+     "stats": {
+      "gp": 10,
+      "sacks": 0.5
+     }
+    },
+    {
+     "number": "11",
+     "nameAbbrev": "S. Adams (So)",
+     "stats": {
+      "gp": 10,
+      "sacks": 8.0
+     }
+    },
+    {
+     "number": "11",
+     "nameAbbrev": "T. Baker (Jr)",
+     "stats": {
+      "gp": 10,
+      "sacks": 1.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "touchdowns",
+   "label": "Touchdowns",
+   "columns": [
+    {
+     "key": "gp",
+     "label": "GP"
+    },
+    {
+     "key": "tdRush",
+     "label": "TD Rush"
+    },
+    {
+     "key": "total",
+     "label": "Total"
+    }
+   ],
+   "rows": [
+    {
+     "number": "6",
+     "nameAbbrev": "A. Lomax (Sr)",
+     "stats": {
+      "gp": 10,
+      "tdRush": 9,
+      "total": 9
+     }
+    },
+    {
+     "number": "10",
+     "nameAbbrev": "D. Todd (Sr)",
+     "stats": {
+      "gp": 10,
+      "tdRush": 0,
+      "total": 0
+     }
+    }
+   ]
+  }
+ ]
+}
