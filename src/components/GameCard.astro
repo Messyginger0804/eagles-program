@@ -16,6 +16,6 @@ const done = game.score && game.result;
     </span>
   </span>
   {done
-    ? <span class="gcard__res"><span class={`wl wl--${game.result}`} aria-label={game.result === 'W' ? 'Win' : game.result === 'L' ? 'Loss' : 'Tie'}>{game.result}</span><span class="gcard__score">{game.score!.wh}-{game.score!.opp}</span></span>
-    : <span class="gcard__res"><span class="wl wl--TBA">TBA</span></span>}
+    ? <span class="gcard__res" role="img" aria-label={`${game.result === 'W' ? 'Win' : game.result === 'L' ? 'Loss' : 'Tie'}, ${game.score!.wh} to ${game.score!.opp}`}><span class={`wl wl--${game.result}`} aria-hidden="true">{game.result}</span><span class="gcard__score" aria-hidden="true"><span class="gcard__us">{game.score!.wh}</span><span class="gcard__dash">-</span><span class="gcard__them">{game.score!.opp}</span></span></span>
+    : <span class="gcard__res"><span class="wl wl--TBA">TBA</span><span class="gcard__score" aria-hidden="true"></span></span>}
 </a>
