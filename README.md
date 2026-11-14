@@ -2,13 +2,13 @@
 
 Static fan-edition game-day program for the Wilmer-Hutchins Eagles, built with Astro. Pages: schedule, roster, stats, matchup, seniors/coaches, per-game and per-player pages, and a booklet-order `/print`.
 
-Live site: https://messyginger0804.github.io/eagles-program/
+Live site: https://hutch.dfwsc.com/
 
 ## Deploy
 
-Hosted on GitHub Pages as a project site (`base: '/eagles-program'`). Pushing or merging to `main` runs `.github/workflows/deploy.yml`: tests, `check:stats`, build, `check:links`, then the `dist` artifact is published to Pages. It can also be run manually (`workflow_dispatch`). Internal URLs go through `withBase()` in `src/lib/url.ts`.
+Hosted on GitHub Pages at the custom domain root (`site: 'https://hutch.dfwsc.com'`, `base: '/'`; the domain is set in the repo's Pages settings, no CNAME file since the deploy uses Actions). Pushing or merging to `main` runs `.github/workflows/deploy.yml`: tests, `check:stats`, build, `check:links`, then the `dist` artifact is published to Pages. It can also be run manually (`workflow_dispatch`). Internal URLs go through `withBase()` in `src/lib/url.ts`.
 
-`npm run check:links` (after `npm run build`) fails if any internal URL in `dist` lacks the `/eagles-program/` prefix or points to a missing file.
+`npm run check:links` (after `npm run build`) fails if any internal URL in `dist` is not root-relative or points to a missing file.
 
 ## Commands
 

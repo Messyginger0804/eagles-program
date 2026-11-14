@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
-const BASE = '/eagles-program/';
+const BASE = '/';
 const dist = resolve(process.argv[2] ?? 'dist');
 const origin = 'https://local.invalid';
 
