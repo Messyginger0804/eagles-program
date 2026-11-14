@@ -1,0 +1,39 @@
+---
+import { withBase } from '../lib/url';
+import { pbpCoverageNote } from '../lib/season';
+import type { PbpTdRow, PbpCoverage } from '../lib/season';
+const { rows, coverage } = Astro.props as { rows: PbpTdRow[]; coverage: PbpCoverage };
+---
+<section id="pbp-tds" class="statsec" aria-labelledby="h-pbp-tds">
+  <h2 id="h-pbp-tds" class="section-title">Touchdowns from Play-by-Play</h2>
+  <p class="muted">{pbpCoverageNote(coverage)}</p>
+  {rows.length === 0 ? <p class="card muted">No touchdowns found in the play-by-play yet.</p> : (
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Touchdowns from play-by-play">
+      <table>
+        <caption class="sr-only">Touchdowns by player from play-by-play, sorted by total</caption>
+        <thead><tr>
+          <th scope="col" class="num">#</th>
+          <th scope="col">Player</th>
+          <th scope="col" class="num">Rush</th>
+          <th scope="col" class="num">Rec</th>
+          <th scope="col" class="num">Pass</th>
+          <th scope="col" class="num">Ret</th>
+          <th scope="col" class="num">Total</th>
+        </tr></thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr>
+              <th scope="row" class="num">{r.player.number}</th>
+              <td class="wrap"><a href={withBase(`/players/${r.player.slug}`)}>{r.player.firstName} {r.player.lastName}</a></td>
+              <td class="num">{r.rushing}</td>
+              <td class="num">{r.receiving}</td>
+              <td class="num">{r.passing}</td>
+              <td class="num">{r.returns}</td>
+              <td class="num"><strong>{r.total}</strong></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</section>

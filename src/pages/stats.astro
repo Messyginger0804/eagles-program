@@ -1,12 +1,18 @@
 ---
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
+import PbpTouchdowns from '../components/PbpTouchdowns.astro';
 import StatCaveat from '../components/StatCaveat.astro';
-import { getRoster, getSeasonStats } from '../lib/data';
-import { leaders } from '../lib/season';
+import { getRoster, getSeasonStats, getGames } from '../lib/data';
+import { playByPlayTouchdowns } from '../lib/season';
+import { realRows } from '../lib/statcards';
 import { playerForStatRow, primaryKey, fmtStat, shortDate } from '../lib/format';
 const stats = getSeasonStats();
 const roster = getRoster();
+const pbp = playByPlayTouchdowns(roster, getGames());
+const OFFENSE = ['passing', 'rushing', 'receiving'];
+const lastOffense = stats.categories.reduce((acc, c, i) => (OFFENSE.includes(c.key) ? i : acc), -1);
+const insertAt = lastOffense >= 0 ? lastOffense : -1;
 ---
 <Program title="Stats">
   <h1 class="page-title">Season Stats</h1>
@@ -19,19 +25,20 @@ const roster = getRoster();
     {stats.categories.map((c) => <li><a class="chip" href={`#${c.key}`}>{c.label}</a></li>)}
   </ul></nav>
 
-  {stats.categories.map((c) => {
+  {stats.categories.map((c, ci) => {
     const pk = primaryKey(c);
     const pkLabel = c.columns.find((x) => x.key === pk)?.label ?? '';
-    const rows = [...c.rows].sort((a, b) => (b.stats[pk] ?? -Infinity) - (a.stats[pk] ?? -Infinity));
-    const top = leaders(stats, c.key, pk, 3).filter((r) => r.value > 0);
+    const rows = [...realRows(c.rows)].sort((a, b) => (b.stats[pk] ?? -Infinity) - (a.stats[pk] ?? -Infinity));
+    const top = rows.slice(0, 3).filter((r) => (r.stats[pk] ?? 0) > 0).map((r) => ({ number: r.number, nameAbbrev: r.nameAbbrev, value: r.stats[pk] as number }));
     const who = (r: { number: string; nameAbbrev: string }) => {
       const pl = playerForStatRow(roster, r);
       return pl ? { name: `${pl.firstName} ${pl.lastName}`, href: withBase(`/players/${pl.slug}`) } : { name: r.nameAbbrev, href: null };
     };
-    return (
+    return (<>
       <section id={c.key} class="statsec" aria-labelledby={`h-${c.key}`}>
         <h2 id={`h-${c.key}`} class="section-title">{c.label}</h2>
-        {top.length === 0 && <p class="muted">No {pkLabel} recorded yet.</p>}
+        {rows.length === 0 && <p class="card muted">{c.label} stats haven't been entered on MaxPreps by the team's stat keeper yet.</p>}
+        {rows.length > 0 && top.length === 0 && <p class="muted">No {pkLabel} recorded yet.</p>}
         {top.length > 0 && (
           <ol class="podium" aria-label={`${c.label} top ${top.length}, by ${pkLabel}`}>
             {top.map((r, i) => {
@@ -47,7 +54,7 @@ const roster = getRoster();
             })}
           </ol>
         )}
-        <details class="fulltable">
+        {rows.length > 0 && <details class="fulltable">
           <summary>Full table ({rows.length})</summary>
           <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} full table`}>
             <table class="sortable">
@@ -75,10 +82,12 @@ const roster = getRoster();
               </tbody>
             </table>
           </div>
-        </details>
+        </details>}
       </section>
-    );
+      {ci === insertAt && <PbpTouchdowns rows={pbp.rows} coverage={pbp.coverage} />}
+    </>);
   })}
+  {insertAt < 0 && <PbpTouchdowns rows={pbp.rows} coverage={pbp.coverage} />}
 
   <script is:inline>
     document.querySelectorAll('table.sortable').forEach(function (table) {

@@ -13,3 +13,11 @@ describe('nonEmptyCategories', () => {
     expect(nonEmptyCategories([{ stats: { gp: 3, a: 0 } }])).toEqual([]);
   });
 });
+
+import { realRows } from '../src/lib/statcards.ts';
+describe('realRows', () => {
+  it('drops rows whose only non-zero stat is gp', () => {
+    const rows: { stats: Record<string, number | null> }[] = [{ stats: { gp: 9, yds: 0, td: null } }, { stats: { gp: 9, yds: 4 } }];
+    expect(realRows(rows)).toEqual([rows[1]]);
+  });
+});
