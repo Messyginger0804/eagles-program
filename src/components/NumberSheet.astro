@@ -1,0 +1,163 @@
+---
+// Number lookup bottom sheet: one <dialog>, build-time JSON, tiny vanilla script.
+// Without JS every tile / "#" control is a normal link (player page, filtered roster, or /#numbers).
+import { getRoster, getSeasonStats } from '../lib/data';
+import { numberIndex } from '../lib/numbers';
+import { withBase } from '../lib/url';
+const entries = numberIndex(getRoster(), getSeasonStats(), withBase);
+const data = JSON.stringify(
+  entries.map((e) => ({
+    n: e.number,
+    h: e.href,
+    p: e.players.map((p) => ({ f: p.first, l: p.last, pos: p.pos.join(' / '), g: p.grade, ht: p.ht, wt: p.wt, st: p.stat, h: p.href })),
+  })),
+).replace(/</g, '\\u003c');
+---
+<dialog id="numsheet" class="sheet" aria-labelledby="sheet-title">
+  <div class="sheet__inner">
+    <div class="sheet__grab" aria-hidden="true"></div>
+    <div class="sheet__bar">
+      <button type="button" class="sheet__back" id="sheet-back" hidden>&larr; All numbers</button>
+      <h2 id="sheet-title" class="sheet__title">Find a number</h2>
+      <button type="button" class="sheet__close" id="sheet-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" /></svg>
+      </button>
+    </div>
+    <div id="sheet-grid">
+      <input class="search" id="sheet-q" type="search" inputmode="search" enterkeyhint="go" autocomplete="off" placeholder="Type a number or a name" aria-label="Search by number or name" />
+      <ul class="tiles" id="sheet-tiles"></ul>
+      <p class="empty" id="sheet-empty" role="status" hidden>No match. Try another number or name.</p>
+    </div>
+    <div id="sheet-detail" hidden></div>
+  </div>
+</dialog>
+<script type="application/json" id="num-data" set:html={data} />
+<script is:inline>
+(function () {
+  var dlg = document.getElementById('numsheet');
+  if (!dlg || typeof dlg.showModal !== 'function') return;
+  var data = null, byN = {}, built = false, lastFocus = null, fromGrid = false;
+  var $ = function (id) { return document.getElementById(id); };
+  var grid = $('sheet-grid'), detail = $('sheet-detail'), title = $('sheet-title'), back = $('sheet-back');
+  var q = $('sheet-q'), tiles = $('sheet-tiles'), empty = $('sheet-empty');
+
+  function load() {
+    if (data) return;
+    data = JSON.parse($('num-data').textContent);
+    data.forEach(function (e) { byN[e.n] = e; });
+  }
+  function el(tag, cls, text) {
+    var x = document.createElement(tag);
+    if (cls) x.className = cls;
+    if (text != null) x.textContent = text;
+    return x;
+  }
+  function names(e) { return e.p.map(function (p) { return p.f + ' ' + p.l; }); }
+  function buildTiles() {
+    if (built) return;
+    built = true;
+    data.forEach(function (e) {
+      var li = el('li'), a = el('a', 'tile');
+      a.href = e.h; a.dataset.n = e.n;
+      a.dataset.name = names(e).join(' | ').toLowerCase();
+      a.setAttribute('aria-label', 'Number ' + e.n + ', ' + names(e).join(' and '));
+      a.appendChild(el('span', 'tile__n', e.n));
+      a.appendChild(el('span', 'tile__l', e.p.length > 1 ? e.p.length + ' players' : e.p[0].l));
+      li.appendChild(a); tiles.appendChild(li);
+    });
+  }
+  function filter(input, list, emptyEl) {
+    var v = input.value.trim().toLowerCase(), shown = 0, last = null;
+    var terms = v.split(/\s+/).filter(Boolean), isNum = /^\d+$/.test(v);
+    Array.prototype.forEach.call(list.children, function (li) {
+      var a = li.firstElementChild, ok = true;
+      if (isNum) ok = a.dataset.n === v;
+      else if (terms.length) ok = terms.every(function (t) { return a.dataset.name.indexOf(t) !== -1; });
+      li.hidden = !ok;
+      if (ok) { shown++; last = a; }
+    });
+    emptyEl.hidden = shown !== 0;
+    return shown === 1 ? last : null;
+  }
+  function wire(input, list, emptyEl) {
+    input.addEventListener('input', function () { filter(input, list, emptyEl); });
+    input.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Enter') return;
+      ev.preventDefault();
+      var only = filter(input, list, emptyEl);
+      if (only) openDetail(only.dataset.n, list === tiles);
+    });
+  }
+
+  function showGrid() {
+    detail.hidden = true; grid.hidden = false; back.hidden = true;
+    title.textContent = 'Find a number'; title.classList.remove('sr-only');
+  }
+  function openGrid() { load(); buildTiles(); showGrid(); open(); }
+  function openDetail(n, viaGrid) {
+    load();
+    var e = byN[n];
+    if (!e) return;
+    fromGrid = !!viaGrid;
+    if (fromGrid) buildTiles();
+    detail.textContent = '';
+    if (e.p.length > 1) detail.appendChild(el('p', 'pcard__shared', e.p.length + ' players wear #' + e.n));
+    e.p.forEach(function (p) {
+      var c = el('article', 'pcard');
+      var num = el('p', 'pcard__num', e.n); num.setAttribute('aria-hidden', 'true');
+      var body = el('div', 'pcard__body');
+      body.appendChild(el('h3', 'pcard__name', p.f + ' ' + p.l));
+      var meta = [p.pos, p.g].filter(Boolean).join(' · ');
+      if (meta) body.appendChild(el('p', 'pcard__meta', meta));
+      var size = [p.ht, p.wt ? p.wt + ' lbs' : null].filter(Boolean).join(' · ');
+      if (size) body.appendChild(el('p', 'pcard__size', size));
+      if (p.st) {
+        var s = el('p', 'pcard__stat');
+        s.appendChild(el('strong', null, p.st));
+        s.appendChild(document.createTextNode(' this season'));
+        body.appendChild(s);
+      }
+      var a = el('a', 'btn', 'Full profile →'); a.href = p.h;
+      body.appendChild(a);
+      c.appendChild(num); c.appendChild(body); detail.appendChild(c);
+    });
+    if (e.p.some(function (p) { return p.st; })) detail.appendChild(el('p', 'pcard__note', 'Stats via MaxPreps; may be incomplete.'));
+    title.textContent = 'Number ' + e.n + ', ' + names(e).join(' and ');
+    title.classList.add('sr-only');
+    grid.hidden = true; detail.hidden = false; back.hidden = !fromGrid;
+    detail.dataset.n = e.n;
+    open();
+  }
+  function open() {
+    if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+    dlg.scrollTop = 0;
+  }
+
+  document.addEventListener('click', function (ev) {
+    if (ev.defaultPrevented || ev.button || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    var t = ev.target.closest && ev.target.closest('a.tile, [data-open-numbers]');
+    if (!t) return;
+    ev.preventDefault();
+    if (t.matches('[data-open-numbers]')) openGrid();
+    else openDetail(t.dataset.n, !!t.closest('#sheet-grid'));
+  });
+  $('sheet-close').addEventListener('click', function () { dlg.close(); });
+  back.addEventListener('click', function () {
+    var n = detail.dataset.n;
+    showGrid(); dlg.scrollTop = 0;
+    var t = tiles.querySelector('a[data-n="' + n + '"]');
+    if (t) t.focus();
+  });
+  dlg.addEventListener('click', function (ev) { if (ev.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', function () {
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  });
+  wire(q, tiles, empty);
+  var hq = $('home-q'), ht = $('home-tiles'), he = $('home-empty');
+  if (hq && ht && he) {
+    var f = hq.closest('form');
+    if (f) f.addEventListener('submit', function (ev) { ev.preventDefault(); });
+    wire(hq, ht, he);
+  }
+})();
+</script>

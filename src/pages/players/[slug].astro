@@ -4,7 +4,7 @@ import Program from '../../layouts/Program.astro';
 import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
 import { playerSeasonStats, playerGameLog } from '../../lib/season';
-import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat, WH_NAME } from '../../lib/format';
+import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat } from '../../lib/format';
 import type { Player } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -34,56 +34,48 @@ const entries = log.flatMap((e) => {
 });
 ---
 <Program title={`#${player.number} ${name}`}>
-  <p><a href={withBase("/roster")}>&larr; Roster</a></p>
-  <section class="player-head" aria-labelledby="pname">
-    <p class="numeral" aria-label={`Number ${player.number}`}>{player.number}</p>
-    <div>
-      <h1 id="pname">{name}</h1>
+  <p class="backlink"><a href={withBase("/roster")}>&larr; Roster</a></p>
+  <section class="phero" aria-labelledby="pname">
+    <p class="phero__num" aria-hidden="true">{player.number}</p>
+    <div class="phero__body">
+      <h1 id="pname" class="phero__name"><span class="sr-only">Number {player.number}, </span>{player.firstName} <span>{player.lastName}</span></h1>
+      <p class="phero__pos">
+        {player.positions.length ? player.positions.map((x) => <span class="pos">{x}</span>) : <span class="muted">No position listed</span>}
+      </p>
       <ul class="vitals">
-        <li><span>Pos</span>{player.positions.join(' / ') || '—'}</li>
         <li><span>Grade</span>{gradeLabel(player.grade)}</li>
-        <li><span>Ht</span>{player.height ?? '—'}</li>
-        <li><span>Wt</span>{player.weight ?? '—'}</li>
+        <li><span>Height</span>{player.height ?? '—'}</li>
+        <li><span>Weight</span>{player.weight ? `${player.weight} lbs` : '—'}</li>
       </ul>
-      <p class="muted">{WH_NAME} Eagles</p>
     </div>
   </section>
 
-  <h2>Season Stats</h2>
+  <h2 class="section-title">Season Stats</h2>
   {cats.length === 0
-    ? <p>No stats entered on MaxPreps yet.</p>
-    : cats.map((c) => (
-      <div class="avoid-break">
+    ? <p class="card muted">No stats entered on MaxPreps yet.</p>
+    : <div class="statcards">{cats.map((c) => (
+      <section class="card statcard avoid-break" aria-label={`${c.label} season stats`}>
         <h3>{c.label}</h3>
-        <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} stats`}>
-          <table>
-            <caption class="sr-only">{name} {c.label} season stats</caption>
-            <thead><tr>
-              {c.stats.gp != null && <th scope="col" class="num">GP</th>}
-              {c.columns.map((col) => <th scope="col" class="num">{col.label}</th>)}
-            </tr></thead>
-            <tbody><tr>
-              {c.stats.gp != null && <td class="num">{fmtStat(c.stats.gp)}</td>}
-              {c.columns.map((col) => <td class="num">{fmtStat(c.stats[col.key])}</td>)}
-            </tr></tbody>
-          </table>
-        </div>
-      </div>
-    ))}
+        <dl class="statgrid">
+          {c.stats.gp != null && <div><dt>GP</dt><dd>{fmtStat(c.stats.gp)}</dd></div>}
+          {c.columns.map((col) => <div><dt>{col.label}</dt><dd>{fmtStat(c.stats[col.key])}</dd></div>)}
+        </dl>
+      </section>
+    ))}</div>}
   <StatCaveat games={stats.gamesPlayed} />
 
-  <h2>Scoring &amp; Takeaways</h2>
+  <h2 class="section-title">Game Log</h2>
   {entries.length === 0
-    ? <p class="muted">No scoring plays or takeaways recorded for this player in the games reported so far.</p>
-    : <ul class="gamelog">
-        {entries.map((e) => <li><a href={withBase(`/games/${e.id}`)}>{e.when}</a> — {e.text}</li>)}
-      </ul>}
+    ? <p class="card muted">No scoring plays or takeaways recorded for this player in the games reported so far.</p>
+    : <ol class="gamelog">
+        {entries.map((e) => <li class="card"><a href={withBase(`/games/${e.id}`)}>{e.when}</a><strong>{e.text}</strong></li>)}
+      </ol>}
   <p class="caveat">Play logs on MaxPreps are incomplete for most games.</p>
 
-  <h2>Links</h2>
-  <ul>
-    <li><a href={player.maxprepsUrl} rel="noopener">MaxPreps profile</a></li>
-    {player.highlights.map((h) => <li><a href={h.url} rel="noopener">{h.label}</a></li>)}
+  <h2 class="section-title">Links</h2>
+  <ul class="linklist">
+    <li><a class="btn btn--ghost" href={player.maxprepsUrl} rel="noopener">MaxPreps profile</a></li>
+    {player.highlights.map((h) => <li><a class="btn btn--ghost" href={h.url} rel="noopener">{h.label}</a></li>)}
   </ul>
 
   <nav class="pager" aria-label="Other players">

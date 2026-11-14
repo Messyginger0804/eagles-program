@@ -3,50 +3,79 @@ import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getRoster, getSeasonStats } from '../lib/data';
+import { leaders } from '../lib/season';
 import { playerForStatRow, primaryKey, fmtStat, shortDate } from '../lib/format';
 const stats = getSeasonStats();
 const roster = getRoster();
 ---
 <Program title="Stats">
-  <h1>Season Stats</h1>
+  <h1 class="page-title">Season Stats</h1>
   <p class="muted">
     As of {stats.asOf ? shortDate(stats.asOf) : `${stats.gamesPlayed} games played`}.
-    Each table is sorted by its main column. Use the column headings to re-sort.
+    Top 3 in each category, then the full table (sortable by column heading).
   </p>
   <StatCaveat games={stats.gamesPlayed} />
-  <nav aria-label="Stat categories"><ul class="chips" style="list-style:none;padding:0">
+  <nav aria-label="Stat categories" class="chipnav"><ul class="chips">
     {stats.categories.map((c) => <li><a class="chip" href={`#${c.key}`}>{c.label}</a></li>)}
   </ul></nav>
 
   {stats.categories.map((c) => {
     const pk = primaryKey(c);
+    const pkLabel = c.columns.find((x) => x.key === pk)?.label ?? '';
     const rows = [...c.rows].sort((a, b) => (b.stats[pk] ?? -Infinity) - (a.stats[pk] ?? -Infinity));
+    const top = leaders(stats, c.key, pk, 3).filter((r) => r.value > 0);
+    const who = (r: { number: string; nameAbbrev: string }) => {
+      const pl = playerForStatRow(roster, r);
+      return pl ? { name: `${pl.firstName} ${pl.lastName}`, href: withBase(`/players/${pl.slug}`) } : { name: r.nameAbbrev, href: null };
+    };
     return (
-      <section id={c.key} aria-labelledby={`h-${c.key}`}>
-        <h2 id={`h-${c.key}`}>{c.label}</h2>
-        <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} leaders`}>
-          <table class="sortable">
-            <caption class="sr-only">{c.label}, sorted by {c.columns.find((x) => x.key === pk)?.label}</caption>
-            <thead><tr>
-              <th scope="col" class="num">#</th>
-              <th scope="col">Player</th>
-              <th scope="col" class="num" aria-sort="none" data-key="gp"><button type="button">GP</button></th>
-              {c.columns.map((col) => (
-                <th scope="col" class="num" aria-sort={col.key === pk ? 'descending' : 'none'} data-key={col.key}><button type="button">{col.label}</button></th>
-              ))}
-            </tr></thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr>
-                  <th scope="row" class="num">{r.number}</th>
-                  <td class="wrap">{(() => { const pl = playerForStatRow(roster, r); return pl ? <a href={withBase(`/players/${pl.slug}`)}>{pl.firstName} {pl.lastName}</a> : r.nameAbbrev; })()}</td>
-                  <td class="num" data-v={r.stats.gp ?? ''}>{fmtStat(r.stats.gp)}</td>
-                  {c.columns.map((col) => <td class="num" data-v={r.stats[col.key] ?? ''}>{fmtStat(r.stats[col.key])}</td>)}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section id={c.key} class="statsec" aria-labelledby={`h-${c.key}`}>
+        <h2 id={`h-${c.key}`} class="section-title">{c.label}</h2>
+        {top.length === 0 && <p class="muted">No {pkLabel} recorded yet.</p>}
+        {top.length > 0 && (
+          <ol class="podium" aria-label={`${c.label} top ${top.length}, by ${pkLabel}`}>
+            {top.map((r, i) => {
+              const w = who(r);
+              return (
+                <li class={`lead lead--${i + 1}`}>
+                  <span class="lead__rank" aria-hidden="true">{i + 1}</span>
+                  <span class="lead__num" aria-hidden="true">#{r.number}</span>
+                  <span class="lead__name">{w.href ? <a href={w.href}>{w.name}</a> : w.name}</span>
+                  <span class="lead__val"><strong>{r.value}</strong> {pkLabel}</span>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+        <details class="fulltable">
+          <summary>Full table ({rows.length})</summary>
+          <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} full table`}>
+            <table class="sortable">
+              <caption class="sr-only">{c.label}, sorted by {pkLabel}</caption>
+              <thead><tr>
+                <th scope="col" class="num">#</th>
+                <th scope="col">Player</th>
+                <th scope="col" class="num" aria-sort="none" data-key="gp"><button type="button">GP</button></th>
+                {c.columns.map((col) => (
+                  <th scope="col" class="num" aria-sort={col.key === pk ? 'descending' : 'none'} data-key={col.key}><button type="button">{col.label}</button></th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {rows.map((r) => {
+                  const w = who(r);
+                  return (
+                    <tr>
+                      <th scope="row" class="num">{r.number}</th>
+                      <td class="wrap">{w.href ? <a href={w.href}>{w.name}</a> : w.name}</td>
+                      <td class="num" data-v={r.stats.gp ?? ''}>{fmtStat(r.stats.gp)}</td>
+                      {c.columns.map((col) => <td class="num" data-v={r.stats[col.key] ?? ''}>{fmtStat(r.stats[col.key])}</td>)}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </section>
     );
   })}

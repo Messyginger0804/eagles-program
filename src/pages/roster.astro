@@ -1,18 +1,18 @@
 ---
+import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
-import RosterTable from '../components/RosterTable.astro';
 import { getRoster } from '../lib/data';
+import { byNumber, gradeLabel, positionGroups } from '../lib/format';
 const roster = getRoster();
+const players = byNumber(roster.players);
 ---
 <Program title="Roster">
-  <h1>Numerical Roster</h1>
-  <p class="muted">{roster.players.length} players. Name, number, position, grade, height and weight only.</p>
+  <h1 class="page-title">Roster</h1>
+  <p class="muted">{players.length} players. Name, number, position, grade, height and weight only.</p>
 
-  <div id="controls" hidden>
-    <div class="search">
-      <label for="q" class="lede"><strong>Search by number or name</strong></label><br />
-      <input id="q" type="search" autocomplete="off" placeholder="e.g. 7 or Lomax" />
-    </div>
+  <div id="controls" class="controls" hidden>
+    <label for="q" class="sr-only">Search by number or name</label>
+    <input class="search" id="q" type="search" inputmode="search" autocomplete="off" placeholder="Search a number or name" />
     <div class="chips" role="group" aria-label="Filter by position group">
       <button type="button" class="chip" data-group="all" aria-pressed="true">All</button>
       <button type="button" class="chip" data-group="offense" aria-pressed="false">Offense</button>
@@ -22,37 +22,49 @@ const roster = getRoster();
     <p id="count" class="count" role="status" aria-live="polite"></p>
   </div>
 
-  <RosterTable rows={roster.players} id="roster-table" caption="Wilmer-Hutchins Eagles numerical roster" filterable />
-  <p id="empty" class="card" hidden>No players match. Try a different number or name, or choose All.</p>
+  <ul class="rgrid" id="roster-grid">
+    {players.map((p) => (
+      <li data-num={p.number} data-name={`${p.firstName} ${p.lastName}`.toLowerCase()} data-groups={positionGroups(p.positions).join(' ')}>
+        <a class="pc" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${p.firstName} ${p.lastName}`}>
+          <span class="pc__num" aria-hidden="true">{p.number}</span>
+          <span class="pc__body">
+            <span class="pc__name">{p.firstName} {p.lastName}</span>
+            <span class="pc__pos">
+              {p.positions.length ? p.positions.map((x) => <span class="pos">{x}</span>) : <span class="muted">No position listed</span>}
+            </span>
+            <span class="pc__vitals">{[gradeLabel(p.grade) === '—' ? null : gradeLabel(p.grade), p.height, p.weight ? `${p.weight} lbs` : null].filter(Boolean).join(' · ')}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p id="empty" class="empty" hidden>No players match. Try a different number or name, or choose All.</p>
 
   <script is:inline>
     (function () {
       var controls = document.getElementById('controls');
-      var table = document.getElementById('roster-table');
-      var rows = Array.prototype.slice.call(table.tBodies[0].rows);
+      var rows = Array.prototype.slice.call(document.querySelectorAll('#roster-grid > li'));
       var input = document.getElementById('q');
       var count = document.getElementById('count');
       var empty = document.getElementById('empty');
       var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
       var group = 'all';
       controls.hidden = false;
-      table.classList.add('js-zebra');
       var norm = function (s) { return s.toLowerCase().replace(/[^a-z0-9 ]/g, ''); };
       function apply() {
         var q = norm(input.value.trim());
         var terms = q.split(/\s+/).filter(Boolean);
         var shown = 0;
-        rows.forEach(function (tr) {
+        rows.forEach(function (li) {
           var ok = true;
-          if (/^\d+$/.test(q)) ok = tr.dataset.num === q;
-          else if (terms.length) ok = terms.every(function (t) { return norm(tr.dataset.name).indexOf(t) !== -1; });
-          if (ok && group !== 'all') ok = (' ' + tr.dataset.groups + ' ').indexOf(' ' + group + ' ') !== -1;
-          tr.hidden = !ok;
-          if (ok) { tr.className = shown % 2 ? 'alt' : ''; shown++; }
+          if (/^\d+$/.test(q)) ok = li.dataset.num === q;
+          else if (terms.length) ok = terms.every(function (t) { return norm(li.dataset.name).indexOf(t) !== -1; });
+          if (ok && group !== 'all') ok = (' ' + li.dataset.groups + ' ').indexOf(' ' + group + ' ') !== -1;
+          li.hidden = !ok;
+          if (ok) shown++;
         });
         count.textContent = 'Showing ' + shown + ' of ' + rows.length + ' players';
         empty.hidden = shown !== 0;
-        table.parentElement.hidden = shown === 0;
         var url = new URL(location.href);
         if (input.value.trim()) url.searchParams.set('q', input.value.trim()); else url.searchParams.delete('q');
         history.replaceState(null, '', url);

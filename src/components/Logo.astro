@@ -1,0 +1,11 @@
+---
+// Single place the team mark is rendered. Set LOGO_SRC in src/config.ts to use real art;
+// otherwise a styled "WH" monogram is drawn. The art is dark blue, so it always sits on a light plate.
+import { withBase } from '../lib/url';
+import { LOGO_SRC } from '../config';
+interface Props { size?: number; class?: string }
+const { size = 40, class: cls } = Astro.props;
+---
+{LOGO_SRC
+  ? <span class:list={['logo', cls]} style={`--s:${size}px`} aria-hidden="true"><img src={withBase(LOGO_SRC)} width={size} height={Math.round(size * 0.57)} alt="" decoding="async" /></span>
+  : <span class:list={['logo', 'logo--mono', cls]} style={`--s:${size}px`} aria-hidden="true"><span>WH</span></span>}

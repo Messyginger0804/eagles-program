@@ -1,53 +1,64 @@
 ---
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
-import { getTeam, getNextGame, getOpponent } from '../lib/data';
+import Logo from '../components/Logo.astro';
+import { getTeam, getRoster, getSeasonStats, getNextGame, getOpponent } from '../lib/data';
+import { numberIndex } from '../lib/numbers';
 import { recordStr, shortDate, opponentSlug, locationLabel } from '../lib/format';
 const team = getTeam();
 const next = getNextGame();
 const opp = next ? getOpponent(opponentSlug(next)) : undefined;
+const entries = numberIndex(getRoster(), getSeasonStats(), withBase);
 const division = (team.classification ?? '').replace(/Division 1$/, 'Division I');
-const links = [
-  { href: '/roster', label: 'Roster', note: 'Numerical roster' },
-  { href: '/schedule', label: 'Schedule', note: 'Results and what is next' },
-  { href: '/matchup', label: 'This Week', note: 'Centerfold matchup' },
-  { href: '/stats', label: 'Stats', note: 'Season leaders' },
-  { href: '/seniors-coaches', label: 'Seniors & Coaches', note: 'Welcome note, seniors, staff' },
-  { href: '/print', label: 'Print', note: 'Take it to the stands' },
-];
 ---
 <Program>
-  <section class="cover avoid-break" aria-labelledby="cover-title">
-    <p class="cover__masthead">Game Day Program · Fan Edition {team.season}</p>
-    <h1 id="cover-title" class="cover__wordmark">Eagles</h1>
-    <p class="cover__team">{team.school} {team.city}, {team.state}</p>
-    <p class="cover__record" aria-label={`Record ${recordStr(team.record.overall)}, district ${recordStr(team.record.district)}`}>
-      {recordStr(team.record.overall)}
-    </p>
-    <p class="cover__sub">({recordStr(team.record.district)} district)</p>
-    <p class="cover__tag">{division} Playoffs</p>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__top">
+      <Logo size={64} class="hero__logo" />
+      <div>
+        <h1 id="hero-title" class="hero__title">Wilmer-Hutchins <span>Eagles</span></h1>
+        <p class="hero__meta">
+          <span class="hero__record" aria-label={`Record ${recordStr(team.record.overall)}, district ${recordStr(team.record.district)}`}>
+            {recordStr(team.record.overall)}
+          </span>
+          <span class="muted">{recordStr(team.record.district)} district</span>
+          <span class="badge badge--hot">Playoffs</span>
+        </p>
+      </div>
+    </div>
+    {next && (
+      <a class="nextgame" href={withBase('/matchup')}>
+        <span class="nextgame__label">Next game</span>
+        <span class="nextgame__vs">vs. {next.opponent.name}{next.opponent.mascot ? ` ${next.opponent.mascot}` : ''}</span>
+        <span class="nextgame__meta">
+          {next.date ? shortDate(next.date) : 'Date TBA'} · {next.date ? 'Time TBA' : locationLabel(next.location)}
+          {opp && <> · {next.opponent.name} {opp.record.overall.w}-{opp.record.overall.l}</>}
+        </span>
+        <span class="nextgame__cta" aria-hidden="true">Matchup &rarr;</span>
+      </a>
+    )}
   </section>
 
-  {next && (
-    <a class="card nextgame" href={withBase("/matchup")}>
-      <h2>Next Game</h2>
-      <p class="nextgame__vs">Wilmer-Hutchins {team.mascot} vs. {next.opponent.name}{next.opponent.mascot ? ` ${next.opponent.mascot}` : ''}</p>
-      <p class="nextgame__meta">
-        {shortDate(next.date)} · {locationLabel(next.location)}
-        {opp && <> · {next.opponent.name} is {opp.record.overall.w}-{opp.record.overall.l}</>}
-      </p>
-      <p class="nextgame__cta">See the matchup</p>
-    </a>
-  )}
-
-  <form class="card finder" action={withBase("/roster")} method="get" role="search">
-    <label for="find">Find a player</label>
-    <input id="find" type="search" name="q" placeholder="Number or name" autocomplete="off" />
-    <button class="btn" type="submit">Search</button>
-  </form>
-
-  <h2>Inside this program</h2>
-  <ul class="links">
-    {links.map((l) => <li><a href={withBase(l.href)}>{l.label}<small>{l.note}</small></a></li>)}
-  </ul>
+  <section id="numbers" class="numbers" aria-labelledby="numbers-title">
+    <h2 id="numbers-title" class="section-title">Who is #<span class="section-title__hl">?</span> <span class="muted section-title__sub">Tap a number</span></h2>
+    <form class="finder" action={withBase('/roster')} method="get" role="search">
+      <label class="sr-only" for="home-q">Search by number or name</label>
+      <input class="search" id="home-q" type="search" name="q" inputmode="search" enterkeyhint="go" autocomplete="off" placeholder="Type a number or a name" />
+      <button class="btn btn--ghost finder__go" type="submit">Search</button>
+    </form>
+    <ul class="tiles" id="home-tiles">
+      {entries.map((e) => (
+        <li>
+          <a class="tile" href={e.href} data-n={e.number}
+             data-name={e.players.map((p) => `${p.first} ${p.last}`).join(' | ').toLowerCase()}
+             aria-label={`Number ${e.number}, ${e.players.map((p) => `${p.first} ${p.last}`).join(' and ')}`}>
+            <span class="tile__n">{e.number}</span>
+            <span class="tile__l">{e.players.length > 1 ? `${e.players.length} players` : e.players[0]!.last}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="empty" id="home-empty" role="status" hidden>No match. Try another number or name.</p>
+    <p class="muted numbers__foot">{division} Playoffs · <a href={withBase('/roster')}>Full roster</a></p>
+  </section>
 </Program>

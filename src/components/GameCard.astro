@@ -1,0 +1,21 @@
+---
+import { withBase } from '../lib/url';
+import type { Game } from '../lib/schema';
+import { gameLabel, shortDate, locationLabel } from '../lib/format';
+const { game } = Astro.props as { game: Game };
+const done = game.score && game.result;
+---
+<a class:list={['gcard', done && `gcard--${game.result}`]} href={withBase(`/games/${game.id}`)}>
+  <span class="gcard__date">{shortDate(game.date)}</span>
+  <span class="gcard__main">
+    <span class="gcard__opp">{gameLabel(game)}</span>
+    <span class="gcard__tags">
+      {game.districtGame && <span class="badge">District</span>}
+      {game.playoff && <span class="badge badge--hot">Playoff{game.round ? ` · ${game.round}` : ''}</span>}
+      {!done && <span class="muted">{locationLabel(game.location)}</span>}
+    </span>
+  </span>
+  {done
+    ? <span class="gcard__res"><span class={`wl wl--${game.result}`} aria-label={game.result === 'W' ? 'Win' : game.result === 'L' ? 'Loss' : 'Tie'}>{game.result}</span><span class="gcard__score">{game.score!.wh}-{game.score!.opp}</span></span>
+    : <span class="gcard__res"><span class="wl wl--TBA">TBA</span></span>}
+</a>
