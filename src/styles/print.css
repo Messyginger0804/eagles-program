@@ -1,5 +1,6 @@
 /* Dark screen theme -> clean black-on-white booklet. */
 *, *::before, *::after { background-image: none !important; box-shadow: none !important; text-shadow: none !important; filter: none !important; animation: none !important; }
+body::before, .site-footer::before, .phero::after { display: none !important; }
 .tabbar, .fab, .skip, dialog, .findnum, .topnav, .site-footer__links, .printbar { display: none !important; }
 main, main * { color: #000 !important; }
 main *:not(table):not(thead):not(tbody):not(tr):not(th):not(td):not(.cover):not(.badge):not(.wl) { background: transparent !important; }

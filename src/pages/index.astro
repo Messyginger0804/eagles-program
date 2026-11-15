@@ -3,6 +3,7 @@ import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import Logo from '../components/Logo.astro';
 import { getTeam, getRoster, getSeasonStats, getNextGame, getOpponent } from '../lib/data';
+import { TAGLINE } from '../config';
 import { numberIndex } from '../lib/numbers';
 import { recordStr, roundName, shortDate, opponentSlug, locationLabel, mapsUrl } from '../lib/format';
 const team = getTeam();
@@ -17,6 +18,7 @@ const division = (team.classification ?? '').replace(/Division 1$/, 'Division I'
       <Logo size={64} class="hero__logo" />
       <div>
         <h1 id="hero-title" class="hero__title">Wilmer-Hutchins <span>Eagles</span></h1>
+        <p class="hero__tag">{TAGLINE}</p>
         <p class="hero__meta">
           <span class="hero__record" aria-label={`Record ${recordStr(team.record.overall)}, district ${recordStr(team.record.district)}`}>
             {recordStr(team.record.overall)}
