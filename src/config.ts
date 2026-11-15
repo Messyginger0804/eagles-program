@@ -1,7 +1,8 @@
 export const SITE_TITLE = 'WH Eagles Game Day';
 /** Path under public/ of the team logo (base is added by <Logo>). null = styled WH monogram. */
 export const LOGO_SRC: string | null = '/brand/eagle-240.png';
-export const THEME_COLOR = '#06122B';
+export const THEME_COLOR = '#050F25';
+export const TAGLINE = 'THE HUTCH IS TOO MUCH';
 export const INDEXABLE = false;
 /** No public contact yet; do not invent one. */
 export const REMOVAL_CONTACT: string | null = null;

@@ -20,6 +20,7 @@ const { title } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 const path = Astro.url.pathname.replace(/\/$/, '');
 const showWelcome = !(path === withBase('/print').replace(/\/$/, ''));
+const noArt = !showWelcome; // /print: no background art
 const isHome = path === withBase('/').replace(/\/$/, '');
 const is = (href: string) => path === withBase(href).replace(/\/$/, '');
 const section = (href: string) => is(href) || path.startsWith(withBase(href).replace(/\/$/, '') + '/');
@@ -74,7 +75,7 @@ const tabs = [
       })();
     </script>
   </head>
-  <body>
+  <body class={noArt ? 'no-art' : undefined}>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="site-header__in">
@@ -109,6 +110,7 @@ const tabs = [
           ? <>Removal requests: <a href={`mailto:${REMOVAL_CONTACT}`}>{REMOVAL_CONTACT}</a></>
           : 'Removal requests: contact form coming soon'}
       </p>
+      <p class="site-footer__art">Background art: official 2026 schedule graphic by BLAC</p>
       {PROMO.enabled && <p class="site-footer__credit">Site by <a href={PROMO.footerUrl} target="_blank" rel="noopener">DFW Software Consulting</a></p>}
     </footer>
 
