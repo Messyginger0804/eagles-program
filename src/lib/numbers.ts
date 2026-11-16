@@ -1,7 +1,7 @@
 // Read-only helper: jersey-number index for the home grid and the number sheet.
 // Only fields the site already shows (number, name, positions, grade, height, weight, one stat highlight).
 import type { Player, Roster, SeasonStats } from './schema.ts';
-import { byNumber, gradeLabel, statHighlight } from './format.ts';
+import { byNumber, firstWithNick, gradeLabel, statHighlight } from './format.ts';
 
 export interface SheetPlayer {
   first: string;
@@ -34,7 +34,7 @@ export function numberIndex(
     number,
     href: ps.length === 1 ? hrefFor(`/players/${ps[0]!.slug}`) : hrefFor(`/roster?q=${encodeURIComponent(number)}`),
     players: ps.map((p) => ({
-      first: p.firstName,
+      first: firstWithNick(p),
       last: p.lastName,
       pos: p.positions,
       grade: p.grade == null ? null : gradeLabel(p.grade),

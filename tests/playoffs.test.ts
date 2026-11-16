@@ -115,7 +115,7 @@ describe('playoffOutlook robustness', () => {
 
 describe('gamesLeftLine', () => {
   it('handles singular and plural', () => {
-    expect(gamesLeftLine(1)).toBe('1 more game to a state title');
-    expect(gamesLeftLine(5)).toBe('Up to 5 more games to a state title');
+    expect(gamesLeftLine(1)).toBe('1 game to a state title');
+    expect(gamesLeftLine(5)).toBe('5 games to a state title');
   });
 });

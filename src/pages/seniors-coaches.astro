@@ -5,7 +5,7 @@ import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getTeam, getRoster, getSeasonStats } from '../lib/data';
 import { seniors } from '../lib/season';
-import { byNumber, statHighlight, paragraphs } from '../lib/format';
+import { fullName, byNumber, statHighlight, paragraphs } from '../lib/format';
 import { WELCOME_NOTE } from '../config';
 const team = getTeam(), roster = getRoster(), stats = getSeasonStats();
 const srs = byNumber(seniors(roster)).map((p) => ({ p, hl: statHighlight(roster, stats, p) }));
@@ -19,10 +19,10 @@ const srs = byNumber(seniors(roster)).map((p) => ({ p, hl: statHighlight(roster,
   <p class="muted">{srs.length} seniors. Thank you for everything.</p>
   <ul class="cards">
     {srs.map(({ p, hl }) => (
-      <li><a class="senior card card--link avoid-break" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${p.firstName} ${p.lastName}, player page`}>
+      <li><a class="senior card card--link avoid-break" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${fullName(p)}, player page`}>
         <span class="senior__num" aria-hidden="true">{p.number}</span>
         <span class="senior__body">
-          <span class="senior__name">{p.firstName} {p.lastName}</span>
+          <span class="senior__name">{fullName(p)}</span>
           <span class="muted">{p.positions.join(' / ') || 'Position not listed'}</span>
           {hl && <span class="senior__stat">{hl} this season</span>}
         </span>

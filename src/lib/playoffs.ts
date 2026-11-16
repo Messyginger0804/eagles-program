@@ -68,7 +68,7 @@ export function playoffOutlook(games: Game[], rounds: PlayoffRoundInfo[]): Playo
   return { eliminated: false, champion: false, placeholders, gamesLeft };
 }
 
-/** "Up to 5 more games to a state title" / "1 more game to a state title". */
+/** "5 games to a state title" / "1 game to a state title". */
 export function gamesLeftLine(n: number): string {
-  return n === 1 ? '1 more game to a state title' : `Up to ${n} more games to a state title`;
+  return n === 1 ? '1 game to a state title' : `${n} games to a state title`;
 }

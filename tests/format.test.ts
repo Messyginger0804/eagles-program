@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortName } from '../src/lib/format.ts';
+import { shortName, fullName } from '../src/lib/format.ts';
 
 describe('shortName', () => {
   it('first initial and last name', () => expect(shortName('Jaylen', 'Gaston')).toBe('J. Gaston'));
@@ -10,4 +10,14 @@ describe('shortName', () => {
   });
   it('keeps a Jr. suffix', () => expect(shortName('Marcus', 'Hall Jr.')).toBe('M. Hall Jr.'));
   it('single word: no first name gives just the last name', () => expect(shortName('', 'Cher')).toBe('Cher'));
+});
+
+describe('fullName', () => {
+  const todd = { firstName: 'Darrick', lastName: 'Todd', careerId: 'a59f8ctg39ai2' };
+  it('puts the nickname in curly quotes', () => expect(fullName(todd)).toBe('Darrick “DJ” Todd'));
+  it('is plain First Last without a nickname', () => expect(fullName({ firstName: 'Jaylen', lastName: 'Gaston', careerId: 'x1' })).toBe('Jaylen Gaston'));
+  it('ignores an unknown career_id and a missing one', () => {
+    expect(fullName({ firstName: 'Ana', lastName: 'Reed', careerId: 'nope' })).toBe('Ana Reed');
+    expect(fullName({ firstName: 'Ana', lastName: 'Reed' })).toBe('Ana Reed');
+  });
 });
