@@ -7,7 +7,7 @@ import StatCaveat from '../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames } from '../lib/data';
 import { playByPlayTouchdowns } from '../lib/season';
 import { realRows } from '../lib/statcards';
-import { playerForStatRow, primaryKey, fmtStat, shortDate } from '../lib/format';
+import { fullName, playerForStatRow, primaryKey, fmtStat, shortDate } from '../lib/format';
 const stats = getSeasonStats();
 const roster = getRoster();
 const pbp = playByPlayTouchdowns(roster, getGames());
@@ -34,7 +34,7 @@ const insertAt = lastOffense >= 0 ? lastOffense : -1;
     const top = rows.slice(0, 3).filter((r) => (r.stats[pk] ?? 0) > 0).map((r) => ({ number: r.number, nameAbbrev: r.nameAbbrev, value: r.stats[pk] as number }));
     const who = (r: { number: string; nameAbbrev: string }) => {
       const pl = playerForStatRow(roster, r);
-      return pl ? { name: `${pl.firstName} ${pl.lastName}`, href: withBase(`/players/${pl.slug}`) } : { name: r.nameAbbrev, href: null };
+      return pl ? { name: fullName(pl), href: withBase(`/players/${pl.slug}`) } : { name: r.nameAbbrev, href: null };
     };
     return (<>
       <section id={c.key} class="statsec" aria-labelledby={`h-${c.key}`}>

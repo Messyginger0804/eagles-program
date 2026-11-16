@@ -7,7 +7,7 @@ import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getTeam, getRoster, getSeasonStats, getGames, getScheduleEvents, getNextGame, getOpponent } from '../lib/data';
 import { seniors, leaders, mergeSchedule } from '../lib/season';
-import { playerForStatRow, byNumber, recordStr, primaryKey, shortDate, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
+import { fullName, playerForStatRow, byNumber, recordStr, primaryKey, shortDate, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
 import { WELCOME_NOTE } from '../config';
 const team = getTeam(), roster = getRoster(), stats = getSeasonStats(), games = getGames();
 const game = getNextGame();
@@ -74,7 +74,7 @@ const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) =>
           <div class="avoid-break"><h3>{c.label} ({colLabel(c)})</h3>
             <ol>{top.map((r) => {
               const pl = playerForStatRow(roster, r);
-              return <li>#{r.number} {pl ? <a href={withBase(`/players/${pl.slug}`)}>{pl.firstName} {pl.lastName}</a> : r.nameAbbrev} — {r.value}</li>;
+              return <li>#{r.number} {pl ? <a href={withBase(`/players/${pl.slug}`)}>{fullName(pl)}</a> : r.nameAbbrev} — {r.value}</li>;
             })}</ol></div>
         ) : null;
       })}
@@ -87,7 +87,7 @@ const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) =>
       <caption class="sr-only">Seniors</caption>
       <thead><tr><th scope="col" class="num">#</th><th scope="col">Name</th><th scope="col">Pos</th><th scope="col">Season highlight</th></tr></thead>
       <tbody>{srs.map((p) => (
-        <tr><th scope="row" class="num">{p.number}</th><td>{p.firstName} {p.lastName}</td><td>{p.positions.join(', ') || '—'}</td><td>{statHighlight(roster, stats, p) ?? '—'}</td></tr>
+        <tr><th scope="row" class="num">{p.number}</th><td>{fullName(p)}</td><td>{p.positions.join(', ') || '—'}</td><td>{statHighlight(roster, stats, p) ?? '—'}</td></tr>
       ))}</tbody>
     </table></div>
     <p class="caveat">Thank you, seniors. Unofficial fan program; stats as entered on MaxPreps.</p>

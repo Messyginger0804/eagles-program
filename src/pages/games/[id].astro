@@ -2,8 +2,9 @@
 import { withBase } from '../../lib/url';
 import Program from '../../layouts/Program.astro';
 import BoxScore from '../../components/BoxScore.astro';
-import { getGames } from '../../lib/data';
-import { gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
+import { getGames, getRoster } from '../../lib/data';
+import { refMatchesPlayer } from '../../lib/season';
+import { fullName, gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
 
 export function getStaticPaths() {
   return getGames().map((g) => ({ params: { id: g.id }, props: { game: g } }));
@@ -13,6 +14,12 @@ const opp = game.opponent.name;
 const q = game.quarters;
 const nq = q ? Math.max(q.wh.length, q.opp.length) : 0;
 const qLabel = (i: number) => (i < 4 ? `Q${i + 1}` : i === 4 ? 'OT' : `${i - 3}OT`);
+const roster = getRoster();
+// WH play refs carry the MaxPreps name; show the roster display name (with nickname) when it matches.
+const refName = (r: { number: string; name: string }, team: 'WH' | 'OPP') => {
+  const pl = team === 'WH' ? roster.players.find((x) => refMatchesPlayer(r, x)) : undefined;
+  return pl ? fullName(pl) : r.name;
+};
 const side = (t: 'WH' | 'OPP') => (t === 'WH' ? WH_NAME : opp);
 const final = game.status === 'final' && game.score;
 const title = `${WH_NAME} vs. ${opp}`;
@@ -73,8 +80,8 @@ const title = `${WH_NAME} vs. ${opp}`;
               <span class="tl__body">
                 <span class="tl__team">{side(p.team)}</span>
                 <span class="tl__play">
-                  {p.player ? <>{p.player.name} (#{p.player.number}) </> : null}{playDesc(p)}
-                  {p.passer ? <> from {p.passer.name} (#{p.passer.number})</> : null}
+                  {p.player ? <>{refName(p.player, p.team)} (#{p.player.number}) </> : null}{playDesc(p)}
+                  {p.passer ? <> from {refName(p.passer, p.team)} (#{p.passer.number})</> : null}
                 </span>
               </span>
               <span class="tl__score" aria-label={p.scoreAfter ? `Score ${p.scoreAfter.wh} to ${p.scoreAfter.opp}` : 'Score not listed'}>{p.scoreAfter ? `${p.scoreAfter.wh}-${p.scoreAfter.opp}` : '—'}</span>
@@ -87,7 +94,7 @@ const title = `${WH_NAME} vs. ${opp}`;
       {game.takeaways.length === 0
         ? <p class="card muted">No takeaways reported.</p>
         : <ul class="bullets">{game.takeaways.map((t) => (
-            <li class="card">Q{t.quarter} · {takeawayLabel(t.type)} — {side(t.team)}{t.player ? `: ${t.player.name} (#${t.player.number})` : ''}</li>
+            <li class="card">Q{t.quarter} · {takeawayLabel(t.type)} — {side(t.team)}{t.player ? `: ${refName(t.player, t.team)} (#${t.player.number})` : ''}</li>
           ))}</ul>}
 
       <BoxScore playerStats={game.playerStats} opponent={opp} />

@@ -1,5 +1,6 @@
 // Display helpers. Pure functions; no data access except where noted.
 import type { Game, Player, Roster, ScoringPlay, SeasonStats } from './schema.ts';
+import { PLAYER_NICKNAMES } from '../config.ts';
 import { playerSeasonStats, matchRow, type PlayerCategoryStats } from './season.ts';
 
 export const WH_NAME = 'Wilmer-Hutchins';
@@ -188,4 +189,15 @@ export function splitRecordLine(r: { home: { w: number; l: number; t: number }; 
 export function shortName(firstName: string, lastName: string): string {
   const initial = firstName.trim().charAt(0).toUpperCase();
   return initial ? `${initial}. ${lastName}` : lastName;
+}
+
+/** First name with the nickname in curly quotes when one is configured: `Darrick “DJ”`. */
+export function firstWithNick(p: { firstName: string; careerId?: string }): string {
+  const nick = p.careerId ? PLAYER_NICKNAMES[p.careerId] : undefined;
+  return nick ? `${p.firstName} \u201C${nick}\u201D` : p.firstName;
+}
+
+/** Display name: `Darrick “DJ” Todd` when a nickname is configured, else `First Last`. */
+export function fullName(p: { firstName: string; lastName: string; careerId?: string }): string {
+  return `${firstWithNick(p)} ${p.lastName}`;
 }

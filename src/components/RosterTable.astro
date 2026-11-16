@@ -1,7 +1,7 @@
 ---
 import { withBase } from '../lib/url';
-import { byNumber, gradeLabel, positionGroups } from '../lib/format';
-interface Row { number: string; firstName: string; lastName: string; positions: string[]; grade: number | null; height: string | null; weight: number | null; slug?: string }
+import { fullName, byNumber, gradeLabel, positionGroups } from '../lib/format';
+interface Row { number: string; firstName: string; lastName: string; careerId?: string; positions: string[]; grade: number | null; height: string | null; weight: number | null; slug?: string }
 interface Props { rows: Row[]; id?: string; caption: string; filterable?: boolean; compact?: boolean; split?: boolean }
 const { rows, id, caption, filterable = false, compact = false, split = false } = Astro.props;
 const sorted = byNumber(rows);
@@ -24,11 +24,11 @@ const chunks = split ? [sorted.slice(0, half), sorted.slice(half)] : [sorted];
       {chunk.map((p) => (
         <tr
           data-num={filterable ? p.number : undefined}
-          data-name={filterable ? `${p.firstName} ${p.lastName}`.toLowerCase() : undefined}
+          data-name={filterable ? fullName(p).toLowerCase() : undefined}
           data-groups={filterable ? positionGroups(p.positions).join(' ') : undefined}
         >
           <th scope="row" class="num">{p.number}</th>
-          <td>{p.slug ? <a href={withBase(`/players/${p.slug}`)}>{p.firstName} {p.lastName}</a> : <>{p.firstName} {p.lastName}</>}</td>
+          <td>{p.slug ? <a href={withBase(`/players/${p.slug}`)}>{fullName(p)}</a> : <>{fullName(p)}</>}</td>
           <td>{p.positions.join(', ') || '—'}</td>
           <td>{gradeLabel(p.grade)}</td>
           <td>{p.height ?? '—'}</td>

@@ -65,3 +65,8 @@ export const PLAYOFF_ROUNDS: Record<number, PlayoffRound[]> = {
     { name: 'State Championship', weekLabel: 'Dec 16–19', site: 'AT&T Stadium, Arlington' },
   ],
 };
+
+// Nicknames shown in quotes between first and last name (Darrick “DJ” Todd), keyed by
+// MaxPreps career_id. Lives here, not in the DB, so it survives roster re-imports.
+// To add one, copy the player's careerId from db/eagles.db (players.career_id) and add `'<id>': 'Nick'`.
+export const PLAYER_NICKNAMES: Record<string, string> = { 'a59f8ctg39ai2': 'DJ' };

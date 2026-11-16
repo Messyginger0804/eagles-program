@@ -22,3 +22,5 @@ Game-scoped stat categories (`stat_categories.game_id`) hold per-game player sta
 - Roster import is a full snapshot: players missing from `roster.json` are removed. Games are upserted by id; games not in the import dir are left alone.
 - Requires Node 24 for `node:sqlite`.
 - Binary diffs: enable the sqlite3 textconv once per clone (see `ops-scripts.md`).
+
+Display names: use `fullName()` / `firstWithNick()` in `format.ts`, never `${firstName} ${lastName}`; nicknames (`Darrick “DJ” Todd`) come from `PLAYER_NICKNAMES` in `src/config.ts`, keyed by MaxPreps `career_id`, so they survive roster re-imports (not a DB field). `shortName()` stays "D. Todd".

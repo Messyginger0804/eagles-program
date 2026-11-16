@@ -1,5 +1,6 @@
 // Pure helpers over already-parsed data objects. No file I/O.
 import type { Game, Player, ScheduleEvent, Roster, ScoringPlay, SeasonStats, StatCategory } from './schema.ts';
+import { fullName } from './format.ts';
 
 type StatRow = StatCategory['rows'][number];
 
@@ -202,7 +203,7 @@ export function findPlayers(roster: Roster, query: string): Player[] {
   const nq = norm(q);
   const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
   return roster.players.filter((p) => {
-    const full = `${p.firstName} ${p.lastName}`.toLowerCase();
+    const full = fullName(p).toLowerCase();
     return norm(`${p.firstName}${p.lastName}`).includes(nq) || terms.every((t) => full.includes(t));
   });
 }

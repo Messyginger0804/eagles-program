@@ -6,7 +6,7 @@ import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
 import { playerSeasonStats, playerGameLog, playByPlayTouchdowns, pbpCoverageNote } from '../../lib/season';
 import { nonEmptyCategories } from '../../lib/statcards';
-import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat, statLine } from '../../lib/format';
+import { fullName, firstWithNick, byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat, statLine } from '../../lib/format';
 import type { Player } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -25,7 +25,7 @@ const cats = nonEmptyCategories(playerSeasonStats(roster, stats, player));
 const pbpRow = playByPlayTouchdowns(roster, getGames()).rows.find((r) => r.player.careerId === player.careerId);
 const pbpNote = pbpCoverageNote(playByPlayTouchdowns(roster, getGames()).coverage);
 const log = playerGameLog(roster, getGames(), player);
-const name = `${player.firstName} ${player.lastName}`;
+const name = fullName(player);
 const nb = (s: string | null) => (s ? getPlayer(s) : undefined) as Player | undefined;
 const prevP = nb(prev), nextP = nb(next);
 const entries = log.flatMap((e) => {
@@ -44,7 +44,7 @@ const entries = log.flatMap((e) => {
   <section class="phero" aria-labelledby="pname">
     <p class="phero__num" aria-hidden="true" style={`view-transition-name: num-${player.slug}`}>{player.number}</p>
     <div class="phero__body">
-      <h1 id="pname" class="phero__name"><span class="sr-only">Number {player.number}, </span>{player.firstName} <span>{player.lastName}</span></h1>
+      <h1 id="pname" class="phero__name"><span class="sr-only">Number {player.number}, </span>{firstWithNick(player)} <span>{player.lastName}</span></h1>
       <p class="phero__pos">
         {player.positions.length ? player.positions.map((x) => <span class="pos">{x}</span>) : <span class="muted">No position listed</span>}
       </p>
@@ -99,7 +99,7 @@ const entries = log.flatMap((e) => {
   </ul>
 
   <nav class="pager" aria-label="Other players">
-    {prevP ? <a href={withBase(`/players/${prevP.slug}`)} rel="prev">&larr; #{prevP.number} {prevP.firstName} {prevP.lastName}</a> : <span></span>}
-    {nextP ? <a href={withBase(`/players/${nextP.slug}`)} rel="next">#{nextP.number} {nextP.firstName} {nextP.lastName} &rarr;</a> : <span></span>}
+    {prevP ? <a href={withBase(`/players/${prevP.slug}`)} rel="prev">&larr; #{prevP.number} {fullName(prevP)}</a> : <span></span>}
+    {nextP ? <a href={withBase(`/players/${nextP.slug}`)} rel="next">#{nextP.number} {fullName(nextP)} &rarr;</a> : <span></span>}
   </nav>
 </Program>

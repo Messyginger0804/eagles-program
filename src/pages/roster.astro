@@ -2,7 +2,7 @@
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import { getRoster } from '../lib/data';
-import { byNumber, gradeLabel, positionGroups } from '../lib/format';
+import { fullName, byNumber, gradeLabel, positionGroups } from '../lib/format';
 const roster = getRoster();
 const players = byNumber(roster.players);
 ---
@@ -24,11 +24,11 @@ const players = byNumber(roster.players);
 
   <ul class="rgrid" id="roster-grid">
     {players.map((p) => (
-      <li data-num={p.number} data-name={`${p.firstName} ${p.lastName}`.toLowerCase()} data-groups={positionGroups(p.positions).join(' ')}>
-        <a class="pc" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${p.firstName} ${p.lastName}`}>
+      <li data-num={p.number} data-name={fullName(p).toLowerCase()} data-groups={positionGroups(p.positions).join(' ')}>
+        <a class="pc" href={withBase(`/players/${p.slug}`)} aria-label={`Number ${p.number}, ${fullName(p)}`}>
           <span class="pc__num" aria-hidden="true">{p.number}</span>
           <span class="pc__body">
-            <span class="pc__name">{p.firstName} {p.lastName}</span>
+            <span class="pc__name">{fullName(p)}</span>
             <span class="pc__pos">
               {p.positions.length ? p.positions.map((x) => <span class="pos">{x}</span>) : <span class="muted">No position listed</span>}
             </span>

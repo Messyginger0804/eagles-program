@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../lib/url';
 import { pbpCoverageNote } from '../lib/season';
+import { fullName } from '../lib/format';
 import type { PbpTdRow, PbpCoverage } from '../lib/season';
 const { rows, coverage } = Astro.props as { rows: PbpTdRow[]; coverage: PbpCoverage };
 ---
@@ -24,7 +25,7 @@ const { rows, coverage } = Astro.props as { rows: PbpTdRow[]; coverage: PbpCover
           {rows.map((r) => (
             <tr>
               <th scope="row" class="num">{r.player.number}</th>
-              <td class="wrap"><a href={withBase(`/players/${r.player.slug}`)}>{r.player.firstName} {r.player.lastName}</a></td>
+              <td class="wrap"><a href={withBase(`/players/${r.player.slug}`)}>{fullName(r.player)}</a></td>
               <td class="num">{r.rushing}</td>
               <td class="num">{r.receiving}</td>
               <td class="num">{r.passing}</td>
