@@ -37,3 +37,32 @@ export const PLAYOFFS_GIF = {
   width: 480,
   height: 480,
 };
+
+export interface PlayoffRound {
+  name: string;
+  /** Game-week window from the UIL calendar. */
+  weekLabel: string;
+  /** Venue when UIL has announced it, otherwise null (shown as TBA). */
+  site: string | null;
+}
+
+/**
+ * UIL football playoff rounds in order, keyed by season. Update every season (dates move each year).
+ * 2026 sources, checked 2026-11-16:
+ * - Playoff Dates (Week One Nov 12-14 ... Week Five Dec 10-12, State Championships Dec 16-19): https://www.uiltexas.org/football
+ * - 4A Division I bracket (loads from MaxPreps, lists no round names): https://www.uiltexas.org/football/playoff-brackets/4AD1
+ * - State Championship site, AT&T Stadium in Arlington: https://www.davecampbells.com/
+ * Our DB confirms only "Bi-District" (Nov 12-14) and "Area" (Nov 19-21). UIL's calendar names weeks 3 to 5 only as
+ * "Week Three/Four/Five", and no source checked gives round names for them, so they stay generic. Rename them when
+ * UIL publishes names. Sites for rounds before the State Championship are not announced (null = TBA).
+ */
+export const PLAYOFF_ROUNDS: Record<number, PlayoffRound[]> = {
+  2026: [
+    { name: 'Bi-District', weekLabel: 'Nov 12–14', site: null },
+    { name: 'Area', weekLabel: 'Nov 19–21', site: null },
+    { name: 'Round 3', weekLabel: 'Nov 26–28', site: null },
+    { name: 'Round 4', weekLabel: 'Dec 3–5', site: null },
+    { name: 'Round 5', weekLabel: 'Dec 10–12', site: null },
+    { name: 'State Championship', weekLabel: 'Dec 16–19', site: 'AT&T Stadium, Arlington' },
+  ],
+};

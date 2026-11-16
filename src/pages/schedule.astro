@@ -4,7 +4,8 @@ import GameCard from '../components/GameCard.astro';
 import EventCard from '../components/EventCard.astro';
 import { getTeam, getGames, getScheduleEvents } from '../lib/data';
 import { recordStr } from '../lib/format';
-import { PLAYOFFS_GIF } from '../config';
+import { PLAYOFFS_GIF, PLAYOFF_ROUNDS } from '../config';
+import { gamesLeftLine, playoffOutlook } from '../lib/playoffs';
 import { mergeSchedule, splitRecord } from '../lib/season';
 const team = getTeam();
 const games = getGames();
@@ -14,6 +15,7 @@ const split = splitRecord(games);
 const hasNeutral = split.neutral.w + split.neutral.l + split.neutral.t > 0;
 const items = mergeSchedule(games, getScheduleEvents());
 const hasPlayoff = games.some((g) => g.playoff);
+const outlook = playoffOutlook(games, PLAYOFF_ROUNDS[team.season] ?? []);
 const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
 ---
 <Program title="Schedule">
@@ -34,6 +36,7 @@ const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
       </picture>
       <figcaption>
         <strong>Playoffs?! Yeah, PLAYOFFS.</strong>
+        {outlook.gamesLeft > 0 && <span class="pogif__left">{gamesLeftLine(outlook.gamesLeft)}</span>}
         <a href={PLAYOFFS_GIF.page} target="_blank" rel="noopener noreferrer">Jim Mora, 2001 · via GIPHY<span class="sr-only"> (opens in a new tab)</span></a>
       </figcaption>
     </figure>
@@ -44,6 +47,15 @@ const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
       {i.type === 'game' && i.game.opponent.maxprepsTeamUrl && (
         <p class="oplink"><a href={i.game.opponent.maxprepsTeamUrl} target="_blank" rel="noopener noreferrer">{i.game.opponent.name} on MaxPreps<span class="sr-only"> (opens in a new tab)</span></a></p>
       )}
+    </li>)}
+    {outlook.placeholders.map((r) => <li>
+      <div class="gcard gcard--event gcard--tbd">
+        <span class="gcard__main">
+          <span class="gcard__opp">{r.name}</span>
+          <span class="muted">If the Eagles advance</span>
+          <span class="muted">{r.weekLabel} · {r.site ?? 'Site TBA'}</span>
+        </span>
+      </div>
     </li>)}
   </ol>
   <p class="caveat">Scores and records as reported on MaxPreps.</p>

@@ -239,6 +239,7 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .pogif img { display: block; max-width: min(100%, 340px); height: auto; border-radius: 10px; }
 .pogif figcaption { display: grid; gap: 0.15rem; text-align: center; }
 .pogif strong { font: 700 1.1rem var(--f-head); letter-spacing: 0.04em; text-transform: uppercase; }
+.pogif__left { font: 600 0.95rem var(--f-head); letter-spacing: 0.04em; color: var(--silver); }
 .pogif figcaption a { color: var(--sky); font: 600 0.85rem var(--f-head); letter-spacing: 0.04em; padding: 0.35rem 0; }
 .glist { display: grid; gap: 0.6rem; }
 .gcard { display: grid; grid-template-columns: 4.2rem 1fr auto; align-items: center; gap: 0.7rem; min-height: 72px; padding: 0.6rem 0.9rem; border-radius: 14px; text-decoration: none; color: #fff; background: linear-gradient(160deg, var(--card2), var(--card)); border: 1px solid var(--line); border-left: 6px solid var(--line); box-shadow: var(--shadow); }
@@ -250,6 +251,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .gcard__when { display: grid; gap: 0.2rem; justify-items: start; min-width: 0; }
 .gcard__site { font: 600 0.7rem/1 var(--f-head); letter-spacing: 0.08em; color: var(--sky); }
 .gcard--event { background: transparent; border-style: dashed; border-left-style: dashed; box-shadow: none; min-height: 60px; color: var(--silver); }
+.gcard--tbd { grid-template-columns: 1fr; opacity: 0.85; }
+.gcard--tbd .gcard__opp { color: var(--silver); }
 .gbye { margin: 0; padding: 0.15rem 0.9rem; font: 500 0.9rem var(--f-head); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .gcard__date { font: 400 1.3rem/1 var(--f-num); letter-spacing: 0.03em; text-transform: uppercase; }
 .gcard__main { display: grid; gap: 0.25rem; min-width: 0; }
