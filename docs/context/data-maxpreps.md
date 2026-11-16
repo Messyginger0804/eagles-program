@@ -28,8 +28,14 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
   - Has every game: schedule, final scores, home/away and playoff round labels. Spot-checked scores match MaxPreps. No quarter scores, scoring plays or player stats.
   - Fetch with `curl -sL -A 'Mozilla/5.0'`. Game data is in `ld+json` SportsEvent blocks plus an embedded GraphQL payload. The `startDate` time offsets look wrong, so use only the date. robots.txt allows crawling.
   - An unscheduled game shows a 23:59 placeholder with blank time and venue. Lindale game page: https://www.si.com/high-school/stats/texas/football/games/6969646-wilmerhutchins-vs-lindale
-- **Nothing useful:** Dave Campbell's (davecampbells.com; empty for 2026, previews paywalled), UIL brackets (link back to MaxPreps), lonestarfootball.net, Dallas ISD athletics, ScoreStream (JS only), Rank One, Hudl (404), Dallas Morning News / SportsDay (old archives only).
-- **Not checked yet:** NFHS Network, GameChanger, local TV scoreboards.
+- **Playoff dates, kickoff times and venues** (MaxPreps and SI often lag on these):
+  - Dave Campbell's weekly playoff "game times and locations" articles, e.g. https://www.davecampbells.com/articles/2026/11/07/txhsfb-playoffs-game-times-and-locations (gives the weekday and time, not the date). Its team page is empty for 2026 and previews are paywalled.
+  - The opponent's local paper. For Lindale that's the Tyler Morning Telegraph (tylerpaper.com), whose recaps give the next game's date, time and venue, e.g. https://tylerpaper.com/2026/11/14/lindale-takes-down-kaufman-in-home-playoff-game-52-22/. KLTV (kltv.com) also covers the Tyler area.
+  - NBC DFW playoff schedule pages, e.g. https://www.nbcdfw.com/news/sports/hs-sports/2026-class-4a-texas-high-school-football-bi-district-playoff-schedule/4103102/
+- **Score cross-check:** High School Football America's playoff score lists, e.g. https://highschoolfootballamerica.com/final-scores-from-the-opening-round-of-the-2026-uil-texas-high-school-football-playoffs/ (a plain list, easy to parse).
+- **NFHS Network:** https://www.nfhsnetwork.com/schools/8f3f8aeaf7 lists games with recap videos (subscription needed). Its dates looked like 2025 under a 2026 label, so verify before trusting them.
+- **Nothing useful:** UIL brackets (link back to MaxPreps), lonestarfootball.net, Dallas ISD athletics, ScoreStream (JS only), Rank One, Hudl (404), Dallas Morning News / SportsDay (old archives only), GameChanger (no public team page), FOX 4, WFAA, CBS Texas, KETK, GoFan and Lindale ISD (nothing for 2026 found).
+- No source has Wilmer-Hutchins scoring plays, game recaps, scrimmages or byes, so keep hand-entering them.
 
 ## Audit log
 - 2026-11-16: everything comparable matched MaxPreps.
@@ -37,5 +43,5 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
   - Roster: 35/35 players (name, number, positions, grade, height/weight); 2 staff.
   - Games: 11/11 on date, opponent, both scores, home/away and district flag. Quarter scores: 4/4 games where MaxPreps has them.
   - Team: 9-2 overall, 7-1 district; district name, colors and coaches.
-  - Open: Lindale Area-round game. Ours says 2026-11-20 at City Bank Stadium, Forney. MaxPreps says date TBA. SI shows Lindale as home with no venue and a placeholder date (2026-11-19 23:59).
+  - Lindale Area-round game confirmed: Fri 2026-11-20, 7:00 p.m., City Bank Stadium, Forney (Tyler Morning Telegraph 2026-11-14 and Dave Campbell's playoff game times). Matches ours. MaxPreps still said TBA and SI showed a placeholder date.
   - Gap: opponents' `maxprepsTeamUrl` is null for all 11 played opponents.
