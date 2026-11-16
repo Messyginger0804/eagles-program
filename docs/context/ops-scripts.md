@@ -15,6 +15,7 @@ Node version: `.nvmrc` is `24`; `package.json` engines `>=24`. Node runs the `.t
 - `db-export.ts`: writes the JSON spec dir from the DB: `npm run db:export -- --out <dir> [--db <path>] [--season <year>]`.
 - `db-dump.ts`: deterministic SQL text dump for readable git diffs. Enable once per clone: `git config diff.sqlite3.textconv "node scripts/db-dump.ts"` (`.gitattributes` maps `*.db` to the `sqlite3` driver).
 - `make-art.mjs`: derives `public/art/*` from the poster image (needs `sharp`). See `site-astro.md`.
+- `make-icons.mjs`: recolors the PNG app icons in `public/brand/` (apple-touch-icon, favicon-48, icon-192, icon-512) from the old #16478E to royal #0A4598 (needs `sharp`). Run `node scripts/make-icons.mjs`; run it once only, as it rewrites the PNGs in place and a second run shifts them further.
 
 ## Weekly data update (from README)
 1. Pull data to JSON in a scratch dir (outside the repo). The source is MaxPreps; see data-maxpreps.md for URLs and fetching.
