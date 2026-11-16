@@ -25,7 +25,12 @@ const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
     <div><dt>PF / PA</dt><dd>{pf} / {pa}</dd></div>
   </dl>
   <ol class="glist">
-    {items.map((i) => <li>{i.type === 'game' ? <GameCard game={i.game} /> : <EventCard event={i.event} />}</li>)}
+    {items.map((i) => <li>
+      {i.type === 'game' ? <GameCard game={i.game} /> : <EventCard event={i.event} />}
+      {i.type === 'game' && i.game.opponent.maxprepsTeamUrl && (
+        <p class="oplink"><a href={i.game.opponent.maxprepsTeamUrl} target="_blank" rel="noopener noreferrer">{i.game.opponent.name} on MaxPreps<span class="sr-only"> (opens in a new tab)</span></a></p>
+      )}
+    </li>)}
   </ol>
   <p class="caveat">Scores and records as reported on MaxPreps.</p>
 </Program>
