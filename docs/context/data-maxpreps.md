@@ -23,11 +23,19 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
 - MaxPreps team-total rows have quirks (e.g. tackles TFL total 100.0; points-category TDs 4 vs 11 rushing TDs). We store player rows only, so ignore team totals.
 - MaxPreps can lag behind our scoring plays; `check:stats` warns on TD mismatches.
 
+## Other sources (checked 2026-11-16)
+- **SI High School (ScoreBook Live), secondary source:** https://www.si.com/high-school/stats/texas/football/teams/263968-wilmerhutchins-eagles/games
+  - Has every game: schedule, final scores, home/away and playoff round labels. Spot-checked scores match MaxPreps. No quarter scores, scoring plays or player stats.
+  - Fetch with `curl -sL -A 'Mozilla/5.0'`. Game data is in `ld+json` SportsEvent blocks plus an embedded GraphQL payload. The `startDate` time offsets look wrong, so use only the date. robots.txt allows crawling.
+  - An unscheduled game shows a 23:59 placeholder with blank time and venue. Lindale game page: https://www.si.com/high-school/stats/texas/football/games/6969646-wilmerhutchins-vs-lindale
+- **Nothing useful:** Dave Campbell's (davecampbells.com; empty for 2026, previews paywalled), UIL brackets (link back to MaxPreps), lonestarfootball.net, Dallas ISD athletics, ScoreStream (JS only), Rank One, Hudl (404), Dallas Morning News / SportsDay (old archives only).
+- **Not checked yet:** NFHS Network, GameChanger, local TV scoreboards.
+
 ## Audit log
 - 2026-11-16: everything comparable matched MaxPreps.
   - Player season stats: 11/11 categories, every row and column.
   - Roster: 35/35 players (name, number, positions, grade, height/weight); 2 staff.
   - Games: 11/11 on date, opponent, both scores, home/away and district flag. Quarter scores: 4/4 games where MaxPreps has them.
   - Team: 9-2 overall, 7-1 district; district name, colors and coaches.
-  - Open: Lindale Bi-District game. Ours says 2026-11-20 at City Bank Stadium, Forney; MaxPreps says date TBA.
+  - Open: Lindale Area-round game. Ours says 2026-11-20 at City Bank Stadium, Forney. MaxPreps says date TBA. SI shows Lindale as home with no venue and a placeholder date (2026-11-19 23:59).
   - Gap: opponents' `maxprepsTeamUrl` is null for all 11 played opponents.
