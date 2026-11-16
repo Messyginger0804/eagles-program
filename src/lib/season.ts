@@ -121,6 +121,62 @@ export function playerGameLog(roster: Roster, games: Game[], player: Player): Ga
   return out;
 }
 
+export interface GameStatMismatch {
+  player: Player;
+  categoryKey: string;
+  column: string;
+  season: number;
+  games: number;
+}
+
+/** Columns that cannot be summed across games (rates, averages, percentages, games played). */
+const NOT_SUMMED = /(pg|Pg|Pct)$|^(gp|avg|qbRate|hundredPlus)$/;
+
+/**
+ * Sum each player's per-game stats by category. Additive columns add up, `lng` takes the max, and null values
+ * are skipped (a column that is null in every game is left out). Rate, average and percentage columns are omitted.
+ * Rows that match no roster player are ignored (check-stats reports those separately).
+ */
+export function sumGameStats(roster: Roster, games: Game[]): Map<string, Record<string, number>> {
+  const out = new Map<string, Record<string, number>>();
+  for (const g of games) {
+    for (const cat of g.playerStats?.categories ?? []) {
+      for (const row of cat.rows) {
+        const m = matchRow(roster, row);
+        if (!('player' in m)) continue;
+        const key = `${m.player.careerId}|${cat.key}`;
+        const sums = out.get(key) ?? {};
+        for (const [col, v] of Object.entries(row.stats)) {
+          if (v == null || NOT_SUMMED.test(col)) continue;
+          sums[col] = col === 'lng' ? Math.max(sums[col] ?? 0, v) : Math.round(((sums[col] ?? 0) + v) * 100) / 100;
+        }
+        out.set(key, sums);
+      }
+    }
+  }
+  return out;
+}
+
+/** Season-stat columns that differ from the sum of the game-by-game stats (season null counts as 0). */
+export function gameStatMismatches(roster: Roster, season: SeasonStats, games: Game[]): GameStatMismatch[] {
+  const sums = sumGameStats(roster, games);
+  const out: GameStatMismatch[] = [];
+  for (const cat of season.categories) {
+    for (const row of cat.rows) {
+      const m = matchRow(roster, row);
+      if (!('player' in m)) continue;
+      const mine = sums.get(`${m.player.careerId}|${cat.key}`) ?? {};
+      for (const col of cat.columns) {
+        if (NOT_SUMMED.test(col.key)) continue;
+        const season = row.stats[col.key] ?? 0;
+        const total = mine[col.key] ?? 0;
+        if (Math.abs(season - total) > 0.001) out.push({ player: m.player, categoryKey: cat.key, column: col.key, season, games: total });
+      }
+    }
+  }
+  return out;
+}
+
 /** Top n rows of a category column, descending. Ties keep source order. Null values are excluded. */
 export function leaders(stats: SeasonStats, categoryKey: string, columnKey: string, n: number): { number: string; nameAbbrev: string; value: number }[] {
   const cat = stats.categories.find((c) => c.key === categoryKey);

@@ -9,7 +9,7 @@ import {
 } from '../src/lib/schema.ts';
 import { currentSeason, openReadOnly, readGames, readOpponents, readRoster, readSeasonStats, readTeam } from '../src/lib/db.ts';
 import { DB_PATH } from './db-import.ts';
-import { joinSeasonStats, scoringSum, scoringTouchdowns } from '../src/lib/season.ts';
+import { gameStatMismatches, joinSeasonStats, matchRow, scoringSum, scoringTouchdowns } from '../src/lib/season.ts';
 
 const arg = (n: string) => { const i = process.argv.indexOf(n); return i > -1 ? process.argv[i + 1] : undefined; };
 const dataArg = arg('--data');
@@ -89,6 +89,12 @@ for (const g of games) {
 const noQuarters = games.filter((g) => g.status === 'final' && g.quarters === null);
 if (noQuarters.length) warnings.push(`${noQuarters.length} final game(s) with null quarters: ${noQuarters.map((g) => g.id).join(', ')}`);
 
+for (const g of games) {
+  if (g.playerStats && g.status !== 'final') errors.push(`games/${g.id}: playerStats present but status is ${g.status}`);
+}
+const noGameStats = games.filter((g) => g.status === 'final' && g.playerStats === null);
+if (noGameStats.length) warnings.push(`${noGameStats.length} final game(s) with no player stats (playerStats null): ${noGameStats.map((g) => g.id).join(', ')}`);
+
 if (roster) {
   // Duplicate jersey numbers.
   const byNumber = new Map<string, string[]>();
@@ -146,6 +152,24 @@ if (roster) {
           warnings.push(`TD mismatch #${p.number} ${p.firstName} ${p.lastName}: scoring plays ${fromPlays} vs touchdowns category ${fromStats} (gp ${gp ?? 'n/a'} of ${stats.gamesPlayed} season games; MaxPreps may lag)`);
         }
       }
+    }
+
+    // Game-by-game stats: rows must match one roster player; season totals should equal the sum of the games.
+    for (const g of games) {
+      for (const cat of g.playerStats?.categories ?? []) {
+        for (const row of cat.rows) {
+          const m = matchRow(roster, row);
+          if ('player' in m) continue;
+          errors.push(
+            m.reason === 'none'
+              ? `games/${g.id}: playerStats ${cat.key} row #${row.number} "${row.nameAbbrev}" matches no roster player`
+              : `games/${g.id}: playerStats ${cat.key} row #${row.number} "${row.nameAbbrev}" matches more than one roster player (${m.candidates.map((c) => `${c.firstName} ${c.lastName}`).join(', ')})`,
+          );
+        }
+      }
+    }
+    for (const x of gameStatMismatches(roster, stats, games)) {
+      warnings.push(`game stats #${x.player.number} ${x.player.firstName} ${x.player.lastName} ${x.categoryKey}.${x.column}: season ${x.season} vs sum of games ${x.games} (MaxPreps may lag or a game may lack stats)`);
     }
 
     // Players with no stats at all.

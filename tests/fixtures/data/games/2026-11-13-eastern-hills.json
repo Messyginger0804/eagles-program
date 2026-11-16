@@ -4,7 +4,10 @@
   "date": "2026-11-13",
   "playoff": true,
   "round": "Bi-District",
-  "labels": ["homecoming", "seniorNight"],
+  "labels": [
+    "homecoming",
+    "seniorNight"
+  ],
   "venue": null,
   "location": "away",
   "districtGame": false,
@@ -278,7 +281,53 @@
       }
     }
   ],
-  "playerStats": null,
+  "playerStats": {
+    "categories": [
+      {
+        "key": "sacks",
+        "label": "Sacks",
+        "columns": [
+          {
+            "key": "sacks",
+            "label": "Sacks"
+          }
+        ],
+        "rows": [
+          {
+            "number": "11",
+            "nameAbbrev": "S. Adams (So)",
+            "stats": {
+              "sacks": 2
+            }
+          }
+        ]
+      },
+      {
+        "key": "touchdowns",
+        "label": "Touchdowns",
+        "columns": [
+          {
+            "key": "tdRush",
+            "label": "Rush"
+          },
+          {
+            "key": "total",
+            "label": "Total"
+          }
+        ],
+        "rows": [
+          {
+            "number": "6",
+            "nameAbbrev": "A. Lomax (Sr)",
+            "stats": {
+              "tdRush": 3,
+              "total": 3
+            }
+          }
+        ]
+      }
+    ]
+  },
   "links": {
     "replay": null,
     "recap": null,

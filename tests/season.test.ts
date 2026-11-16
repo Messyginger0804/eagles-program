@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { statLine } from '../src/lib/format.ts';
 import { GameSchema, RosterSchema, SeasonStatsSchema } from '../src/lib/schema.ts';
-import { findPlayers, joinSeasonStats, leaders, playerGameLog, playerSeasonStats, scoringSum, seniors, sortGames } from '../src/lib/season.ts';
+import { findPlayers, gameStatMismatches, joinSeasonStats, leaders, playerGameLog, playerSeasonStats, scoringSum, seniors, sortGames, sumGameStats } from '../src/lib/season.ts';
 
 const read = (f: string) => JSON.parse(readFileSync(new URL(`./fixtures/data/${f}`, import.meta.url), 'utf8'));
 const roster = RosterSchema.parse(read('roster.json'));
@@ -78,6 +79,35 @@ describe('playerGameLog', () => {
   });
 });
 
+describe('game stats', () => {
+  it('playerGameLog returns game stats for a player in the game, null otherwise', () => {
+    const adams = playerGameLog(roster, [final], byNum('11', 0))[0]!;
+    expect(adams.stats!.map((c) => c.key)).toEqual(['sacks']);
+    expect(adams.stats![0]!.stats['sacks']).toBe(2);
+    expect(playerGameLog(roster, [final], byNum('6'))[0]!.stats!.map((c) => c.key)).toEqual(['touchdowns']);
+    expect(playerGameLog(roster, [final], byNum('3'))[0]!.stats).toBeNull();
+    expect(playerGameLog(roster, [{ ...final, playerStats: null }], byNum('11', 0))).toEqual([]);
+  });
+  it('statLine summarizes non-zero stats', () => {
+    const adams = playerGameLog(roster, [final], byNum('11', 0))[0]!;
+    expect(statLine(adams.stats)).toBe('2 sacks');
+    expect(statLine(null)).toBe('');
+    expect(statLine([{ key: 'sacks', label: 'Sacks', columns: [], stats: { sacks: 1 } }, { key: 'tackles', label: 'Tackles', columns: [], stats: { totTckls: 5, tfl: 0 } }])).toBe('5 tackles, 1 sack');
+  });
+  it('sumGameStats adds, takes max for lng and skips nulls and rates', () => {
+    const mk = (stats: Record<string, number | null>) => ({ ...final, playerStats: { categories: [{ key: 'receiving', label: 'Receiving', columns: [], rows: [{ number: '6', nameAbbrev: 'A. Lomax (Sr)', stats }] }] } });
+    const sums = sumGameStats(roster, [mk({ rec: 3, yds: 31, avg: 10.3, lng: 20, td: null }), mk({ rec: 2, yds: 10, avg: 5, lng: 12, td: 1 })]);
+    expect(sums.get(`${byNum('6').careerId}|receiving`)).toEqual({ rec: 5, yds: 41, lng: 20, td: 1 });
+  });
+  it('gameStatMismatches compares season totals with game sums', () => {
+    const all = gameStatMismatches(roster, stats, [final]);
+    expect(all.find((m) => m.player.number === '11' && m.categoryKey === 'sacks')).toMatchObject({ season: 8, games: 2 });
+    expect(all.find((m) => m.categoryKey === 'touchdowns' && m.column === 'tdRush')).toMatchObject({ season: 9, games: 3 });
+    const matching = { ...final, playerStats: { categories: [{ key: 'touchdowns', label: 'Touchdowns', columns: [], rows: [{ number: '6', nameAbbrev: 'A. Lomax (Sr)', stats: { tdRush: 9, total: 9 } }] }] } };
+    expect(gameStatMismatches(roster, stats, [matching]).filter((m) => m.categoryKey === 'touchdowns' && m.player.number === '6')).toEqual([]);
+  });
+});
+
 describe('misc', () => {
   it('sorts scheduled games last', () => {
     expect(sortGames([scheduled, final]).map((g) => g.id)).toEqual([final.id, scheduled.id]);
@@ -94,6 +124,23 @@ describe('check-stats smoke', () => {
     const r = spawnSync(process.execPath, ['scripts/check-stats.ts', '--data', 'tests/fixtures/data'], { encoding: 'utf8' });
     expect(r.stdout).toContain('0 error(s)');
     expect(r.status).toBe(0);
+  });
+});
+
+describe('check-stats game stats', () => {
+  it('errors on a non-final game with playerStats and on an unmatched row', async () => {
+    const { spawnSync } = await import('node:child_process');
+    const { cpSync, mkdtempSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'check-stats-'));
+    cpSync(new URL('./fixtures/data', import.meta.url), dir, { recursive: true });
+    const bad = { ...scheduled, playerStats: { categories: [{ key: 'sacks', label: 'Sacks', columns: [{ key: 'sacks', label: 'Sacks' }], rows: [{ number: '99', nameAbbrev: 'Z. Nobody (Sr)', stats: { sacks: 1 } }] }] } };
+    writeFileSync(join(dir, 'games', `${scheduled.id}.json`), JSON.stringify(bad));
+    const r = spawnSync(process.execPath, ['scripts/check-stats.ts', '--data', dir], { encoding: 'utf8' });
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain('playerStats present but status is scheduled');
+    expect(r.stdout).toContain('matches no roster player');
   });
 });
 

@@ -15,6 +15,9 @@ DB path defaults to `db/eagles.db` relative to cwd; override with the `EAGLES_DB
 ## JSON spec format
 `team.json`, `roster.json`, `season-stats.json`, `schedule-events.json`, `games/*.json`, `opponents/*.json`. Import and export convert between this and the DB (see `ops-scripts.md`). Test fixtures use the same format in `tests/fixtures/data/`.
 
+## Game-by-game stats
+Game-scoped stat categories (`stat_categories.game_id`) hold per-game player stats, spec field `games/*.json` `playerStats` (same shape as season stats, no `gp` or per-game-rate columns, `nameAbbrev` copied from the season rows). Shown by `BoxScore.astro` on game pages and as a stat line (`statLine` in `format.ts`) in each player's game log. `null` means MaxPreps has no stats for that game. MaxPreps has no per-player passing or rushing lines, so those are absent.
+
 ## Gotchas
 - Roster import is a full snapshot: players missing from `roster.json` are removed. Games are upserted by id; games not in the import dir are left alone.
 - Requires Node 24 for `node:sqlite`.

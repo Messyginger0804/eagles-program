@@ -3,6 +3,7 @@ import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import RosterTable from '../components/RosterTable.astro';
 import GameRow from '../components/GameRow.astro';
+import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getTeam, getRoster, getSeasonStats, getGames, getScheduleEvents, getNextGame, getOpponent } from '../lib/data';
 import { seniors, leaders, mergeSchedule } from '../lib/season';
@@ -65,6 +66,7 @@ const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) =>
   <section class="page-break-before" aria-labelledby="p-stats">
     <h2 id="p-stats">Season Leaders</h2>
     <StatCaveat games={stats.gamesPlayed} />
+    <StatsSource plain />
     <div class="leaders">
       {stats.categories.map((c) => {
         const top = leaders(stats, c.key, primaryKey(c), 5);

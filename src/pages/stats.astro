@@ -2,6 +2,7 @@
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import PbpTouchdowns from '../components/PbpTouchdowns.astro';
+import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames } from '../lib/data';
 import { playByPlayTouchdowns } from '../lib/season';
@@ -21,6 +22,7 @@ const insertAt = lastOffense >= 0 ? lastOffense : -1;
     Top 3 in each category, then the full table (sortable by column heading).
   </p>
   <StatCaveat games={stats.gamesPlayed} />
+  <StatsSource />
   <nav aria-label="Stat categories" class="chipnav"><ul class="chips">
     {stats.categories.map((c) => <li><a class="chip" href={`#${c.key}`}>{c.label}</a></li>)}
   </ul></nav>

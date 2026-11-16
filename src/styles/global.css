@@ -55,6 +55,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .section-title__sub { font: 500 0.85rem var(--f-body); text-transform: none; margin-left: auto; }
 .backlink { margin-bottom: 0.5rem; }
 .caveat { font-size: 0.9rem; color: var(--muted); margin-top: 0.75rem; }
+.statsource { font-size: 0.9rem; color: var(--muted); margin: 0.75rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid var(--sky); background: rgba(255,255,255,0.04); border-radius: 0 6px 6px 0; overflow-wrap: anywhere; }
+.statsource a { display: inline-block; padding: 0.2rem 0; }
 .lede { font-size: 1.125rem; }
 .empty { background: var(--card); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1rem; text-align: center; color: var(--muted); }
 
@@ -226,6 +228,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .statgrid dd { margin: 0; font: 400 1.7rem/1.1 var(--f-num); }
 .gamelog { display: grid; gap: 0.5rem; }
 .gamelog li { display: grid; gap: 0.1rem; padding: 0.6rem 0.9rem; border-left: 5px solid var(--sky); }
+.boxscore { margin-top: 0.75rem; }
+.boxscore__title { font: 700 1.1rem var(--f-head); text-transform: uppercase; margin: 0 0 0.4rem; }
 .gamelog strong { font: 700 1.05rem var(--f-head); text-transform: uppercase; }
 .pager { display: flex; justify-content: space-between; gap: 0.6rem; margin-top: 2rem; }
 .pager a { display: inline-flex; align-items: center; min-height: 48px; padding: 0.3rem 0.9rem; border-radius: 12px; background: var(--card); border: 1px solid var(--line); text-decoration: none; color: #fff; font: 500 0.95rem var(--f-head); text-transform: uppercase; letter-spacing: 0.04em; }
