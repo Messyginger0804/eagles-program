@@ -13,7 +13,7 @@ describe('playoffOutlook', () => {
     const o = playoffOutlook([...regular, g('Bi-District', 'final', 'W'), g('Area', 'scheduled')], rounds);
     expect(o.eliminated).toBe(false);
     expect(o.champion).toBe(false);
-    expect(o.placeholders.map((r) => r.name)).toEqual(['Round 3', 'Round 4', 'Round 5', 'State Championship']);
+    expect(o.placeholders.map((r) => r.name)).toEqual(['Regional Semifinal', 'Regional Final (State Quarterfinal)', 'State Semifinal', 'State Championship']);
     expect(o.gamesLeft).toBe(5);
   });
   it('matches round names case-insensitively', () => {
@@ -47,7 +47,7 @@ describe('playoffOutlook', () => {
   });
   it('an unknown round name falls back to game order', () => {
     const o = playoffOutlook([g('Mystery', 'final', 'W'), g('Other', 'scheduled')], rounds);
-    expect(o.placeholders.map((r) => r.name)).toEqual(['Round 3', 'Round 4', 'Round 5', 'State Championship']);
+    expect(o.placeholders.map((r) => r.name)).toEqual(['Regional Semifinal', 'Regional Final (State Quarterfinal)', 'State Semifinal', 'State Championship']);
   });
 });
 
