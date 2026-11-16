@@ -13,6 +13,8 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
 ## Fetching
 - `curl -sL -A 'Mozilla/5.0' <url>` works; no browser needed.
 - Pages embed their data as JSON in `<script id="__NEXT_DATA__">`. The stats page only embeds the top leader per stat there, so use the print view for full tables (11 HTML tables, one per category).
+- Team, schedule and roster pages: parse `__NEXT_DATA__`. Box score pages (each game's `maxprepsUrl` on the schedule) embed Next.js flight data instead.
+- MaxPreps does not publish scoring plays, takeaways, scrimmages or byes, so those can't be checked against it. A playoff game can show "Date is TBA" (contest dated 1900-01-01) until its date is set.
 
 ## How our data lines up
 - The 11 stat categories match MaxPreps one to one: passing, rushing, receiving, allPurpose, totalYards, tackles, sacks, defensive, points, patsFieldGoals, touchdowns. Same columns. A blank on MaxPreps is null in the DB.
@@ -22,4 +24,10 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
 - MaxPreps can lag behind our scoring plays; `check:stats` warns on TD mismatches.
 
 ## Audit log
-- 2026-11-16: player season stats matched MaxPreps exactly (11/11 categories, every row and column).
+- 2026-11-16: everything comparable matched MaxPreps.
+  - Player season stats: 11/11 categories, every row and column.
+  - Roster: 35/35 players (name, number, positions, grade, height/weight); 2 staff.
+  - Games: 11/11 on date, opponent, both scores, home/away and district flag. Quarter scores: 4/4 games where MaxPreps has them.
+  - Team: 9-2 overall, 7-1 district; district name, colors and coaches.
+  - Open: Lindale Bi-District game. Ours says 2026-11-20 at City Bank Stadium, Forney; MaxPreps says date TBA.
+  - Gap: opponents' `maxprepsTeamUrl` is null for all 11 played opponents.
