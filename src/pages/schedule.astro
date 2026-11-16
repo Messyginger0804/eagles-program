@@ -37,7 +37,7 @@ const pa = finals.reduce((s, g) => s + g.score!.opp, 0);
       <figcaption>
         <strong>Playoffs?! Yeah, PLAYOFFS.</strong>
         {outlook.gamesLeft > 0 && <span class="pogif__left">{gamesLeftLine(outlook.gamesLeft)}</span>}
-        <a href={PLAYOFFS_GIF.page} target="_blank" rel="noopener noreferrer">Jim Mora, 2001 · via GIPHY<span class="sr-only"> (opens in a new tab)</span></a>
+        <span class="pogif__credit">Jim Mora, 2001 · via GIPHY</span>
       </figcaption>
     </figure>
   )}
