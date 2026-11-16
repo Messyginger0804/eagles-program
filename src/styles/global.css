@@ -130,6 +130,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .morelist__label { display: block; font: 700 1.35rem var(--f-head); text-transform: uppercase; letter-spacing: 0.04em; }
 .linklist { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .linkrow { margin: 0.5rem 0 0; }
+.oplink { margin: 0.2rem 0 0 0.9rem; font: 600 0.85rem var(--f-head); letter-spacing: 0.04em; overflow-wrap: anywhere; }
+.oplink a { color: var(--sky); display: inline-block; padding: 0.35rem 0; }
 
 /* ---------- home ---------- */
 .hero { position: relative; overflow: hidden; border-radius: 20px; padding: 0.9rem; background: linear-gradient(135deg, #123577 0%, var(--card) 62%); border: 1px solid var(--line); box-shadow: var(--shadow); }

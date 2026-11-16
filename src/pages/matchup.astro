@@ -42,6 +42,7 @@ const whResults = getGames().filter((g) => g.score);
         <div><dt>Kickoff</dt><dd>TBA{game.date ? ' (time not announced)' : ''}</dd></div>
         <div><dt>Site</dt><dd>{siteLabel(game)}{game.venue && <> · <a href={mapsUrl(game.venue)} target="_blank" rel="noopener">{game.venue.address}<span class="sr-only"> (opens maps in a new tab)</span></a></>}</dd></div>
       </dl>
+      {game.opponent.maxprepsTeamUrl && <p class="linkrow"><a href={game.opponent.maxprepsTeamUrl} target="_blank" rel="noopener noreferrer">{game.opponent.name} on MaxPreps<span class="sr-only"> (opens in a new tab)</span></a></p>}
       {game.maxprepsUrl && <p class="linkrow"><a href={game.maxprepsUrl} rel="noopener">Game page on MaxPreps</a> · <a href={withBase(`/games/${game.id}`)}>Game page here</a></p>}
 
       <h2 class="section-title">Rosters</h2>
