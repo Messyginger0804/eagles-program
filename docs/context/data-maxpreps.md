@@ -44,4 +44,4 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
   - Games: 11/11 on date, opponent, both scores, home/away and district flag. Quarter scores: 4/4 games where MaxPreps has them.
   - Team: 9-2 overall, 7-1 district; district name, colors and coaches.
   - Lindale Area-round game confirmed: Fri 2026-11-20, 7:00 p.m., City Bank Stadium, Forney (Tyler Morning Telegraph 2026-11-14 and Dave Campbell's playoff game times). Matches ours. MaxPreps still said TBA and SI showed a placeholder date.
-  - Gap: opponents' `maxprepsTeamUrl` is null for all 11 played opponents.
+  - Gap: opponents' `maxprepsTeamUrl` was null for all 11 played opponents. Filled in from the MaxPreps schedule page by PR #11 (2026-11-16).
