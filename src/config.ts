@@ -28,3 +28,12 @@ export const PROMO = {
   url: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=welcome',
   footerUrl: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=footer',
 };
+
+/** Jim Mora "Playoffs?!" clip (NFL channel on GIPHY), hotlinked on /schedule when the season has a playoff game. */
+export const PLAYOFFS_GIF = {
+  page: 'https://giphy.com/gifs/nfl-confused-playoffs-jim-mora-aEG9ByjIfupJXakkac',
+  animated: 'https://media.giphy.com/media/aEG9ByjIfupJXakkac/giphy.webp',
+  still: 'https://media.giphy.com/media/aEG9ByjIfupJXakkac/giphy_s.gif',
+  width: 480,
+  height: 480,
+};
