@@ -28,3 +28,41 @@ export const PROMO = {
   url: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=welcome',
   footerUrl: 'https://dfwsc.com/?utm_source=eagles-program&utm_medium=referral&utm_campaign=footer',
 };
+
+/** Jim Mora "Playoffs?!" clip (NFL channel on GIPHY), hotlinked on /schedule when the season has a playoff game. */
+export const PLAYOFFS_GIF = {
+  page: 'https://giphy.com/gifs/nfl-confused-playoffs-jim-mora-aEG9ByjIfupJXakkac',
+  animated: 'https://media.giphy.com/media/aEG9ByjIfupJXakkac/200.webp',
+  still: 'https://media.giphy.com/media/aEG9ByjIfupJXakkac/200_s.gif',
+  width: 480,
+  height: 480,
+};
+
+export interface PlayoffRound {
+  name: string;
+  /** Game-week window from the UIL calendar. */
+  weekLabel: string;
+  /** Venue when UIL has announced it, otherwise null (shown as TBA). */
+  site: string | null;
+}
+
+/**
+ * UIL football playoff rounds in order, keyed by season. Update every season (dates move each year).
+ * 2026 sources, checked 2026-11-16:
+ * - Playoff Dates (Week One Nov 12-14 ... Week Five Dec 10-12, State Championships Dec 16-19): https://www.uiltexas.org/football
+ * - 4A Division I bracket (loads from MaxPreps, lists no round names): https://www.uiltexas.org/football/playoff-brackets/4AD1
+ * - State Championship site, AT&T Stadium in Arlington: https://www.davecampbells.com/
+ * Our DB confirms only "Bi-District" (Nov 12-14) and "Area" (Nov 19-21). Sites for rounds before the State
+ * Championship are not announced (null = TBA).
+ */
+export const PLAYOFF_ROUNDS: Record<number, PlayoffRound[]> = {
+  // Rounds 3-5 named from the bracket size: 6 playoff weeks and 4 UIL regions make 4A D1 a 64-team bracket (16 per region), so round 3 is the regional semifinal, round 4 the regional final (state quarterfinal) and round 5 the state semifinal.
+  2026: [
+    { name: 'Bi-District', weekLabel: 'Nov 12–14', site: null },
+    { name: 'Area', weekLabel: 'Nov 19–21', site: null },
+    { name: 'Regional Semifinal', weekLabel: 'Nov 26–28', site: null },
+    { name: 'Regional Final (State Quarterfinal)', weekLabel: 'Dec 3–5', site: null },
+    { name: 'State Semifinal', weekLabel: 'Dec 10–12', site: null },
+    { name: 'State Championship', weekLabel: 'Dec 16–19', site: 'AT&T Stadium, Arlington' },
+  ],
+};
