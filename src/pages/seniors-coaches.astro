@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
+import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getTeam, getRoster, getSeasonStats } from '../lib/data';
 import { seniors } from '../lib/season';
@@ -28,7 +29,7 @@ const srs = byNumber(seniors(roster)).map((p) => ({ p, hl: statHighlight(roster,
       </a></li>
     ))}
   </ul>
-  {srs.some((s) => s.hl) && <StatCaveat games={stats.gamesPlayed} />}
+  {srs.some((s) => s.hl) && <><StatCaveat games={stats.gamesPlayed} /><StatsSource /></>}
 
   <h2 class="section-title">Coaching Staff</h2>
   <ul class="cards cards--coaches">

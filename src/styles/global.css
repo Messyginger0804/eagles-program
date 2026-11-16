@@ -55,6 +55,8 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .section-title__sub { font: 500 0.85rem var(--f-body); text-transform: none; margin-left: auto; }
 .backlink { margin-bottom: 0.5rem; }
 .caveat { font-size: 0.9rem; color: var(--muted); margin-top: 0.75rem; }
+.statsource { font-size: 0.9rem; color: var(--muted); margin: 0.75rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid var(--sky); background: rgba(255,255,255,0.04); border-radius: 0 6px 6px 0; overflow-wrap: anywhere; }
+.statsource a { display: inline-block; padding: 0.2rem 0; }
 .lede { font-size: 1.125rem; }
 .empty { background: var(--card); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1rem; text-align: center; color: var(--muted); }
 

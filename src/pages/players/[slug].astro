@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../../lib/url';
 import Program from '../../layouts/Program.astro';
+import StatsSource from '../../components/StatsSource.astro';
 import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
 import { playerSeasonStats, playerGameLog, playByPlayTouchdowns, pbpCoverageNote } from '../../lib/season';
@@ -81,6 +82,7 @@ const entries = log.flatMap((e) => {
       </section>
     ))}</div>}
   <StatCaveat games={stats.gamesPlayed} />
+  <StatsSource />
 
   <h2 class="section-title">Game Log</h2>
   {entries.length === 0

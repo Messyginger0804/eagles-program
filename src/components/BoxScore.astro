@@ -3,6 +3,7 @@ import { withBase } from '../lib/url';
 import { getRoster } from '../lib/data';
 import { realRows } from '../lib/statcards';
 import { playerForStatRow, primaryKey, fmtStat } from '../lib/format';
+import StatsSource from './StatsSource.astro';
 import type { Game } from '../lib/schema';
 
 const { playerStats, opponent } = Astro.props as { playerStats: Game['playerStats']; opponent: string };
@@ -15,6 +16,7 @@ const cats = (playerStats?.categories ?? [])
   .filter((c) => c.rows.length > 0);
 ---
 <h2 class="section-title">Box Score</h2>
+<StatsSource />
 {cats.length === 0 ? (
   <p class="card muted">Player stats weren't entered on MaxPreps for this game.</p>
 ) : (

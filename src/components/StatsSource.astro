@@ -1,0 +1,10 @@
+---
+import { MAXPREPS_TEAM_URL } from '../config';
+const { plain = false } = Astro.props as { plain?: boolean };
+---
+<p class="statsource" role="note">
+  Stats are subject to the team's uploads to MaxPreps and may be incomplete or delayed.{' '}
+  {plain
+    ? <span>Source: {MAXPREPS_TEAM_URL}</span>
+    : <a href={MAXPREPS_TEAM_URL} target="_blank" rel="noopener noreferrer">Wilmer-Hutchins on MaxPreps<span class="sr-only"> (opens in a new tab)</span></a>}
+</p>
