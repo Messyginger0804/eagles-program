@@ -8,6 +8,7 @@ Static fan-edition game-day program (Wilmer-Hutchins Eagles). Astro 7, `output: 
 - `src/components/`: EventCard, GameCard, GameRow, Logo, NumberSheet (jersey lookup), BoxScore (per-game player stat tables on `games/[id]`, with a null-stats message), PbpTouchdowns, RosterTable, StatCaveat, StatsSource (MaxPreps-upload notice, `plain` prop for print; shown on stats, game box score, player, seniors, print), WelcomeSheet.
 - `src/lib/`: `data.ts` (loader used by pages), `db.ts`, `schema.ts` (zod), plus pure helpers `season.ts`, `format.ts`, `statcards.ts`, `numbers.ts`, `url.ts`. See `data-db.md`.
 - `src/config.ts`: site title, tagline, theme color, `INDEXABLE` (false, so pages emit noindex), welcome note, and the builder promo (`PROMO.enabled`).
+- `/fix-a-name/` (`src/pages/fix-a-name.astro`, pure helpers in `src/lib/fixName.ts`) is a no-JS-capable form that POSTs to `FORMS_ENDPOINT` in `src/config.ts` (receiver: repo DFW-Software-Consulting/hutch-forms at forms.dfwsc.com); linked from the footer, More and player pages. JS uses fetch JSON; no-JS gets a 303 back with `?sent=1` / `?error=`.
 
 ## Base path and URLs
 Internal links and assets go through `withBase()` in `src/lib/url.ts`. It adds the base and a trailing slash to page paths, and leaves paths with a file extension alone. Gotcha: `src/styles/global.css` hardcodes root paths like `/art/...` in `url()`, which only works because base is `/`. If base ever changes, update the CSS. `scripts/check-links.ts` also hardcodes `BASE = '/'`.

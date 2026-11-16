@@ -98,6 +98,8 @@ const entries = log.flatMap((e) => {
     {player.highlights.map((h) => <li><a class="btn btn--ghost" href={h.url} rel="noopener">{h.label}</a></li>)}
   </ul>
 
+  <p class="fn-link"><a href={withBase(`/fix-a-name?player=${player.slug}`)}>Suggest a correction</a></p>
+
   <nav class="pager" aria-label="Other players">
     {prevP ? <a href={withBase(`/players/${prevP.slug}`)} rel="prev">&larr; #{prevP.number} {fullName(prevP)}</a> : <span></span>}
     {nextP ? <a href={withBase(`/players/${nextP.slug}`)} rel="next">#{nextP.number} {fullName(nextP)} &rarr;</a> : <span></span>}

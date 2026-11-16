@@ -70,3 +70,6 @@ export const PLAYOFF_ROUNDS: Record<number, PlayoffRound[]> = {
 // MaxPreps career_id. Lives here, not in the DB, so it survives roster re-imports.
 // To add one, copy the player's careerId from db/eagles.db (players.career_id) and add `'<id>': 'Nick'`.
 export const PLAYER_NICKNAMES: Record<string, string> = { 'a59f8ctg39ai2': 'DJ' };
+
+/** Receiver for the /fix-a-name/ form (repo DFW-Software-Consulting/hutch-forms). Accepts JSON and urlencoded POSTs. */
+export const FORMS_ENDPOINT = 'https://forms.dfwsc.com/api/submissions';
