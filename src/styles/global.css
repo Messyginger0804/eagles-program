@@ -303,7 +303,13 @@ main { max-width: 1040px; margin: 0 auto; padding: 7rem 1rem 1.5rem; }
 .fulltable[open] summary { margin-bottom: 0.5rem; }
 
 /* ---------- tables (only scroll inside their own container) ---------- */
-.table-scroll { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); -webkit-overflow-scrolling: touch; }
+.table-scroll { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 12px; -webkit-overflow-scrolling: touch;
+  /* scroll hint: edge shadows appear only on the side that still has content to scroll to */
+  background: linear-gradient(to right, var(--bg2) 30%, rgba(10, 26, 60, 0)) 0 0 / 28px 100% no-repeat local,
+    linear-gradient(to left, var(--bg2) 30%, rgba(10, 26, 60, 0)) 100% 0 / 28px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(108, 169, 220, 0.45), rgba(108, 169, 220, 0)) 0 0 / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(108, 169, 220, 0.45), rgba(108, 169, 220, 0)) 100% 0 / 12px 100% no-repeat scroll,
+    var(--bg2); }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 th, td { padding: 0.5rem 0.65rem; text-align: left; white-space: nowrap; }
 td.wrap { white-space: normal; min-width: 8rem; }
@@ -460,3 +466,15 @@ td > a { display: block; margin: -0.5rem 0; padding: 0.5rem 0; }
   .gcard__res .wl { width: 2rem; }
   .gcard__score { grid-template-columns: auto auto auto; font-size: 1.2rem; }
 }
+
+.nm-short { display: none; }
+@media (max-width: 430px) {
+  .nm-full { display: none; }
+  .nm-short { display: inline; }
+  .boxscore th, .boxscore td { padding: 0.5rem 0.4rem; }
+  .boxscore thead th { letter-spacing: 0.04em; }
+  .boxscore td.wrap { white-space: nowrap; min-width: 0; }
+  .boxscore .num { padding-left: 0.3rem; padding-right: 0.3rem; }
+}
+.pogif picture { display: block; justify-self: center; }
+.pogif img { margin: 0 auto; }

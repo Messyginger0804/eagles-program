@@ -26,6 +26,8 @@ Plain CSS, no framework: `src/styles/global.css` (CSS variables for the dark nav
 ## Phone rules
 Tap targets: text links in cards, tables, footer and notices are padded to 44px (opponent, GIPHY and StatsSource links) or at least 24px (table name links fill their cell). Keep text at 12px or more. Below 360px `.gcard` result column shrinks so opponent names are not covered. `.gcard.gcard--tbd` needs the extra class to beat the 360px `.gcard` columns.
 
+Box score tables (`BoxScore.astro`) show `F. Lastname` at 430px and under (`.nm-short`, full name in aria-label/title) with tighter cell padding; `.table-scroll` has a CSS-only scroll-shadow hint on whichever edge still has content.
+
 ## Gotchas
 - `.env*` and `dist`, `.astro` are gitignored.
 - Recent history: the site moved to the custom-domain root (previously served under a sub-path), then the poster-art restyle.
