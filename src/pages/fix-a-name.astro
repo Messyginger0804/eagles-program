@@ -15,6 +15,9 @@ const builtAt = Date.now();
   <div id="fn-status" class="fn-status" role="status" aria-live="polite" tabindex="-1" data-players={JSON.stringify(players.map((p) => p.slug))}></div>
 
   <form id="fn-form" class="fn-form card" method="post" action={FORMS_ENDPOINT}>
+    <p class="fn-notice fn-status--ok" id="sent" role="status">Thanks! We got it and will review it soon.</p>
+    <p class="fn-notice fn-status--err" id="rate-limited" role="alert">Too many tries — please wait a few minutes and try again.</p>
+    <p class="fn-notice fn-status--err" id="error" role="alert">Something went wrong sending that. Please try again later.</p>
     <input type="hidden" name="site" value="hutch" />
     <input type="hidden" name="startedAt" id="fn-started" value={builtAt} />
     <input type="hidden" name="returnTo" value="/fix-a-name/" />
@@ -96,6 +99,8 @@ const builtAt = Date.now();
   const currentType = () => (form.querySelector('input[name="type"]:checked') as HTMLInputElement | null)?.value as RequestType;
 
   started.value = String(Date.now());
+  // The CSS :target notices are the no-JS confirmation; with JS, #fn-status shows the message instead.
+  document.querySelectorAll('.fn-notice').forEach((n) => n.remove());
 
   function syncType() {
     const t = currentType();
