@@ -1,0 +1,190 @@
+---
+import Program from '../layouts/Program.astro';
+import { getRoster } from '../lib/data';
+import { fullName, byNumber } from '../lib/format';
+import { FORMS_ENDPOINT } from '../config';
+import { REQUEST_TYPES, TYPE_LABELS, RELATIONSHIPS, RELATIONSHIP_LABELS } from '../lib/fixName';
+const players = byNumber(getRoster().players).map((p) => ({ slug: p.slug, label: `#${p.number} ${fullName(p)}` }));
+// No-JS fallback for startedAt: the build time, so the server sees an old enough form.
+const builtAt = Date.now();
+---
+<Program title="Fix a Name">
+  <h1 class="page-title">Fix a Name</h1>
+  <p class="muted">Help us get names right. Send a nickname, a spelling fix or a removal request and it goes straight to the site's maintainer.</p>
+
+  <div id="fn-status" class="fn-status" role="status" aria-live="polite" tabindex="-1" data-players={JSON.stringify(players.map((p) => p.slug))}></div>
+
+  <form id="fn-form" class="fn-form card" method="post" action={FORMS_ENDPOINT}>
+    <input type="hidden" name="site" value="hutch" />
+    <input type="hidden" name="startedAt" id="fn-started" value={builtAt} />
+    <input type="hidden" name="returnTo" value="/fix-a-name/" />
+    <div class="fn-hp" aria-hidden="true">
+      <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <fieldset class="fn-field fn-types" aria-describedby="fn-err-type">
+      <legend>What do you need?</legend>
+      {REQUEST_TYPES.map((t, i) => (
+        <label class="fn-radio"><input type="radio" name="type" value={t} checked={i === 0} required /> <span>{TYPE_LABELS[t]}</span></label>
+      ))}
+      <p class="fn-err" id="fn-err-type" hidden></p>
+    </fieldset>
+
+    <div class="fn-field">
+      <label for="fn-player">Player</label>
+      <select id="fn-player" name="playerSlug" aria-describedby="fn-err-playerSlug">
+        <option value="">Not listed / other</option>
+        {players.map((p) => <option value={p.slug}>{p.label}</option>)}
+      </select>
+      <p class="fn-err" id="fn-err-playerSlug" hidden></p>
+    </div>
+
+    <div class="fn-field" id="fn-suggested-wrap">
+      <label for="fn-suggested" id="fn-suggested-label">Nickname or correct spelling</label>
+      <input id="fn-suggested" name="suggested" type="text" maxlength="80" autocomplete="off" aria-describedby="fn-err-suggested" />
+      <p class="fn-err" id="fn-err-suggested" hidden></p>
+    </div>
+
+    <div class="fn-field">
+      <label for="fn-name">Your name</label>
+      <input id="fn-name" name="submitterName" type="text" maxlength="80" autocomplete="name" required aria-describedby="fn-err-submitterName" />
+      <p class="fn-err" id="fn-err-submitterName" hidden></p>
+    </div>
+
+    <div class="fn-field">
+      <label for="fn-rel">Your relationship</label>
+      <select id="fn-rel" name="relationship" required aria-describedby="fn-err-relationship">
+        <option value="" disabled selected>Choose one</option>
+        {RELATIONSHIPS.map((r) => <option value={r}>{RELATIONSHIP_LABELS[r]}</option>)}
+      </select>
+      <p class="fn-err" id="fn-err-relationship" hidden></p>
+    </div>
+
+    <div class="fn-field">
+      <label for="fn-contact">Email or phone (optional)</label>
+      <input id="fn-contact" name="contact" type="text" maxlength="120" autocomplete="email" aria-describedby="fn-hint-contact fn-err-contact" />
+      <p class="fn-hint" id="fn-hint-contact">Only used if we need to follow up.</p>
+      <p class="fn-err" id="fn-err-contact" hidden></p>
+    </div>
+
+    <div class="fn-field">
+      <label for="fn-message">Message (optional)</label>
+      <textarea id="fn-message" name="message" rows="4" maxlength="1000" aria-describedby="fn-err-message"></textarea>
+      <p class="fn-err" id="fn-err-message" hidden></p>
+    </div>
+
+    <button class="btn" type="submit" id="fn-submit">Send</button>
+    <p class="fn-hint fn-privacy">We only use this to update the site. Your contact info is never published.</p>
+  </form>
+  <noscript><p class="muted">After you send, you will return to this page with a confirmation.</p></noscript>
+</Program>
+
+<script>
+  import { FORMS_ENDPOINT } from '../config';
+  import { buildPayload, suggestedLabel, suggestedRequired, preselectSlug, errorMessage, FIELD_LABELS, RATE_LIMIT_MESSAGE, NETWORK_ERROR, GENERIC_ERROR, type RequestType } from '../lib/fixName';
+
+  const form = document.getElementById('fn-form') as HTMLFormElement;
+  const status = document.getElementById('fn-status') as HTMLElement;
+  const submit = document.getElementById('fn-submit') as HTMLButtonElement;
+  const player = document.getElementById('fn-player') as HTMLSelectElement;
+  const sugWrap = document.getElementById('fn-suggested-wrap') as HTMLElement;
+  const sugLabel = document.getElementById('fn-suggested-label') as HTMLElement;
+  const sug = document.getElementById('fn-suggested') as HTMLInputElement;
+  const started = document.getElementById('fn-started') as HTMLInputElement;
+  const slugs = JSON.parse(status.dataset.players || '[]') as string[];
+  const FIELDS = ['type', 'playerSlug', 'suggested', 'submitterName', 'relationship', 'contact', 'message'];
+  const currentType = () => (form.querySelector('input[name="type"]:checked') as HTMLInputElement | null)?.value as RequestType;
+
+  started.value = String(Date.now());
+
+  function syncType() {
+    const t = currentType();
+    const label = t && suggestedLabel(t);
+    sugWrap.hidden = !label;
+    sug.disabled = !label;
+    sug.required = !!t && suggestedRequired(t);
+    if (label) sugLabel.textContent = label;
+  }
+  form.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', syncType));
+
+  const pre = preselectSlug(new URLSearchParams(location.search).get('player'), slugs);
+  if (pre) player.value = pre;
+  syncType();
+
+  function clearErrors() {
+    status.className = 'fn-status';
+    status.textContent = '';
+    for (const f of FIELDS) {
+      const e = document.getElementById('fn-err-' + f);
+      if (e) { e.hidden = true; e.textContent = ''; }
+      form.querySelectorAll(`[name="${f}"]`).forEach((el) => el.removeAttribute('aria-invalid'));
+    }
+  }
+  function showStatus(kind: 'ok' | 'err', text: string) {
+    status.className = 'fn-status fn-status--' + kind;
+    status.textContent = text;
+    status.focus();
+  }
+
+  // No-JS path: the receiver redirects back with ?sent=1 or ?error=<code>.
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('sent') === '1') showStatus('ok', 'Thanks! We\'ll review it soon.');
+  else if (qs.get('error')) showStatus('err', errorMessage(qs.get('error')!));
+  if (qs.has('sent') || qs.has('error')) history.replaceState(null, '', location.pathname + (pre ? `?player=${pre}` : ''));
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    clearErrors();
+    const data = new FormData(form);
+    const opt = player.selectedOptions[0];
+    const payload = buildPayload({
+      type: String(data.get('type') ?? ''),
+      playerSlug: player.value,
+      playerName: player.value ? opt.textContent ?? '' : '',
+      suggested: String(data.get('suggested') ?? ''),
+      submitterName: String(data.get('submitterName') ?? ''),
+      relationship: String(data.get('relationship') ?? ''),
+      contact: String(data.get('contact') ?? ''),
+      message: String(data.get('message') ?? ''),
+      website: String(data.get('website') ?? ''),
+      startedAt: String(data.get('startedAt') ?? ''),
+    });
+    submit.disabled = true;
+    submit.textContent = 'Sending…';
+    try {
+      const res = await fetch(FORMS_ENDPOINT, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 201 && body.ok) {
+        form.reset();
+        syncType();
+        started.value = String(Date.now());
+        showStatus('ok', 'Thanks! We\'ll review it soon.');
+      } else if (res.status === 400 && body.fields) {
+        let first: HTMLElement | null = null;
+        const general: string[] = [];
+        for (const [name, reason] of Object.entries(body.fields as Record<string, string>)) {
+          const key = name === 'playerName' ? 'playerSlug' : name;
+          const e = document.getElementById('fn-err-' + key);
+          const input = form.querySelector(`[name="${key}"]`) as HTMLElement | null;
+          const msg = `${FIELD_LABELS[name] ?? name}: ${reason}`;
+          if (e && input) {
+            e.textContent = msg; e.hidden = false;
+            form.querySelectorAll(`[name="${key}"]`).forEach((el) => el.setAttribute('aria-invalid', 'true'));
+            first ??= input;
+          } else general.push(msg);
+        }
+        showStatus('err', 'Please fix the highlighted fields and send again.' + (general.length ? ' ' + general.join(' ') : ''));
+        if (first) first.focus();
+      } else if (res.status === 429) {
+        showStatus('err', RATE_LIMIT_MESSAGE);
+      } else {
+        showStatus('err', body.error ? errorMessage(String(body.error)) : GENERIC_ERROR);
+      }
+    } catch {
+      showStatus('err', NETWORK_ERROR);
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Send';
+    }
+  });
+</script>

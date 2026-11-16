@@ -486,3 +486,30 @@ body::before { content: ''; position: absolute; z-index: -1; top: calc(61px + en
 }
 .pogif picture { display: block; justify-self: center; }
 .pogif img { margin: 0 auto; }
+
+/* Fix a Name form */
+.fn-form { display: grid; gap: 1rem; margin-top: 1rem; }
+.fn-form [hidden], .fn-status[hidden] { display: none !important; }
+.fn-field { display: grid; gap: 0.35rem; border: 0; padding: 0; margin: 0; min-width: 0; }
+.fn-field label, .fn-field legend { font: 700 0.95rem var(--f-head); letter-spacing: 0.06em; text-transform: uppercase; padding: 0; }
+.fn-form input[type="text"], .fn-form select, .fn-form textarea { width: 100%; min-height: 44px; padding: 0.55rem 0.75rem; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: #fff; font: 400 1rem var(--f-body); }
+.fn-form textarea { resize: vertical; }
+.fn-form [aria-invalid="true"] { border-color: var(--loss); }
+.fn-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fn-types legend, .fn-types .fn-err { grid-column: 1 / -1; }
+.fn-radio { display: flex !important; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0 0.75rem; border: 1.5px solid var(--line); border-radius: 10px; text-transform: none !important; font: 600 1rem var(--f-body) !important; letter-spacing: 0 !important; cursor: pointer; }
+.fn-radio input { width: 20px; height: 20px; accent-color: var(--blue); flex: none; }
+.fn-hint { color: var(--muted); font-size: 0.875rem; margin: 0; }
+.fn-err { color: var(--loss); font-size: 0.9rem; font-weight: 600; margin: 0; }
+.fn-hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.fn-status { margin-top: 1rem; }
+.fn-status:empty { display: none; }
+.fn-status--ok, .fn-status--err { padding: 0.8rem 1rem; border-radius: 12px; font-weight: 600; border: 1.5px solid; }
+.fn-status--ok { border-color: var(--win); color: var(--win); background: rgba(74, 222, 128, 0.08); }
+.fn-status--err { border-color: var(--loss); color: var(--loss); background: rgba(255, 138, 138, 0.08); }
+.fn-form .btn:disabled { opacity: 0.6; cursor: progress; }
+.fn-link { font-size: 0.9rem; }
+@media (max-width: 360px) { .fn-types { grid-template-columns: 1fr; } }
+@media (pointer: coarse), (max-width: 430px) {
+  .fn-link a { display: inline-flex; align-items: center; min-height: 44px; }
+}

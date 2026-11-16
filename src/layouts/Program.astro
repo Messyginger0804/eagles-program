@@ -108,7 +108,7 @@ const tabs = [
       <p>
         {REMOVAL_CONTACT
           ? <>Removal requests: <a href={`mailto:${REMOVAL_CONTACT}`}>{REMOVAL_CONTACT}</a></>
-          : 'Removal requests: contact form coming soon'}
+          : <>Removal requests and name fixes: <a href={withBase('/fix-a-name')}>Fix a Name</a></>}
       </p>
       <p class="site-footer__art">Background art: official 2026 schedule graphic by BLAC</p>
       {PROMO.enabled && <p class="site-footer__credit">Site by <a href={PROMO.footerUrl} target="_blank" rel="noopener">DFW Software Consulting</a></p>}
