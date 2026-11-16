@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../../lib/url';
 import Program from '../../layouts/Program.astro';
+import BoxScore from '../../components/BoxScore.astro';
 import { getGames } from '../../lib/data';
 import { gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
 
@@ -88,6 +89,8 @@ const title = `${WH_NAME} vs. ${opp}`;
         : <ul class="bullets">{game.takeaways.map((t) => (
             <li class="card">Q{t.quarter} · {takeawayLabel(t.type)} — {side(t.team)}{t.player ? `: ${t.player.name} (#${t.player.number})` : ''}</li>
           ))}</ul>}
+
+      <BoxScore playerStats={game.playerStats} opponent={opp} />
     </>
   ) : (
     <section class="card">

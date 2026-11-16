@@ -9,7 +9,7 @@ Node version: `.nvmrc` is `24`; `package.json` engines `>=24`. Node runs the `.t
 - `check:stats`, `check:links`, `db:import`, `db:export`, `db:dump`: wrap the scripts below.
 
 ## scripts/
-- `check-stats.ts`: data sanity checks. Reads the DB by default (`--db <path>`), or a JSON dir with `--data <dir>`. Errors (nonzero exit) include schema failures, `nextGameId` matching no game, complete scoring that does not sum to the final score, and scorers not on the roster. Warnings cover partial scoring, null quarters, duplicate jersey numbers, TD mismatches and players with no stats.
+- `check-stats.ts`: data sanity checks. Reads the DB by default (`--db <path>`), or a JSON dir with `--data <dir>`. Errors (nonzero exit) include schema failures, `nextGameId` matching no game, complete scoring that does not sum to the final score, and scorers not on the roster. Game stats: errors for `playerStats` on a non-final game or a row matching no or several roster players. Warnings cover final games with `playerStats` null, season totals that differ from the sum of the games (`gameStatMismatches` in `season.ts`), partial scoring, null quarters, duplicate jersey numbers, TD mismatches and players with no stats.
 - `check-links.ts`: run after `build`. Walks `dist/**/*.html` and fails if an internal URL is not root-relative or points to a missing file (`BASE = '/'`).
 - `db-import.ts`: imports a JSON dir into the DB in one transaction, validated by zod, idempotent. `npm run db:import -- --data <dir> [--db <path>]`. Exports `DB_PATH`, `SCHEMA_PATH`, `importDir`.
 - `db-export.ts`: writes the JSON spec dir from the DB: `npm run db:export -- --out <dir> [--db <path>] [--season <year>]`.

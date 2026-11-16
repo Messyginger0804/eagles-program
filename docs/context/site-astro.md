@@ -5,7 +5,7 @@ Static fan-edition game-day program (Wilmer-Hutchins Eagles). Astro 7, `output: 
 ## Layout of src/
 - `src/pages/`: `index`, `schedule`, `roster`, `stats`, `matchup`, `more`, `seniors-coaches`, `print` (booklet order), `games/[id].astro`, `players/[slug].astro` (both use `getStaticPaths`), and `manifest.webmanifest.ts` (PWA manifest endpoint).
 - `src/layouts/Program.astro`: the single layout. Head, fonts, bottom tab bar, number sheet, welcome sheet, footer. `/print` gets the `no-art` class (no background art, no welcome sheet).
-- `src/components/`: EventCard, GameCard, GameRow, Logo, NumberSheet (jersey lookup), PbpTouchdowns, RosterTable, StatCaveat, WelcomeSheet.
+- `src/components/`: EventCard, GameCard, GameRow, Logo, NumberSheet (jersey lookup), BoxScore (per-game player stat tables on `games/[id]`, with a null-stats message), PbpTouchdowns, RosterTable, StatCaveat, WelcomeSheet.
 - `src/lib/`: `data.ts` (loader used by pages), `db.ts`, `schema.ts` (zod), plus pure helpers `season.ts`, `format.ts`, `statcards.ts`, `numbers.ts`, `url.ts`. See `data-db.md`.
 - `src/config.ts`: site title, tagline, theme color, `INDEXABLE` (false, so pages emit noindex), welcome note, and the builder promo (`PROMO.enabled`).
 

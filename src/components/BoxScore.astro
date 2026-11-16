@@ -1,0 +1,51 @@
+---
+import { withBase } from '../lib/url';
+import { getRoster } from '../lib/data';
+import { realRows } from '../lib/statcards';
+import { playerForStatRow, primaryKey, fmtStat } from '../lib/format';
+import type { Game } from '../lib/schema';
+
+const { playerStats, opponent } = Astro.props as { playerStats: Game['playerStats']; opponent: string };
+const roster = getRoster();
+const cats = (playerStats?.categories ?? [])
+  .map((c) => {
+    const pk = primaryKey(c);
+    return { ...c, rows: [...realRows(c.rows)].sort((a, b) => (b.stats[pk] ?? -Infinity) - (a.stats[pk] ?? -Infinity)) };
+  })
+  .filter((c) => c.rows.length > 0);
+---
+<h2 class="section-title">Box Score</h2>
+{cats.length === 0 ? (
+  <p class="card muted">Player stats weren't entered on MaxPreps for this game.</p>
+) : (
+  <>
+    {cats.map((c) => (
+      <section class="boxscore avoid-break" aria-labelledby={`bs-${c.key}`}>
+        <h3 id={`bs-${c.key}`} class="boxscore__title">{c.label}</h3>
+        <div class="table-scroll" role="region" tabindex="0" aria-label={`${c.label} box score`}>
+          <table>
+            <caption class="sr-only">{c.label}, Wilmer-Hutchins players against {opponent}</caption>
+            <thead><tr>
+              <th scope="col" class="num">#</th>
+              <th scope="col">Player</th>
+              {c.columns.map((col) => <th scope="col" class="num">{col.label}</th>)}
+            </tr></thead>
+            <tbody>
+              {c.rows.map((r) => {
+                const pl = playerForStatRow(roster, r);
+                return (
+                  <tr>
+                    <th scope="row" class="num">{r.number}</th>
+                    <td class="wrap">{pl ? <a href={withBase(`/players/${pl.slug}`)}>{pl.firstName} {pl.lastName}</a> : r.nameAbbrev}</td>
+                    {c.columns.map((col) => <td class="num">{fmtStat(r.stats[col.key])}</td>)}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+    <p class="caveat">Passing and rushing lines aren't available: MaxPreps doesn't list them for individual players this season.</p>
+  </>
+)}

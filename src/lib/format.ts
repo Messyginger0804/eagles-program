@@ -1,6 +1,6 @@
 // Display helpers. Pure functions; no data access except where noted.
 import type { Game, Player, Roster, ScoringPlay, SeasonStats } from './schema.ts';
-import { playerSeasonStats, matchRow } from './season.ts';
+import { playerSeasonStats, matchRow, type PlayerCategoryStats } from './season.ts';
 
 export const WH_NAME = 'Wilmer-Hutchins';
 export const GRADE_LABELS: Record<number, string> = { 9: 'Fr', 10: 'So', 11: 'Jr', 12: 'Sr' };
@@ -135,6 +135,31 @@ export function statHighlight(roster: Roster, stats: SeasonStats, player: Player
     if (typeof v === 'number' && v > 0) return h.text(v);
   }
   return null;
+}
+
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const STAT_PHRASES: { cat: string; col: string; text: (v: number) => string }[] = [
+  { cat: 'touchdowns', col: 'total', text: (v) => plural(v, 'TD') },
+  { cat: 'receiving', col: 'rec', text: (v) => plural(v, 'catch', 'catches') },
+  { cat: 'receiving', col: 'yds', text: (v) => `${v} rec yds` },
+  { cat: 'tackles', col: 'totTckls', text: (v) => plural(v, 'tackle') },
+  { cat: 'tackles', col: 'tfl', text: (v) => `${v} TFL` },
+  { cat: 'sacks', col: 'sacks', text: (v) => plural(v, 'sack') },
+  { cat: 'defensive', col: 'int', text: (v) => plural(v, 'INT') },
+  { cat: 'defensive', col: 'pd', text: (v) => plural(v, 'pass breakup') },
+  { cat: 'defensive', col: 'fmbRec', text: (v) => plural(v, 'fumble recovery', 'fumble recoveries') },
+  { cat: 'patsFieldGoals', col: 'pat', text: (v) => plural(v, 'PAT') },
+  { cat: 'patsFieldGoals', col: 'fg', text: (v) => plural(v, 'FG') },
+];
+/** One-line game stat summary for a player, e.g. "5 tackles, 1 sack"; empty string if nothing non-zero. */
+export function statLine(stats: PlayerCategoryStats[] | null): string {
+  if (!stats) return '';
+  const parts: string[] = [];
+  for (const p of STAT_PHRASES) {
+    const v = stats.find((c) => c.key === p.cat)?.stats[p.col];
+    if (typeof v === 'number' && v > 0) parts.push(p.text(v));
+  }
+  return parts.join(', ');
 }
 
 export const fmtStat = (v: number | null | undefined) => (v == null ? '—' : String(v));

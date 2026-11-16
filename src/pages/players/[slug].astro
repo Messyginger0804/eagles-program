@@ -5,7 +5,7 @@ import StatCaveat from '../../components/StatCaveat.astro';
 import { getRoster, getSeasonStats, getGames, getGame, getPlayer } from '../../lib/data';
 import { playerSeasonStats, playerGameLog, playByPlayTouchdowns, pbpCoverageNote } from '../../lib/season';
 import { nonEmptyCategories } from '../../lib/statcards';
-import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat } from '../../lib/format';
+import { byNumber, gradeLabel, shortDate, playDesc, takeawayLabel, fmtStat, statLine } from '../../lib/format';
 import type { Player } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -30,7 +30,9 @@ const prevP = nb(prev), nextP = nb(next);
 const entries = log.flatMap((e) => {
   const g = getGame(e.gameId)!;
   const when = `${shortDate(e.date)} · ${g.location === 'away' ? 'at' : 'vs.'} ${e.opponent}`;
+  const line = statLine(e.stats);
   return [
+    ...(line ? [{ id: e.gameId, when, text: line }] : []),
     ...e.scoring.map((s) => ({ id: e.gameId, when, text: `Q${s.play.quarter} ${playDesc(s.play, s.role)}` })),
     ...e.takeaways.map((t) => ({ id: e.gameId, when, text: `Q${t.quarter} ${takeawayLabel(t.type).toLowerCase()}` })),
   ];
@@ -82,7 +84,7 @@ const entries = log.flatMap((e) => {
 
   <h2 class="section-title">Game Log</h2>
   {entries.length === 0
-    ? <p class="card muted">No scoring plays or takeaways recorded for this player in the games reported so far.</p>
+    ? <p class="card muted">No game stats, scoring plays or takeaways recorded for this player in the games reported so far.</p>
     : <ol class="gamelog">
         {entries.map((e) => <li class="card"><a href={withBase(`/games/${e.id}`)}>{e.when}</a><strong>{e.text}</strong></li>)}
       </ol>}

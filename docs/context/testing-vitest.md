@@ -5,6 +5,7 @@ Config: `vitest.config.ts` only sets `include: ['tests/**/*.test.ts']`. Run with
 ## What tests/ covers
 - `db.test.ts`: imports the fixtures into a temp DB, checks read-back equals the fixture JSON, export equals input, and re-import is idempotent (SQL dump unchanged).
 - `season.test.ts`: season stat joining (duplicate numbers, unmatched/ambiguous rows), scoring sums, player search, game logs, leaders/seniors, and a smoke run of `check-stats` on fixtures (exit 0).
+  Also covers game stats: `playerGameLog` stats, `statLine`, `sumGameStats`, `gameStatMismatches`, and check-stats error cases on a temp copy of the fixtures.
 - `pbp-tds.test.ts`: play-by-play touchdown leaderboard and coverage note.
 - `badges.test.ts`: game badges, round names, venue helpers.
 - `split-record.test.ts`: home/away record split and schedule merge with events.
