@@ -17,7 +17,7 @@ Node version: `.nvmrc` is `24`; `package.json` engines `>=24`. Node runs the `.t
 - `make-art.mjs`: derives `public/art/*` from the poster image (needs `sharp`). See `site-astro.md`.
 
 ## Weekly data update (from README)
-1. Pull data to JSON in a scratch dir (outside the repo).
+1. Pull data to JSON in a scratch dir (outside the repo). The source is MaxPreps; see data-maxpreps.md for URLs and fetching.
 2. `npm run db:import -- --data <dir>`
 3. `npm run check:stats`
 4. Commit `db/eagles.db` and push. Merging to `main` deploys (see `ops-deploy.md`).
