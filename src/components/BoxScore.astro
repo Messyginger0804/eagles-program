@@ -2,7 +2,7 @@
 import { withBase } from '../lib/url';
 import { getRoster } from '../lib/data';
 import { realRows } from '../lib/statcards';
-import { playerForStatRow, primaryKey, fmtStat } from '../lib/format';
+import { playerForStatRow, primaryKey, fmtStat, shortName } from '../lib/format';
 import StatsSource from './StatsSource.astro';
 import type { Game } from '../lib/schema';
 
@@ -38,7 +38,7 @@ const cats = (playerStats?.categories ?? [])
                 return (
                   <tr>
                     <th scope="row" class="num">{r.number}</th>
-                    <td class="wrap">{pl ? <a href={withBase(`/players/${pl.slug}`)} aria-label={`${pl.firstName} ${pl.lastName}`} title={`${pl.firstName} ${pl.lastName}`}><span class="nm-full">{pl.firstName} {pl.lastName}</span><span class="nm-short" aria-hidden="true">{pl.firstName.charAt(0)}. {pl.lastName}</span></a> : r.nameAbbrev}</td>
+                    <td class="wrap">{pl ? <a href={withBase(`/players/${pl.slug}`)}><span class="nm-full">{pl.firstName} {pl.lastName}</span><span class="nm-short" aria-hidden="true">{shortName(pl.firstName, pl.lastName)}</span></a> : r.nameAbbrev}</td>
                     {c.columns.map((col) => <td class="num">{fmtStat(r.stats[col.key])}</td>)}
                   </tr>
                 );

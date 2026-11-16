@@ -9,7 +9,8 @@ Config: `vitest.config.ts` only sets `include: ['tests/**/*.test.ts']`. Run with
 - `pbp-tds.test.ts`: play-by-play touchdown leaderboard and coverage note.
 - `badges.test.ts`: game badges, round names, venue helpers.
 - `split-record.test.ts`: home/away record split and schedule merge with events.
-- `playoffs.test.ts`: remaining playoff rounds, games-left count, eliminated and champion cases.
+- `playoffs.test.ts`: remaining playoff rounds, games-left count, eliminated and champion cases, name normalization, null rounds/results, the games-left cap.
+- `format.test.ts`: `shortName` (box score short names).
 - `statcards.test.ts`: hiding all-zero stat categories and rows.
 
 ## Conventions

@@ -183,3 +183,9 @@ export function splitRecordLine(r: { home: { w: number; l: number; t: number }; 
   if (r.neutral.w + r.neutral.l + r.neutral.t > 0) parts.push(`Neutral ${recordStr(r.neutral)}`);
   return parts.join(' · ');
 }
+
+/** "Jaylen" + "Gaston" -> "J. Gaston". Uses the first letter of the first name; no initial when the first name is empty. */
+export function shortName(firstName: string, lastName: string): string {
+  const initial = firstName.trim().charAt(0).toUpperCase();
+  return initial ? `${initial}. ${lastName}` : lastName;
+}

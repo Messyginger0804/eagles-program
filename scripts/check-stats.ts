@@ -86,6 +86,9 @@ for (const g of games) {
   else if (g.scoringStatus === 'partial') warnings.push(`${msg} (scoringStatus partial)`);
   else if (g.scoringStatus === 'none' && g.scoring.length > 0) errors.push(`games/${g.id}: scoringStatus none but ${g.scoring.length} scoring plays present`);
 }
+for (const g of games) {
+  if (g.playoff && g.status === 'final' && g.result === null) warnings.push(`games/${g.id}: final playoff game with no result`);
+}
 const noQuarters = games.filter((g) => g.status === 'final' && g.quarters === null);
 if (noQuarters.length) warnings.push(`${noQuarters.length} final game(s) with null quarters: ${noQuarters.map((g) => g.id).join(', ')}`);
 
