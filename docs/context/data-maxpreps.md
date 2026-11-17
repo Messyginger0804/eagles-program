@@ -10,6 +10,8 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
 - Full per-player stats (print view): https://www.maxpreps.com/print/team_stats.aspx?admin=0&bygame=0&league=0&print=1&schoolid=480a3ca5-78ac-408c-94dd-a1f69c30b37f&ssid=2286cd80-c46d-4739-8dd1-92a67ca8daa7
   - `schoolid` is the school. `ssid` is the 2026 season (MaxPreps calls it "26-27"). For a new season, take the print link from the stats page to get the new `ssid`.
 - Per-game player stats: each athlete's stats page, `https://www.maxpreps.com/local/player/stats.aspx?athleteid=<players.athlete_id>&ssid=<season ssid>` (redirects to `/athletes/<slug>/football/stats/`). One fetch per player who has season stats.
+- Opponent season stats: the same print view with the opponent's `schoolid` (take it from the `sharedStatsLinks` Print link in `__NEXT_DATA__` of `<opponent_maxpreps_url>stats/`; `ssid` is the same season id as ours): `https://www.maxpreps.com/print/team_stats.aspx?admin=0&bygame=0&league=0&print=1&schoolid=<opponent schoolid>&ssid=<ssid>`. Same 11 tables as ours. An opponent whose coach has not entered stats returns the page with no tables, an empty `playerStatLeadersData.leaders` and athlete pages with `careerGameLogs: null`; leave `seasonStats` null for them. (Lindale schoolid 473ca6df-fe5f-4ad7-b3e9-34e5b6faa3c1; no stats posted as of 2026-11-17.)
+- Kickoff times: a scheduled contest's `date` in the schedule page's `contests` carries the time (`2026-11-20T19:00:00`, local). Played contests show a bare date there, so use each game page's `ld+json` `startDate` (UTC, convert to America/Chicago). Both agree (checked 2026-11-17).
 - Opponent results: each opponent's `<opponent_maxpreps_url>schedule/` (the `contests` arrays in `__NEXT_DATA__`).
 
 ## Fetching
@@ -62,3 +64,6 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
   - Lindale date/time: MaxPreps and SI now list Fri 2026-11-20, 7:00 p.m. (MaxPreps: neutral playoff game, no venue). Venue (City Bank Stadium, Forney) still comes from the Tyler Morning Telegraph and Dave Campbell's.
   - Per-game values still sum to season totals (check:stats: 0 errors, no season-vs-games warnings).
   - Gaps: per-player passing and rushing still all zeros; Eastern Hills has no offense per-game lines; scoring plays, takeaways and some quarter scores still hand-entered; the schema has no opponent season stats, so Lindale's leaders weren't added.
+- 2026-11-17: kickoff times and Lindale stats (same branch).
+  - Kickoff times filled for all 12 games from the game pages' `startDate` (11 at 7:30 p.m., Turner 7:00 p.m., Lindale 7:00 p.m.). MaxPreps schedule and game page agree.
+  - Lindale season stats: MaxPreps has none posted (print view empty, no athlete game logs; SI has no Lindale stats page). 0 rows imported. The schema and the matchup leaders table are ready; re-run the opponent print view and import `opponents/lindale.json` `seasonStats` when stats appear.
