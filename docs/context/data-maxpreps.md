@@ -18,17 +18,17 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
 - Team, schedule and roster pages: parse `__NEXT_DATA__`. A game page (each game's `maxprepsUrl`) embeds Next.js flight data, but only team quarter scores and header info: no player stats. `/box-score/`, `/boxscore/` and the legacy `boxscore.aspx` are 404.
 - Per-game player stats are in the athlete stats page's flight payload (`self.__next_f.push`), key `"careerGameLogs"`. Each entry has a `contestUrl` whose `?c=` matches `games.contest_id`. Key on that, not the date (playoff dates can be TBA). Per-game GP isn't available.
 - The print view with `bygame=1` returns the same season tables as `bygame=0`. It is not a per-game source.
-- MaxPreps has no per-player passing or rushing numbers for 2026. Those rows are all zeros, though the team total shows 956 passing yards. Game box scores therefore have no QB or rusher lines.
+- MaxPreps has no per-player passing or rushing numbers for 2026 (rechecked 2026-11-17). Those rows are all zeros, though the team total shows 956 passing yards. Game box scores therefore have no QB or rusher lines.
 - MaxPreps does not publish scoring plays, takeaways, scrimmages or byes, so those can't be checked against it. A playoff game can show "Date is TBA" (contest dated 1900-01-01) until its date is set.
 
 ## How our data lines up
 - The 11 stat categories match MaxPreps one to one: passing, rushing, receiving, allPurpose, totalYards, tackles, sacks, defensive, points, patsFieldGoals, touchdowns. Same columns. A blank on MaxPreps is null in the DB.
 - Match rows on jersey number plus name.
-- Games played (GP) is MaxPreps' per-player GP. It can trail the team record when a game has no stats entered (2026-11-16: record 9-2, 10 games with stats).
+- Games played (GP) is MaxPreps' per-player GP. It can trail the team record when a game has no stats entered (2026-11-16: record 9-2, 10 games with stats; 2026-11-17: Eastern Hills stats posted, 11 of 11).
 - MaxPreps team-total rows have quirks (e.g. tackles TFL total 100.0; points-category TDs 4 vs 11 rushing TDs). We store player rows only, so ignore team totals.
 - MaxPreps can lag behind our scoring plays; `check:stats` warns on TD mismatches.
 
-## Other sources (checked 2026-11-16)
+## Other sources (checked 2026-11-17)
 - **SI High School (ScoreBook Live), secondary source:** https://www.si.com/high-school/stats/texas/football/teams/263968-wilmerhutchins-eagles/games
   - Has every game: schedule, final scores, home/away and playoff round labels. Spot-checked scores match MaxPreps. No quarter scores, scoring plays or player stats.
   - Fetch with `curl -sL -A 'Mozilla/5.0'`. Game data is in `ld+json` SportsEvent blocks plus an embedded GraphQL payload. The `startDate` time offsets look wrong, so use only the date. robots.txt allows crawling.
@@ -55,3 +55,10 @@ Roster, schedule, scores and season stats come from MaxPreps. Look here when doi
   - NFHS replay links verified and added for 4 games (Dunbar, Roosevelt, Conrad, North Dallas). Lincoln, Spruce, Carter and Pinkston NFHS pages returned 403 and weren't added. No written recaps found.
 - 2026-11-16: game-by-game player stats (PR #13).
   - 10 of 11 played games, from athlete game logs. Per-game values sum to the season totals (546 checks, 0 mismatches). Eastern Hills has no per-game stats on MaxPreps.
+- 2026-11-17: fresh pull ahead of the Lindale game (data/refresh-2026-11-17).
+  - Re-fetched team schedule, roster, print stats, all 35 athlete game logs, 12 opponent schedules, Lindale roster, SI game list and Lindale page.
+  - Changed: Eastern Hills (2026-11-13) per-game stats now posted (tackles 9 rows, sacks 2, defensive 4; no offense lines). Season stats updated to 11 GP (93 cell changes across 115 rows, e.g. Smith #5 68 tackles, Adams #11 97); `gamesPlayed` 10 to 11. Lindale game `maxprepsUrl` now carries the real date (11-20-2026) instead of 1-1-1900.
+  - Unchanged: roster (35/35), all 11 final scores (MaxPreps and SI both match), 12 opponents' results and Lindale roster (38/38). Lindale 11-0 with no new results since Kaufman 52-22 on 2026-11-13.
+  - Lindale date/time: MaxPreps and SI now list Fri 2026-11-20, 7:00 p.m. (MaxPreps: neutral playoff game, no venue). Venue (City Bank Stadium, Forney) still comes from the Tyler Morning Telegraph and Dave Campbell's.
+  - Per-game values still sum to season totals (check:stats: 0 errors, no season-vs-games warnings).
+  - Gaps: per-player passing and rushing still all zeros; Eastern Hills has no offense per-game lines; scoring plays, takeaways and some quarter scores still hand-entered; the schema has no opponent season stats, so Lindale's leaders weren't added.
