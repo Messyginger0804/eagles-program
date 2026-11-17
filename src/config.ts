@@ -19,6 +19,17 @@ This fan-made program helps everyone in the stands put a name to a number. Thank
 
 — A proud Eagles football parent`;
 
+/**
+ * "Eagle-on-Eagle" alert sheet. Shows only when the next game's opponent mascot equals ours (see src/lib/mascot.ts).
+ * Tweak the copy freely; keep it family-friendly.
+ */
+export const EAGLE_ALERT = {
+  heading: '⚠️ Eagle-on-Eagle Violence Alert',
+  lines: ['Only one flock flies home.', 'Feathers will fly.'],
+  button: 'See the matchup',
+  dismiss: 'Got it',
+};
+
 /** Small ad for the site builder, shown in the welcome sheet and the footer. Set enabled: false to remove both. */
 export const PROMO = {
   enabled: true,

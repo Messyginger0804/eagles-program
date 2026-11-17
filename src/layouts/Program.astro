@@ -13,6 +13,7 @@ import printCss from '../styles/print.css?url';
 import Logo from '../components/Logo.astro';
 import NumberSheet from '../components/NumberSheet.astro';
 import WelcomeSheet from '../components/WelcomeSheet.astro';
+import EagleAlert from '../components/EagleAlert.astro';
 import { SITE_TITLE, INDEXABLE, REMOVAL_CONTACT, MAXPREPS_TEAM_URL, THEME_COLOR, PROMO } from '../config';
 
 interface Props { title?: string }
@@ -131,5 +132,6 @@ const tabs = [
     </nav>
     <NumberSheet />
     {showWelcome && <WelcomeSheet />}
+    {showWelcome && <EagleAlert />}
   </body>
 </html>

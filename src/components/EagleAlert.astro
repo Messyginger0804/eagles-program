@@ -1,0 +1,63 @@
+---
+// "Eagle-on-Eagle" alert sheet. Renders only when the next game's opponent shares our mascot (isMascotMirror).
+// Reuses .sheet. No JS = never opens. Dismissal is remembered per game; waits for the welcome sheet.
+import { EAGLE_ALERT } from '../config';
+import { getTeam, getNextGame } from '../lib/data';
+import { isMascotMirror } from '../lib/mascot';
+import { longDate, roundName, siteLabel, WH_NAME } from '../lib/format';
+import { withBase } from '../lib/url';
+const team = getTeam();
+const game = getNextGame();
+const show = isMascotMirror(game, team.mascot);
+const round = game ? roundName(game) : null;
+---
+{show && game && (
+  <dialog id="eagle-alert" class="sheet eagle-alert" aria-labelledby="eagle-alert-title" data-game={game.id}>
+    <div class="sheet__inner">
+      <div class="sheet__grab" aria-hidden="true"></div>
+      <div class="sheet__bar">
+        <h2 id="eagle-alert-title" class="sheet__title">{EAGLE_ALERT.heading}</h2>
+        <button type="button" class="sheet__close" id="eagle-alert-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" /></svg>
+        </button>
+      </div>
+      <p class="eagle-alert__match">{WH_NAME} {team.mascot} <span class="eagle-alert__vs">vs.</span> {game.opponent.name} {game.opponent.mascot}</p>
+      <p class="eagle-alert__when">
+        {round && <>{round} · </>}{longDate(game.date)} · {siteLabel(game)}
+      </p>
+      {EAGLE_ALERT.lines.map((t) => <p class="eagle-alert__line">{t}</p>)}
+      <div class="eagle-alert__actions">
+        <a class="btn" id="eagle-alert-go" href={withBase('/matchup')}>{EAGLE_ALERT.button}</a>
+        <button type="button" class="btn btn--ghost" id="eagle-alert-dismiss">{EAGLE_ALERT.dismiss}</button>
+      </div>
+    </div>
+  </dialog>
+)}
+{show && <script is:inline>
+(function () {
+  var d = document.getElementById('eagle-alert');
+  if (!d || typeof d.showModal !== 'function') return;
+  var K = 'wh-eagle-alert-dismissed-v1:' + d.getAttribute('data-game');
+  var seen = false;
+  try { seen = localStorage.getItem(K) !== null; } catch (e) {}
+  if (seen) return;
+  function mark() { try { localStorage.setItem(K, '1'); } catch (e) {} }
+  d.addEventListener('cancel', mark);
+  d.addEventListener('close', mark);
+  document.getElementById('eagle-alert-close').addEventListener('click', function () { d.close(); });
+  document.getElementById('eagle-alert-dismiss').addEventListener('click', function () { d.close(); });
+  document.getElementById('eagle-alert-go').addEventListener('click', mark);
+  d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+  var w = document.getElementById('welcome'), n = document.getElementById('numsheet');
+  function show() { if (!d.open && !(n && n.open) && !(w && w.open)) d.showModal(); }
+  function go() {
+    var welcomePending = false;
+    if (w) {
+      try { welcomePending = localStorage.getItem('wh-welcome-dismissed-v1') === null; } catch (e) {}
+      if (w.open || welcomePending) { w.addEventListener('close', function () { setTimeout(show, 0); }, { once: true }); return; }
+    }
+    show();
+  }
+  if (document.readyState === 'complete') go(); else window.addEventListener('load', go);
+})();
+</script>}
