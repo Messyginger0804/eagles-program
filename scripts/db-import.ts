@@ -74,6 +74,9 @@ export function openWritable(path: string): DatabaseSync {
   const old = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'game_labels'").get() as { sql: string } | undefined;
   const rebuild = !!old && !old.sql.includes('feederNight');
   if (rebuild) db.exec('ALTER TABLE game_labels RENAME TO game_labels_old');
+  // games.kickoff_time was added later; CREATE TABLE IF NOT EXISTS won't add it to an older table.
+  const gcols = db.prepare("SELECT name FROM pragma_table_info('games')").all() as { name: string }[];
+  if (gcols.length && !gcols.some((c) => c.name === 'kickoff_time')) db.exec('ALTER TABLE games ADD COLUMN kickoff_time TEXT');
   db.exec(readFileSync(SCHEMA_PATH, 'utf8'));
   if (rebuild) db.exec('INSERT INTO game_labels SELECT * FROM game_labels_old; DROP TABLE game_labels_old');
   return db;
@@ -208,16 +211,16 @@ export function importDataSet(db: DatabaseSync, data: DataSet): Counts {
     if (same(() => readGame(db, g.id), g)) { counts['unchanged']!++; continue; }
     const oppId = upsertSchool(opponentSlug(g.id), { name: g.opponent.name, mascot: g.opponent.mascot, city: g.opponent.city });
     run(
-      `INSERT INTO games(id, school_id, season, opponent_school_id, opponent_maxpreps_url, status, date, playoff, round, location, district_game,
+      `INSERT INTO games(id, school_id, season, opponent_school_id, opponent_maxpreps_url, status, date, kickoff_time, playoff, round, location, district_game,
          contest_id, maxpreps_url, score_wh, score_opp, result, quarters, record_after_w, record_after_l, record_after_t, scoring_status, replay_url, recap_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET school_id = excluded.school_id, season = excluded.season, opponent_school_id = excluded.opponent_school_id,
-         opponent_maxpreps_url = excluded.opponent_maxpreps_url, status = excluded.status, date = excluded.date, playoff = excluded.playoff,
+         opponent_maxpreps_url = excluded.opponent_maxpreps_url, status = excluded.status, date = excluded.date, kickoff_time = excluded.kickoff_time, playoff = excluded.playoff,
          round = excluded.round, location = excluded.location, district_game = excluded.district_game, contest_id = excluded.contest_id,
          maxpreps_url = excluded.maxpreps_url, score_wh = excluded.score_wh, score_opp = excluded.score_opp, result = excluded.result,
          quarters = excluded.quarters, record_after_w = excluded.record_after_w, record_after_l = excluded.record_after_l,
          record_after_t = excluded.record_after_t, scoring_status = excluded.scoring_status, replay_url = excluded.replay_url, recap_url = excluded.recap_url`,
-      g.id, homeId, season, oppId, g.opponent.maxprepsTeamUrl, g.status, g.date, g.playoff ? 1 : 0, g.round, g.location, g.districtGame ? 1 : 0,
+      g.id, homeId, season, oppId, g.opponent.maxprepsTeamUrl, g.status, g.date, g.kickoffTime, g.playoff ? 1 : 0, g.round, g.location, g.districtGame ? 1 : 0,
       g.contestId, g.maxprepsUrl, g.score?.wh ?? null, g.score?.opp ?? null, g.result, g.quarters ? JSON.stringify(g.quarters) : null,
       g.recordAfter?.w ?? null, g.recordAfter?.l ?? null, g.recordAfter?.t ?? null, g.scoringStatus, g.links.replay, g.links.recap,
     );

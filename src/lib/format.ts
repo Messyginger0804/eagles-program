@@ -19,6 +19,13 @@ export function longDate(d: string | null): string {
   return `${shortDate(d)}, ${d.slice(0, 4)}`;
 }
 
+/** "19:30" -> "7:30 PM" (local time, no timezone math). Null -> "TBA". */
+export function kickoffLabel(t: string | null): string {
+  if (!t) return 'TBA';
+  const [h, m] = t.split(':').map(Number);
+  return `${h! % 12 || 12}:${String(m).padStart(2, '0')} ${h! < 12 ? 'AM' : 'PM'}`;
+}
+
 export function recordStr(r: { w: number; l: number; t?: number }): string {
   return `${r.w}-${r.l}${r.t ? `-${r.t}` : ''}`;
 }

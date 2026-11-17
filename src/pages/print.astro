@@ -7,7 +7,7 @@ import StatsSource from '../components/StatsSource.astro';
 import StatCaveat from '../components/StatCaveat.astro';
 import { getTeam, getRoster, getSeasonStats, getGames, getScheduleEvents, getNextGame, getOpponent } from '../lib/data';
 import { seniors, leaders, mergeSchedule } from '../lib/season';
-import { fullName, playerForStatRow, byNumber, recordStr, primaryKey, shortDate, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
+import { kickoffLabel, fullName, playerForStatRow, byNumber, recordStr, primaryKey, shortDate, statHighlight, paragraphs, opponentSlug, WH_NAME } from '../lib/format';
 import { WELCOME_NOTE } from '../config';
 const team = getTeam(), roster = getRoster(), stats = getSeasonStats(), games = getGames();
 const game = getNextGame();
@@ -53,7 +53,7 @@ const colLabel = (c: (typeof stats.categories)[number]) => c.columns.find((x) =>
     <>
       <section class="page-break-before" aria-labelledby="p-fold-opp">
         <h2 id="p-fold-opp">This Week: {game.opponent.name} {game.opponent.mascot ?? ''}</h2>
-        <p>{WH_NAME} Eagles vs. {game.opponent.name} {game.opponent.mascot ?? ''} · Kickoff: TBA{opp ? ` · ${game.opponent.name} is ${recordStr(opp.record.overall)}` : ''}</p>
+        <p>{WH_NAME} Eagles vs. {game.opponent.name} {game.opponent.mascot ?? ''} · Kickoff: {kickoffLabel(game.kickoffTime)}{opp ? ` · ${game.opponent.name} is ${recordStr(opp.record.overall)}` : ''}</p>
         {opp ? <RosterTable rows={opp.roster} caption={`${game.opponent.name} numerical roster`} compact split /> : <p>Roster not available yet.</p>}
       </section>
       <section class="page-break-before" aria-labelledby="p-fold-wh">

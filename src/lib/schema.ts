@@ -100,6 +100,7 @@ export const GameSchema = z.object({
   id: z.string().regex(/^\d{4}-(\d{2}-\d{2}|tbd)-[a-z0-9-]+$/, 'id must be YYYY-MM-DD-<opponent-slug>'),
   status: z.enum(['final', 'scheduled']),
   date: isoDate.nullable(),
+  kickoffTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'expected HH:MM (24h local)').nullable().default(null),
   playoff: z.boolean(),
   round: z.string().nullable(),
   labels: z.array(z.enum(GameLabels)).default([]),

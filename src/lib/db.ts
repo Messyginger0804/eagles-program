@@ -119,7 +119,7 @@ function buildGame(db: DatabaseSync, g: Row): Game {
   const recordAfter = g['record_after_w'] == null ? null
     : { w: g['record_after_w'], l: g['record_after_l'], ...(g['record_after_t'] == null ? {} : { t: g['record_after_t'] }) };
   return GameSchema.parse({
-    id: g['id'], status: g['status'], date: g['date'], playoff: bool(g['playoff']), round: g['round'],
+    id: g['id'], status: g['status'], date: g['date'], kickoffTime: g['kickoff_time'] ?? null, playoff: bool(g['playoff']), round: g['round'],
     venue: venueOf(db, g['id']),
     labels: all(db, 'SELECT label FROM game_labels WHERE game_id = ? ORDER BY label', g['id']).map((l) => l['label']),
     location: g['location'], districtGame: bool(g['district_game']),

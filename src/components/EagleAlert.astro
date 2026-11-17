@@ -4,7 +4,7 @@
 import { EAGLE_ALERT } from '../config';
 import { getTeam, getNextGame } from '../lib/data';
 import { isMascotMirror } from '../lib/mascot';
-import { longDate, roundName, siteLabel, WH_NAME } from '../lib/format';
+import { kickoffLabel, longDate, roundName, siteLabel, WH_NAME } from '../lib/format';
 import { withBase } from '../lib/url';
 const team = getTeam();
 const game = getNextGame();
@@ -23,7 +23,7 @@ const round = game ? roundName(game) : null;
       </div>
       <p class="eagle-alert__match">{WH_NAME} {team.mascot} <span class="eagle-alert__vs">vs.</span> {game.opponent.name} {game.opponent.mascot}</p>
       <p class="eagle-alert__when">
-        {round && <>{round} · </>}{longDate(game.date)} · {siteLabel(game)}
+        {round && <>{round} · </>}{longDate(game.date)}{game.kickoffTime && <> · {kickoffLabel(game.kickoffTime)}</>} · {siteLabel(game)}
       </p>
       {EAGLE_ALERT.lines.map((t) => <p class="eagle-alert__line">{t}</p>)}
       <div class="eagle-alert__actions">

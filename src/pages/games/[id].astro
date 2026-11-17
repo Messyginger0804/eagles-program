@@ -4,7 +4,7 @@ import Program from '../../layouts/Program.astro';
 import BoxScore from '../../components/BoxScore.astro';
 import { getGames, getRoster } from '../../lib/data';
 import { refMatchesPlayer } from '../../lib/season';
-import { fullName, gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
+import { kickoffLabel, fullName, gameBadges, longDate, playDesc, takeawayLabel, siteLabel, mapsUrl, WH_NAME, recordStr } from '../../lib/format';
 
 export function getStaticPaths() {
   return getGames().map((g) => ({ params: { id: g.id }, props: { game: g } }));
@@ -35,7 +35,7 @@ const title = `${WH_NAME} vs. ${opp}`;
       </span>
     ))}
   </p>
-  {game.venue && <p class="muted gmeta"><a href={mapsUrl(game.venue)} target="_blank" rel="noopener">{game.venue.address}<span class="sr-only"> (opens maps in a new tab)</span></a>{!final && <> · Kickoff TBA</>}</p>}
+  {game.venue && <p class="muted gmeta"><a href={mapsUrl(game.venue)} target="_blank" rel="noopener">{game.venue.address}<span class="sr-only"> (opens maps in a new tab)</span></a>{!final && <> · {game.kickoffTime ? kickoffLabel(game.kickoffTime) : 'Kickoff TBA'}</>}</p>}
 
   {final ? (
     <>
@@ -102,7 +102,7 @@ const title = `${WH_NAME} vs. ${opp}`;
   ) : (
     <section class="card">
       <h2 class="section-title">Game Preview</h2>
-      <p class="lede">{longDate(game.date)}. Kickoff: TBA. See the full matchup, with both rosters, on the <a href={withBase("/matchup")}>Matchup page</a>.</p>
+      <p class="lede">{longDate(game.date)}. Kickoff: {kickoffLabel(game.kickoffTime)}. See the full matchup, with both rosters, on the <a href={withBase("/matchup")}>Matchup page</a>.</p>
     </section>
   )}
 
