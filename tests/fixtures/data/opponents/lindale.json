@@ -52,5 +52,65 @@
    },
    "result": "W"
   }
- ]
+ ],
+ "seasonStats": {
+  "asOf": null,
+  "gamesPlayed": 11,
+  "categories": [
+   {
+    "key": "passing",
+    "label": "Passing",
+    "columns": [
+     {
+      "key": "yds",
+      "label": "Yds"
+     },
+     {
+      "key": "td",
+      "label": "TD"
+     }
+    ],
+    "rows": [
+     {
+      "number": "1",
+      "nameAbbrev": "T. Player (Sr)",
+      "stats": {
+       "gp": 11,
+       "yds": 2400,
+       "td": 25
+      }
+     },
+     {
+      "number": "2",
+      "nameAbbrev": "B. Backup (Jr)",
+      "stats": {
+       "gp": 6,
+       "yds": 0,
+       "td": 0
+      }
+     }
+    ]
+   },
+   {
+    "key": "rushing",
+    "label": "Rushing",
+    "columns": [
+     {
+      "key": "yds",
+      "label": "Yds"
+     }
+    ],
+    "rows": [
+     {
+      "number": "1",
+      "nameAbbrev": "T. Player (Sr)",
+      "stats": {
+       "gp": 11,
+       "yds": 310
+      }
+     }
+    ]
+   }
+  ]
+ }
 }

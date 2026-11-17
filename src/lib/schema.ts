@@ -161,6 +161,8 @@ export const OpponentSchema = z.object({
       weight: z.number().nullable(),
     }),
   ),
+  /** Season stat tables as listed on MaxPreps (same shape as ours), or null when the opponent has none posted. */
+  seasonStats: SeasonStatsSchema.nullable().default(null),
   results: z.array(
     z.object({
       date: isoDate.nullable(),

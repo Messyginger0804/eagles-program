@@ -2,8 +2,8 @@
 import { withBase } from '../lib/url';
 import Program from '../layouts/Program.astro';
 import RosterTable from '../components/RosterTable.astro';
-import { splitRecord } from '../lib/season';
-import { getTeam, getRoster, getNextGame, getOpponent, getGames } from '../lib/data';
+import { splitRecord, LEADER_STATS, topLeader } from '../lib/season';
+import { getTeam, getRoster, getSeasonStats, getNextGame, getOpponent, getGames } from '../lib/data';
 import { kickoffLabel, recordStr, splitRecordLine, roundName, shortDate, longDate, opponentSlug, siteLabel, mapsUrl, WH_NAME } from '../lib/format';
 const team = getTeam();
 const roster = getRoster();
@@ -11,6 +11,13 @@ const game = getNextGame();
 const opp = game ? getOpponent(opponentSlug(game)) : undefined;
 const head = (c: { name: string; role: string }[]) => c.find((x) => /head/i.test(x.role))?.name ?? 'TBA';
 const whSplit = splitRecordLine(splitRecord(getGames()));
+const whStats = getSeasonStats();
+const leaderRows = LEADER_STATS.map((s) => ({
+  label: s.label,
+  wh: topLeader(whStats, s.category, s.column),
+  opp: topLeader(opp?.seasonStats ?? null, s.category, s.column),
+}));
+const showLeaders = leaderRows.some((r) => r.opp);
 const whResults = getGames().filter((g) => g.score);
 ---
 <Program title="Matchup">
@@ -44,6 +51,24 @@ const whResults = getGames().filter((g) => g.score);
       </dl>
       {game.opponent.maxprepsTeamUrl && <p class="linkrow"><a href={game.opponent.maxprepsTeamUrl} target="_blank" rel="noopener noreferrer">{game.opponent.name} on MaxPreps<span class="sr-only"> (opens in a new tab)</span></a></p>}
       {game.maxprepsUrl && <p class="linkrow"><a href={game.maxprepsUrl} rel="noopener">Game page on MaxPreps</a> · <a href={withBase(`/games/${game.id}`)}>Game page here</a></p>}
+
+      {showLeaders && (
+        <>
+          <h2 class="section-title">{game.opponent.name} Leaders</h2>
+          <div class="table-scroll" role="region" tabindex="0" aria-label="Season leaders, both teams"><table class="leaders">
+            <caption class="sr-only">Season leaders for {WH_NAME} and {game.opponent.name}</caption>
+            <thead><tr><th scope="col">Stat</th><th scope="col">{WH_NAME}</th><th scope="col">{game.opponent.name}</th></tr></thead>
+            <tbody>{leaderRows.map((r) => (
+              <tr>
+                <th scope="row">{r.label}</th>
+                <td>{r.wh ? <><span class="leaders__name">{r.wh.nameAbbrev}</span> <strong>{r.wh.value}</strong></> : '—'}</td>
+                <td>{r.opp ? <><span class="leaders__name">{r.opp.nameAbbrev}</span> <strong>{r.opp.value}</strong></> : '—'}</td>
+              </tr>
+            ))}</tbody>
+          </table></div>
+          <p class="caveat">Season totals as entered on MaxPreps{opp?.seasonStats?.gamesPlayed ? ` through ${opp.seasonStats.gamesPlayed} games` : ''}; may be incomplete.</p>
+        </>
+      )}
 
       <h2 class="section-title">Rosters</h2>
       <div class="fold__tabs chips no-print" id="fold-tabs" role="group" aria-label="Choose a roster" hidden>

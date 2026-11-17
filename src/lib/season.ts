@@ -191,6 +191,21 @@ export function leaders(stats: SeasonStats, categoryKey: string, columnKey: stri
     .slice(0, n);
 }
 
+/** Stats shown in the matchup page's season leaders table. */
+export const LEADER_STATS = [
+  { label: 'Passing yards', category: 'passing', column: 'yds' },
+  { label: 'Rushing yards', category: 'rushing', column: 'yds' },
+  { label: 'Receiving yards', category: 'receiving', column: 'yds' },
+  { label: 'Tackles', category: 'tackles', column: 'totTckls' },
+  { label: 'Sacks', category: 'sacks', column: 'sacks' },
+] as const;
+
+/** The top player for a stat, or null when there are no stats or the best value is 0. */
+export function topLeader(stats: SeasonStats | null, categoryKey: string, columnKey: string) {
+  const top = stats ? leaders(stats, categoryKey, columnKey, 1)[0] : undefined;
+  return top && top.value > 0 ? top : null;
+}
+
 export function seniors(roster: Roster): Player[] {
   return roster.players.filter((p) => p.grade === 12);
 }

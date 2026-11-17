@@ -7,6 +7,7 @@ import { canonical, openReadOnly, readGames, readOpponents, readRoster, readSeas
 import { exportDir } from '../scripts/db-export.ts';
 import { dumpSql } from '../scripts/db-dump.ts';
 import { importDir, openWritable } from '../scripts/db-import.ts';
+import { topLeader } from '../src/lib/season.ts';
 
 const fixtures = new URL('./fixtures/data', import.meta.url).pathname;
 const read = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
@@ -45,7 +46,7 @@ describe('db round trip', () => {
   });
 });
 
-describe('kickoff time', () => {
+describe('kickoff time and opponent stats', () => {
   it('stores kickoff_time and leaves unannounced games null', () => {
     const db = openReadOnly(dbPath);
     const k = Object.fromEntries(readGames(db).map((g) => [g.id, g.kickoffTime]));
@@ -64,6 +65,15 @@ describe('kickoff time', () => {
     importDir(old, fixtures);
     const db = openReadOnly(old);
     expect(readGames(db).find((g) => g.id === '2026-11-13-eastern-hills')?.kickoffTime).toBe('19:30');
+    db.close();
+  });
+  it('round-trips opponent season stats and picks leaders', () => {
+    const db = openReadOnly(dbPath);
+    const lindale = readOpponents(db).find((o) => o.slug === 'lindale')!;
+    expect(lindale.seasonStats?.gamesPlayed).toBe(11);
+    expect(topLeader(lindale.seasonStats, 'passing', 'yds')).toMatchObject({ nameAbbrev: 'T. Player (Sr)', value: 2400 });
+    expect(topLeader(lindale.seasonStats, 'receiving', 'yds')).toBeNull();
+    expect(topLeader(null, 'passing', 'yds')).toBeNull();
     db.close();
   });
 });

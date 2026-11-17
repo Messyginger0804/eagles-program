@@ -251,6 +251,9 @@ export function importDataSet(db: DatabaseSync, data: DataSet): Counts {
     writeTeamSeason(id, o.classification, null, o.record.overall, o.record.district);
     writeCoaches(id, o.coaches);
     writePlayers(id, o.roster);
+    run('UPDATE team_seasons SET stats_as_of = ?, games_played = ? WHERE school_id = ? AND season = ?',
+      o.seasonStats?.asOf ?? null, o.seasonStats?.gamesPlayed ?? null, id, season);
+    writeCategories({ schoolId: id }, o.seasonStats?.categories ?? []);
     run('DELETE FROM opponent_results WHERE school_id = ? AND season = ?', id, season);
     o.results.forEach((r, i) => run('INSERT INTO opponent_results VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       id, season, i, r.date, r.opponent, r.location, r.score?.us ?? null, r.score?.them ?? null, r.result));
