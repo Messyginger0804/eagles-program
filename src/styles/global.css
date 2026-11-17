@@ -337,10 +337,11 @@ th[aria-sort='ascending'] button::after { content: ' \25B2'; font-size: 0.65em; 
 .versus__rec { font: 400 1.5rem var(--f-num); color: var(--sky); letter-spacing: 0.04em; }
 .versus__vs { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--bg); font: 400 1.2rem var(--f-num); box-shadow: 0 0 0 4px var(--royal); }
 .versus__note { grid-column: 1 / -1; margin: 0.3rem 0 0; font-size: 0.9rem; color: var(--muted); }
-.leaders th, .leaders td { white-space: normal; vertical-align: top; padding: 0.55rem 0.5rem; font-size: 0.9rem; }
-.leaders tbody th { font-weight: 700; color: var(--silver); width: 28%; }
-.leaders__name { display: block; color: var(--silver); }
-.leaders strong { font: 400 1.3rem var(--f-num); color: #fff; }
+.matchup-leaders th, .matchup-leaders td { white-space: normal; vertical-align: top; padding: 0.55rem 0.5rem; font-size: 0.9rem; }
+.matchup-leaders abbr { text-decoration: none; }
+.matchup-leaders tbody th { font-weight: 700; color: var(--silver); }
+.matchup-leaders__name { display: block; color: var(--silver); }
+.matchup-leaders strong { font: 400 1.3rem var(--f-num); color: #fff; }
 .fold { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 .fold > * { min-width: 0; }
 .fold__h { font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--sky); }

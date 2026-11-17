@@ -55,14 +55,15 @@ const whResults = getGames().filter((g) => g.score);
       {showLeaders && (
         <>
           <h2 class="section-title">{game.opponent.name} Leaders</h2>
-          <div class="table-scroll" role="region" tabindex="0" aria-label="Season leaders, both teams"><table class="leaders">
+          <div class="table-scroll" role="region" tabindex="0" aria-label="Season leaders, both teams"><table class="matchup-leaders">
             <caption class="sr-only">Season leaders for {WH_NAME} and {game.opponent.name}</caption>
-            <thead><tr><th scope="col">Stat</th><th scope="col">{WH_NAME}</th><th scope="col">{game.opponent.name}</th></tr></thead>
+            <colgroup><col style="width: 24%" /><col style="width: 38%" /><col style="width: 38%" /></colgroup>
+            <thead><tr><th scope="col">Stat</th><th scope="col"><abbr title={WH_NAME}>WH</abbr></th><th scope="col">{game.opponent.name}</th></tr></thead>
             <tbody>{leaderRows.map((r) => (
               <tr>
                 <th scope="row">{r.label}</th>
-                <td>{r.wh ? <><span class="leaders__name">{r.wh.nameAbbrev}</span> <strong>{r.wh.value}</strong></> : '—'}</td>
-                <td>{r.opp ? <><span class="leaders__name">{r.opp.nameAbbrev}</span> <strong>{r.opp.value}</strong></> : '—'}</td>
+                <td>{r.wh ? <><span class="matchup-leaders__name">{r.wh.nameAbbrev}</span> <strong>{r.wh.value}</strong></> : '—'}</td>
+                <td>{r.opp ? <><span class="matchup-leaders__name">{r.opp.nameAbbrev}</span> <strong>{r.opp.value}</strong></> : '—'}</td>
               </tr>
             ))}</tbody>
           </table></div>
