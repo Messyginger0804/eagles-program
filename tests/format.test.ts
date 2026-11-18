@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shortName, fullName } from '../src/lib/format.ts';
+import { shortName, fullName, kickoffLabel } from '../src/lib/format.ts';
 
 describe('shortName', () => {
   it('first initial and last name', () => expect(shortName('Jaylen', 'Gaston')).toBe('J. Gaston'));
@@ -20,4 +20,15 @@ describe('fullName', () => {
     expect(fullName({ firstName: 'Ana', lastName: 'Reed', careerId: 'nope' })).toBe('Ana Reed');
     expect(fullName({ firstName: 'Ana', lastName: 'Reed' })).toBe('Ana Reed');
   });
+});
+
+describe('kickoffLabel', () => {
+  it('formats 24h local time as 12h', () => {
+    expect(kickoffLabel('19:00')).toBe('7:00 PM');
+    expect(kickoffLabel('19:30')).toBe('7:30 PM');
+    expect(kickoffLabel('11:05')).toBe('11:05 AM');
+    expect(kickoffLabel('12:00')).toBe('12:00 PM');
+    expect(kickoffLabel('00:15')).toBe('12:15 AM');
+  });
+  it('is TBA when not announced', () => expect(kickoffLabel(null)).toBe('TBA'));
 });

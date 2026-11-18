@@ -12,6 +12,7 @@ Config: `vitest.config.ts` only sets `include: ['tests/**/*.test.ts']`. Run with
 - `playoffs.test.ts`: remaining playoff rounds, games-left count, eliminated and champion cases, name normalization, null rounds/results, the games-left cap.
 - `format.test.ts`: `shortName` (box score short names).
 - `fixName.test.ts`: Fix a Name payload shape, removal omits suggested, slug preselect, label switching.
+- `mascot.test.ts`: `isMascotMirror` (match, no match, final game, missing mascot).
 - `statcards.test.ts`: hiding all-zero stat categories and rows.
 
 ## Conventions

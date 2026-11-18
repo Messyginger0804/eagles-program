@@ -337,6 +337,11 @@ th[aria-sort='ascending'] button::after { content: ' \25B2'; font-size: 0.65em; 
 .versus__rec { font: 400 1.5rem var(--f-num); color: var(--sky); letter-spacing: 0.04em; }
 .versus__vs { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--bg); font: 400 1.2rem var(--f-num); box-shadow: 0 0 0 4px var(--royal); }
 .versus__note { grid-column: 1 / -1; margin: 0.3rem 0 0; font-size: 0.9rem; color: var(--muted); }
+.matchup-leaders th, .matchup-leaders td { white-space: normal; vertical-align: top; padding: 0.55rem 0.5rem; font-size: 0.9rem; }
+.matchup-leaders abbr { text-decoration: none; }
+.matchup-leaders tbody th { font-weight: 700; color: var(--silver); }
+.matchup-leaders__name { display: block; color: var(--silver); }
+.matchup-leaders strong { font: 400 1.3rem var(--f-num); color: #fff; }
 .fold { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
 .fold > * { min-width: 0; }
 .fold__h { font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--sky); }
@@ -515,3 +520,16 @@ body::before { content: ''; position: absolute; z-index: -1; top: calc(61px + en
 @media (pointer: coarse), (max-width: 430px) {
   .fn-link a { display: inline-flex; align-items: center; min-height: 44px; }
 }
+
+/* ---------- eagle-on-eagle alert (reuses .sheet) ---------- */
+.eagle-alert .sheet__title { font-size: 1.2rem; line-height: 1.15; }
+.eagle-alert__match { font: 400 1.5rem/1.1 var(--f-num); text-transform: uppercase; margin: 0.2rem 0 0.4rem; overflow-wrap: anywhere; }
+.eagle-alert__vs { color: var(--muted); font-size: 1rem; }
+.eagle-alert__when { color: var(--muted); font-size: 0.95rem; margin: 0 0 0.8rem; }
+.eagle-alert__line { margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 600; }
+.eagle-alert__actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+.eagle-alert__actions .btn { flex: 1 1 10rem; }
+@media screen and (prefers-reduced-motion: no-preference) {
+  .eagle-alert[open] .sheet__title { animation: eagle-shake 0.5s ease-in-out 0.25s 2; }
+}
+@keyframes eagle-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-3px) rotate(-0.6deg); } 75% { transform: translateX(3px) rotate(0.6deg); } }

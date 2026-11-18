@@ -2,6 +2,7 @@
   "id": "2026-tbd-lindale",
   "status": "scheduled",
   "date": null,
+  "kickoffTime": null,
   "playoff": true,
   "round": null,
   "labels": [],

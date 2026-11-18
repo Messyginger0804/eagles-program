@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS games (
   opponent_maxpreps_url  TEXT,               -- game.opponent.maxprepsTeamUrl
   status                 TEXT NOT NULL CHECK (status IN ('final','scheduled')),
   date                   TEXT,
+  kickoff_time           TEXT,               -- local 24h 'HH:MM' (America/Chicago), NULL = not announced
   playoff                INTEGER NOT NULL CHECK (playoff IN (0,1)),
   round                  TEXT,
   location               TEXT CHECK (location IN ('home','away','neutral')),

@@ -119,7 +119,7 @@ function buildGame(db: DatabaseSync, g: Row): Game {
   const recordAfter = g['record_after_w'] == null ? null
     : { w: g['record_after_w'], l: g['record_after_l'], ...(g['record_after_t'] == null ? {} : { t: g['record_after_t'] }) };
   return GameSchema.parse({
-    id: g['id'], status: g['status'], date: g['date'], playoff: bool(g['playoff']), round: g['round'],
+    id: g['id'], status: g['status'], date: g['date'], kickoffTime: g['kickoff_time'] ?? null, playoff: bool(g['playoff']), round: g['round'],
     venue: venueOf(db, g['id']),
     labels: all(db, 'SELECT label FROM game_labels WHERE game_id = ? ORDER BY label', g['id']).map((l) => l['label']),
     location: g['location'], districtGame: bool(g['district_game']),
@@ -169,6 +169,13 @@ export function readScheduleEvents(db: DatabaseSync, season = currentSeason(db))
   })));
 }
 
+/** An opponent's season stats (same stat tables as ours, keyed by school and season), or null if none are stored. */
+function opponentStats(db: DatabaseSync, schoolId: number, season: number, t: Row): SeasonStats | null {
+  const categories_ = categories(db, 'game_id IS NULL AND school_id = ? AND season = ?', schoolId, season);
+  if (!categories_.length) return null;
+  return SeasonStatsSchema.parse({ asOf: t['stats_as_of'], gamesPlayed: t['games_played'] ?? 0, categories: categories_ });
+}
+
 function buildOpponent(db: DatabaseSync, s: Row, season: number): Opponent {
   const t = get(db, 'SELECT * FROM team_seasons WHERE school_id = ? AND season = ?', s['id'], season)!;
   return OpponentSchema.parse({
@@ -184,6 +191,7 @@ function buildOpponent(db: DatabaseSync, s: Row, season: number): Opponent {
       number: p['number'], firstName: p['first_name'], lastName: p['last_name'],
       positions: JSON.parse(p['positions']), grade: p['grade'], height: p['height'], weight: p['weight'],
     })),
+    seasonStats: opponentStats(db, s['id'], season, t),
     results: all(db, 'SELECT * FROM opponent_results WHERE school_id = ? AND season = ? ORDER BY seq', s['id'], season).map((r) => ({
       date: r['date'], opponent: r['opponent'], location: r['location'],
       score: r['score_us'] == null ? null : { us: r['score_us'], them: r['score_them'] },

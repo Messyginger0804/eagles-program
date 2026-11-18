@@ -5,7 +5,7 @@ import Logo from '../components/Logo.astro';
 import { getTeam, getRoster, getSeasonStats, getNextGame, getOpponent } from '../lib/data';
 import { TAGLINE } from '../config';
 import { numberIndex } from '../lib/numbers';
-import { recordStr, roundName, shortDate, opponentSlug, locationLabel, mapsUrl } from '../lib/format';
+import { kickoffLabel, recordStr, roundName, shortDate, opponentSlug, locationLabel, mapsUrl } from '../lib/format';
 const team = getTeam();
 const next = getNextGame();
 const opp = next ? getOpponent(opponentSlug(next)) : undefined;
@@ -33,7 +33,7 @@ const division = (team.classification ?? '').replace(/Division 1$/, 'Division I'
         <span class="nextgame__label">Next game{roundName(next) && <> · {roundName(next)}</>}</span>
         <span class="nextgame__vs">vs. {next.opponent.name}{next.opponent.mascot ? ` ${next.opponent.mascot}` : ''}</span>
         <span class="nextgame__meta">
-          {next.date ? shortDate(next.date) : 'Date TBA'} · Kickoff TBA{next.venue ? ` · ${next.venue.name}` : !next.date ? ` · ${locationLabel(next.location)}` : ''}
+          {next.date ? shortDate(next.date) : 'Date TBA'} · {next.kickoffTime ? kickoffLabel(next.kickoffTime) : 'Kickoff TBA'}{next.venue ? ` · ${next.venue.name}` : !next.date ? ` · ${locationLabel(next.location)}` : ''}
           {opp && <> · {next.opponent.name} {opp.record.overall.w}-{opp.record.overall.l}</>}
         </span>
         <span class="nextgame__cta" aria-hidden="true">Matchup &rarr;</span>

@@ -1,7 +1,7 @@
 ---
 import { withBase } from '../lib/url';
 import type { Game } from '../lib/schema';
-import { gameBadges, gameLabel, shortDate, siteLabel, siteTag } from '../lib/format';
+import { kickoffLabel, gameBadges, gameLabel, shortDate, siteLabel, siteTag } from '../lib/format';
 const { game } = Astro.props as { game: Game };
 const done = game.score && game.result;
 const tag = siteTag(game.location);
@@ -19,7 +19,7 @@ const tag = siteTag(game.location);
           {b.kind === 'special' && <span aria-hidden="true">★ </span>}{b.label}
         </span>
       ))}
-      {!done && <span class="muted">{siteLabel(game)}</span>}
+      {!done && <span class="muted">{game.kickoffTime && `${kickoffLabel(game.kickoffTime)} · `}{siteLabel(game)}</span>}
     </span>
   </span>
   {done

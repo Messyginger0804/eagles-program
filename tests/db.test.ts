@@ -1,11 +1,13 @@
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { canonical, openReadOnly, readGames, readOpponents, readRoster, readSeasonStats, readTeam } from '../src/lib/db.ts';
 import { exportDir } from '../scripts/db-export.ts';
 import { dumpSql } from '../scripts/db-dump.ts';
-import { importDir } from '../scripts/db-import.ts';
+import { importDir, openWritable } from '../scripts/db-import.ts';
+import { topLeader } from '../src/lib/season.ts';
 
 const fixtures = new URL('./fixtures/data', import.meta.url).pathname;
 const read = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
@@ -41,5 +43,37 @@ describe('db round trip', () => {
     const before = dumpSql(dbPath);
     importDir(dbPath, fixtures);
     expect(dumpSql(dbPath)).toBe(before);
+  });
+});
+
+describe('kickoff time and opponent stats', () => {
+  it('stores kickoff_time and leaves unannounced games null', () => {
+    const db = openReadOnly(dbPath);
+    const k = Object.fromEntries(readGames(db).map((g) => [g.id, g.kickoffTime]));
+    expect(k).toEqual({ '2026-11-13-eastern-hills': '19:30', '2026-tbd-lindale': null });
+    db.close();
+  });
+  it('upgrades a DB made before kickoff_time existed', () => {
+    const old = join(tmp, 'old.db');
+    const d = new DatabaseSync(old);
+    d.exec(`CREATE TABLE games (id TEXT PRIMARY KEY, school_id INTEGER, season INTEGER, opponent_school_id INTEGER, opponent_maxpreps_url TEXT,
+      status TEXT, date TEXT, playoff INTEGER, round TEXT, location TEXT, district_game INTEGER, contest_id TEXT, maxpreps_url TEXT,
+      score_wh INTEGER, score_opp INTEGER, result TEXT, quarters TEXT, record_after_w INTEGER, record_after_l INTEGER, record_after_t INTEGER,
+      scoring_status TEXT, replay_url TEXT, recap_url TEXT)`);
+    d.close();
+    openWritable(old).close();
+    importDir(old, fixtures);
+    const db = openReadOnly(old);
+    expect(readGames(db).find((g) => g.id === '2026-11-13-eastern-hills')?.kickoffTime).toBe('19:30');
+    db.close();
+  });
+  it('round-trips opponent season stats and picks leaders', () => {
+    const db = openReadOnly(dbPath);
+    const lindale = readOpponents(db).find((o) => o.slug === 'lindale')!;
+    expect(lindale.seasonStats?.gamesPlayed).toBe(11);
+    expect(topLeader(lindale.seasonStats, 'passing', 'yds')).toMatchObject({ nameAbbrev: 'T. Player (Sr)', value: 2400 });
+    expect(topLeader(lindale.seasonStats, 'receiving', 'yds')).toBeNull();
+    expect(topLeader(null, 'passing', 'yds')).toBeNull();
+    db.close();
   });
 });
